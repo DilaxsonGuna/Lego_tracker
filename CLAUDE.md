@@ -30,7 +30,9 @@ npm start        # Start production server
 
 **Components (`/components`)**
 - `/ui` - shadcn/ui primitives (button, input, card, etc.)
-- Root level - Auth forms, theme switcher, layout components
+- `/shared` - Shared layout components (sidebar, mobile header, logo)
+- `/profile` - Profile page-specific components
+- Root level - Auth forms, theme switcher
 
 **Authentication Flow**
 - Cookie-based auth via `@supabase/ssr`
@@ -74,12 +76,15 @@ Path alias `@/*` maps to project root.
 
 ## BrickBox Design System
 
-The application uses a custom design system based on the BrickBox theme with Lego yellow as the primary accent color.
+The application uses a custom design system based on the BrickBox theme with Lego yellow as the primary accent color and a warm dark palette.
 
 **Design Tokens (CSS Variables in `globals.css`):**
 - Primary: `#ffd000` (Lego yellow) - used for accents, buttons, highlights
-- Background: Light `#f8f8f5` / Dark `#212121`
-- Card/Surface: Light `#ffffff` / Dark `#2c2c2c`
+- Primary Ghost: `--primary-ghost` - 10% opacity primary, used for hover backgrounds (e.g. tabs, buttons)
+- Background: Light `#f8f8f5` / Dark `#18150c` (warm)
+- Card/Surface: Light `#ffffff` / Dark `#231f0f` (warm)
+- Surface Accent: `--surface-accent` - subtle accent surface for hover states
+- Border: Dark `#36301a` (warm)
 - Border radius: `0.75rem` (12px) default
 
 **Typography:**
@@ -88,36 +93,49 @@ The application uses a custom design system based on the BrickBox theme with Leg
 
 ## Type Definitions (`/types`)
 
-- `profile.ts` - `UserProfile`, `UserStats` interfaces
-- `lego-set.ts` - `LegoSet`, `ThemeFilter` interfaces
-- `navigation.ts` - `NavItem` interface
+- `profile.ts` - `UserProfile` (id, username, fullName, avatarUrl, bio, isVerified, role, isOnline), `UserStats` (setsCount, piecesCount, rank, rankNumber)
+- `lego-set.ts` - `LegoSet` (setNum, name, year, themeId, numParts, setImgUrl, price?), `CollectionTab` type ("collection" | "wishlist")
+- `navigation.ts` - `NavItem` (label, href, icon, isActive?)
 - `supabase.ts` - Auto-generated Supabase database types
 
 ## Mock Data (`/lib/mockdata.ts`)
 
 Development mock data exports:
-- `mockUser` - Sample user profile (BrickMaster99)
-- `mockUserStats` - User statistics (sets, pieces, rank)
-- `mockNavItems` - Navigation menu items
-- `mockLegoSets` - Array of 6 sample Lego sets
-- `mockThemeFilters` - Theme filter options
+- `mockUser` - Sample user profile (Legoman, Master Builder role)
+- `mockUserStats` - User statistics (setsCount, piecesCount, rank, rankNumber)
+- `mockNavItems` - Sidebar navigation items with icons (Home, Explore, My Shelf/Vault, Profile)
+- `mockLegoSets` - Array of 6 sample Lego sets with prices
 
-## Profile Components (`/components/profile`)
+## Layout
 
-Compound components for the profile page:
+- Sidebar is the only component shared between pages
+- Each route that uses the sidebar has its own `layout.tsx` that imports `Sidebar` and `MobileHeader` from `@/components/shared`
+- Page-specific content (main area, footer) stays in `page.tsx`
+
+## Shared Components (`/components/shared`)
 
 | Component | Description |
 |-----------|-------------|
-| `header.tsx` | Top navigation with logo, nav links, notification bell, avatar |
-| `profile-header.tsx` | User avatar, name, bio, verified badge, stats, follow button |
-| `stats-bar.tsx` | Sets/Pieces/Rank display with highlight styling |
-| `search-filter-bar.tsx` | Search input + theme filter chips |
-| `filter-chip.tsx` | Individual filter chip button (active/inactive states) |
-| `lego-set-card.tsx` | Card with image, favorite button, piece count, metadata |
-| `lego-set-grid.tsx` | Responsive grid layout for cards |
-| `brickbox-logo.tsx` | BrickBox SVG logo component |
-| `index.ts` | Barrel export for all components |
+| `legoflex-logo.tsx` | LegoFlex Puzzle icon logo component |
+| `sidebar.tsx` | Desktop sidebar with nav items, Post Build CTA, user footer |
+| `mobile-header.tsx` | Mobile-only sticky header with logo and hamburger menu |
+| `index.ts` | Barrel export for all shared components |
+
+## Profile Components (`/components/profile`)
+
+Page-specific components for the profile page:
+
+| Component | Description |
+|-----------|-------------|
+| `profile-hero.tsx` | Centered avatar with glow effect, @username, role badge, bio |
+| `stats-card.tsx` | 3-column stats card: Sets Owned, Total Bricks, World Rank with trend |
+| `collection-tabs.tsx` | My Collection / My Wishlist toggle, sort button, search bar |
+| `lego-set-card.tsx` | Set card with cover image, set# overlay badge, title, year/pieces, price |
+| `lego-set-grid.tsx` | Responsive 1/2/3 column grid layout for cards |
+| `footer.tsx` | Brand footer with copyright and Privacy/Terms/Help links |
+| `stud-pattern-bg.tsx` | Decorative Lego stud radial-gradient background with overlay |
+| `index.ts` | Barrel export for all profile components |
 
 ## Routes
 
-- `/profile` - User profile page with collection display (auth required)
+- `/profile` - User profile page with collection/wishlist display (auth required, has `layout.tsx` with sidebar)

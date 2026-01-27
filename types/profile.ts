@@ -5,10 +5,13 @@ export interface UserProfile {
   avatarUrl: string;
   bio: string;
   isVerified: boolean;
+  role: string;
+  isOnline: boolean;
 }
 
 export interface UserStats {
   setsCount: number;
   piecesCount: number;
   rank: string;
+  rankNumber: number;
 }

@@ -31,34 +31,38 @@
     --chart-5: 27 87% 67%;
     --radius: 0.75rem;
     --surface: 0 0% 100%;
+    --surface-accent: 48 30% 96%;
+    --primary-ghost: 49 100% 41% / 0.1;
   }
   .dark {
-    /* BrickBox Design System - Dark Mode */
-    --background: 0 0% 13%;
-    --foreground: 0 0% 100%;
-    --card: 0 0% 17%;
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 17%;
-    --popover-foreground: 0 0% 100%;
+    /* BrickBox Design System - Dark Mode (warm palette) */
+    --background: 40 33% 7%;
+    --foreground: 48 20% 95%;
+    --card: 43 40% 10%;
+    --card-foreground: 48 20% 95%;
+    --popover: 43 40% 10%;
+    --popover-foreground: 48 20% 95%;
     --primary: 49 100% 41%;
     --primary-foreground: 0 0% 0%;
-    --secondary: 0 0% 17%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 12%;
-    --muted-foreground: 218 11% 65%;
+    --secondary: 44 37% 13%;
+    --secondary-foreground: 48 20% 95%;
+    --muted: 43 30% 12%;
+    --muted-foreground: 43 20% 55%;
     --accent: 49 100% 41%;
     --accent-foreground: 0 0% 0%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 23%;
-    --input: 0 0% 23%;
+    --border: 43 37% 16%;
+    --input: 43 37% 16%;
     --ring: 49 100% 41%;
     --chart-1: 49 100% 41%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-    --surface: 0 0% 17%;
+    --surface: 43 40% 10%;
+    --surface-accent: 44 37% 13%;
+    --primary-ghost: 49 100% 41% / 0.1;
   }
 }
 

@@ -24,6 +24,7 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          ghost: "hsl(var(--primary-ghost))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -45,6 +46,7 @@ export default {
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         surface: "hsl(var(--surface))",
+        "surface-accent": "hsl(var(--surface-accent))",
         chart: {
           "1": "hsl(var(--chart-1))",
           "2": "hsl(var(--chart-2))",

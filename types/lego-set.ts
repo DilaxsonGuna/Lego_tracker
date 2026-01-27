@@ -5,11 +5,7 @@ export interface LegoSet {
   themeId: number;
   numParts: number;
   setImgUrl: string;
-  isFavorite?: boolean;
+  price?: string;
 }
 
-export interface ThemeFilter {
-  id: string;
-  label: string;
-  isActive?: boolean;
-}
+export type CollectionTab = "collection" | "wishlist";
