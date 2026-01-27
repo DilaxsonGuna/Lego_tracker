@@ -2,6 +2,7 @@ import { UserProfile, UserStats } from "@/types/profile";
 import { LegoSet } from "@/types/lego-set";
 import { NavItem } from "@/types/navigation";
 import { FeedPost, Story, TrendingSet, SuggestedUser } from "@/types/feed";
+import { ThemeCategory, DiscoverySet } from "@/types/explore";
 
 export const mockUser: UserProfile = {
   id: "1",
@@ -216,5 +217,83 @@ export const mockSuggestedUsers: SuggestedUser[] = [
     username: "SarahBricks",
     avatarUrl:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuCpxjEc18rwBXghWHykR9ruWO9z9QaAeeyU6mxaDGP5XxuuiTU1UKNu1AD-mX2RfbwLiXP0ZcLbh5qRD8m8lANDk7bS9_3s7ORGIbCJSq82_pbpAR9xvnTDzUEaO5-Cc4LZnJxNyZidHmgI7i_sCD5uFYGPCNc3l2YM2L7zgC2BjMjcIbLIP-JneXGnrVOEuaJZwrZlBsiARwdRAgLmb6ane7E0BaX2VnWdj5dCZd3pARIHqG04n8tWNDyFPkn0KXeWBwjesbGsUrPa",
+  },
+];
+
+export const mockThemeCategories: ThemeCategory[] = [
+  { id: "all", label: "All" },
+  { id: "star-wars", label: "Star Wars" },
+  { id: "technic", label: "Technic" },
+  { id: "icons", label: "Icons" },
+  { id: "ideas", label: "Ideas" },
+  { id: "architecture", label: "Architecture" },
+  { id: "marvel", label: "Marvel" },
+  { id: "harry-potter", label: "Harry Potter" },
+];
+
+export const mockDiscoverySets: DiscoverySet[] = [
+  {
+    setNum: "10316",
+    name: "Rivendell\u2122",
+    numParts: 6167,
+    theme: "icons",
+    setImgUrl:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDkpWRFPwRquey0azRxVhPnYjj4VQGqDuT85ITixw_AkpnrrzUgnv4k_bre9HOc3G3lvOGMkhHyJtQvQa2wL3Yo8voeMh2nNzpVBPs8Wwc2TysZSqsQh-tUnW1cT7ZnAs7uZ7uuSX37Mrc_qXRWpTMQehJtnloTGtWw9_cpeutSjJPDi2YGspRx52sxno_s0HdvMm4rkqJfoKq2--7z7Y0-p728W6tQPJE5d_GfHd6wMCRmloj6Xm-_eMj8ABpq9Fe7j5OVOCobk6uw",
+  },
+  {
+    setNum: "75192",
+    name: "Millennium Falcon\u2122",
+    numParts: 7541,
+    theme: "star-wars",
+    setImgUrl:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuD-n1ue9uFx_Hq4owK4RO_oMq6W7KTPl66KMj9bpy-Rbx5P2ex_24XY6UFNAZ_C08c1Ee-P_xRZ1rjVvz1b60GIYNCkA_CtXo-V-UrROBE46NL70vqJuc1AHRrGoLdbpvXbbDXmnBdWrnIlOAxmFsteHc0JO8y5d6ii3z1bb1ZjCU--qK4QjsMlDlgqMuyS7oGOBg7DpLbUzr-3y5l6jcZ7SzefwwIAOEC5afO9BGA_2UuLkhZvF0uSorSVUVqSsptNiVYm0sv7y7AY",
+  },
+  {
+    setNum: "21333",
+    name: "The Starry Night",
+    numParts: 2316,
+    theme: "ideas",
+    setImgUrl:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuA1juGR0iHYojtzwCSycaIe-hG000XQ_4U9FTiw4UCSM-ssD6BnOUfBHTfbI_NXn2xJlLeJsStdVZZv0oXNdLBX3shOnBRFLCGnQhSKzjhKCE1GHNcSb9HFiRwrdo6oyA621IDAe0oNkqvvTNX7GdCwW4d2nraFSJ4LeJT749KxmowXV9mKSdKozKyhai25Zz7GA0Z3A3miQynr7x3fFYYxP1zqc5P_3TuXoAZpVyuwZmpUKjCFL3ryEuGxphvWQO2twb01BLS49Xs4",
+  },
+  {
+    setNum: "42141",
+    name: "McLaren Formula 1\u2122",
+    numParts: 1432,
+    theme: "technic",
+    setImgUrl:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuCqug7UsW0NxBicBnm5Kszh2WWHwcOr7uuvJDoflyD52ovCOHeTyYDLGTKWWbGmVvPOlAnTSQX_zsVFHmFaJWNLtfGK9qP5ZJ7F17koKVlZo4m7vUl05F58X7OssokA8XR7T5KHwRuAmRjKjPtS4lzGjP-4WZVXUJNrYmUUfQM_dSxErcBRpX5Wvk4P1_96MYchb6iMddkJeD7ZziSyvV7mP2qPu_WH1ZXzp8jOI7chVVY3-Dz4pbr95cu7nRaSe08u9Ty2emz4SujQ",
+  },
+  {
+    setNum: "71043",
+    name: "Hogwarts\u2122 Castle",
+    numParts: 6020,
+    theme: "harry-potter",
+    setImgUrl:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAIRwLNMoUV3ACPPuDFysm0LOtakkdDFnI0YTCr0tvp0YvE4phQfkeWuk4WWqlpWP1wYdCMtkjdCNOhLoVmlKIBNJDpkprZTiLLyo5UfhWR3qUlv9PtNMYHVV8k--yFe5Av9BsW5zB8i3KLxXT2GhUK1RlRhcH74T1TJFuzJ1s4C8TsZuJk41_fVN6FaMlcE3p1LCKdwKFg4PMbmRQw4_FAfvvHU_xGUJd3B4Fd_gFxtzrATmk_DgGQuByZwCu7HxBAJ4_yhO-O2QNW",
+  },
+  {
+    setNum: "10307",
+    name: "Eiffel Tower",
+    numParts: 10001,
+    theme: "icons",
+    setImgUrl:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuCpDafAh7qglXaRKJD7_3M7wW6FrL73vZQwul1BM2U55DydoTeteU5wQPs1j5ewq2DesBXdFfFRK9pLyuWxGJj4jmIfyzM7hPmCAIQxVZ42H2_VVrEshVYy1AVf7gjILkP0B-6uhH5w6OkO-HEE3wuUZ8V20WCUKlFRs9LCOE3pEtq51uDr_mKO4RjqQjQigNo5ldYOjg4cwlDMKaAws6W9LVJSc-ury4wRTfHSZQti75-NVvYn6Erw055im5rj2Pdqn7w2PXRQ8OtQ",
+  },
+  {
+    setNum: "21327",
+    name: "Typewriter",
+    numParts: 2079,
+    theme: "ideas",
+    setImgUrl:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDr40Hd4VngUa1v0NwbqqRzm0Q5Df06HPkmNEz1-dTOxF2m_n9bbTSeWHGEzD5gya0ilui0hipfyA6qG1wulId94qnFvbaq868HFWp4xvpxwsB-7R8YM1sk0dYOdR6GPhjBHExeKCc5a0wNFNrgSRryvXMvA_4274DVF115tG7JC8d5B2rgpVxzKXsllCqX3NtcxHYcrXvSdKMrkWxL-VzTOk1lsWYoRMZcmp7iJczOfc4ZzV0_oy7xJkRXMJwsCpB1iW8HU2-Zh2cr",
+  },
+  {
+    setNum: "10497",
+    name: "Galaxy Explorer",
+    numParts: 1254,
+    theme: "icons",
+    setImgUrl:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBlZhG33-0xtTjoSVSuZh2a6wmTkrlHVpvkhzJ1ysuWrLHatCbx18U1ddkO-XQbJtJ6gpEIK-2o4kLRzockbYZImFnTiC4_eVbCiPEK9rDKGab0khPXD2k_XPoEXgD4f6Y5Csy6XYC1CwSLebwsnnuSOO1pqn8t2G9uTV4t9rLsI-F-ugLff52zr5BviMPKUvyf-ViP7n9ak9re0VReDsre0RbnuWjxQ_R-vUztu6RpjMe6KSlEZ1phvK0gJvEGJhhpdVzXqxDtA6eL",
   },
 ];

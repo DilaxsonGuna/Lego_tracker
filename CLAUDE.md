@@ -21,6 +21,7 @@ npm start        # Start production server
 - `(app)/` - Route group for all sidebar pages (single shared layout with Sidebar + MobileHeader)
   - `page.tsx` - Homepage feed (`/`)
   - `profile/page.tsx` - User profile page (`/profile`)
+  - `explore/page.tsx` - Discovery catalog with search and theme filtering (`/explore`)
 - `/auth/*` - Authentication pages (login, sign-up, forgot-password, etc.) — no sidebar
 - Root layout handles theme provider and global styles
 - All routes except `/`, `/login`, and `/auth/*` are protected by middleware
@@ -34,6 +35,7 @@ npm start        # Start production server
 - `/ui` - shadcn/ui primitives (button, input, card, etc.)
 - `/shared` - Shared layout components (sidebar, mobile header, logo, footer)
 - `/home` - Homepage feed-specific components
+- `/explore` - Explore/Discovery page components
 - `/profile` - Profile page-specific components
 - Root level - Auth forms, theme switcher
 
@@ -103,6 +105,7 @@ The application uses a custom design system based on the BrickBox theme with Leg
 - `lego-set.ts` - `LegoSet` (setNum, name, year, themeId, numParts, setImgUrl, price?), `CollectionTab` type ("collection" | "wishlist")
 - `navigation.ts` - `NavItem` (label, href, icon, isActive?)
 - `feed.ts` - `FeedPost` (id, user, type, actionText, timeAgo, imageUrl, likes, comments, rating?, topComment?), `Story` (id, username, avatarUrl, isAddStory, hasUnviewed), `TrendingSet` (setNum, name, thumbnailUrl, postCount), `SuggestedUser` (id, username, avatarUrl), `PostType` ("build" | "review" | "haul" | "moc")
+- `explore.ts` - `ThemeCategory` (id, label), `DiscoverySet` (setNum, name, numParts, setImgUrl, theme)
 - `supabase.ts` - Auto-generated Supabase database types
 
 ## Mock Data (`/lib/mockdata.ts`)
@@ -116,6 +119,8 @@ Development mock data exports:
 - `mockFeedPosts` - Array of 2 feed posts (build addition + review with rating and comment)
 - `mockTrendingSets` - Array of 3 trending sets with post counts
 - `mockSuggestedUsers` - Array of 2 suggested collectors
+- `mockThemeCategories` - Array of 8 theme filter categories (All, Star Wars, Technic, Icons, Ideas, Architecture, Marvel, Harry Potter)
+- `mockDiscoverySets` - Array of 8 discovery catalog sets with theme tags
 
 ## Layout
 
@@ -148,6 +153,18 @@ Page-specific components for the homepage feed:
 | `right-sidebar.tsx` | Right contextual sidebar (xl+ only): search input, trending sets, suggested collectors, footer links |
 | `index.ts` | Barrel export for all home components |
 
+## Explore Components (`/components/explore`)
+
+Page-specific components for the explore/discovery page:
+
+| Component | Description |
+|-----------|-------------|
+| `explore-header.tsx` | Sticky header with "Discovery" title, search input with filter icon, theme chips |
+| `theme-chips.tsx` | Horizontal scrollable theme category filter buttons with active state |
+| `discovery-card.tsx` | Set card with 4:3 contained image, hover favorite button, title, set#, piece count, add button |
+| `discovery-grid.tsx` | Responsive 1/2/3/4 column grid of discovery cards |
+| `index.ts` | Barrel export for all explore components |
+
 ## Profile Components (`/components/profile`)
 
 Page-specific components for the profile page:
@@ -165,5 +182,6 @@ Page-specific components for the profile page:
 ## Routes
 
 - `/` - Homepage social feed with stories carousel, posts, trending sets, suggested collectors
+- `/explore` - Discovery catalog with search, theme filtering, and responsive set grid
 - `/profile` - User profile page with collection/wishlist display
 - `/auth/*` - Authentication pages (no sidebar)
