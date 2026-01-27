@@ -19,8 +19,9 @@ npm start        # Start production server
 
 **App Router Structure (`/app`)**
 - `/auth/*` - Authentication pages (login, sign-up, forgot-password, etc.)
-- `/protected/*` - Routes requiring authentication
+- `/profile` - User profile page with collection display
 - Root layout handles theme provider and global styles
+- All routes except `/`, `/login`, and `/auth/*` are protected by middleware
 
 **Supabase Integration (`/lib/supabase`)**
 - `client.ts` - Browser client for client components
@@ -117,6 +118,6 @@ Compound components for the profile page:
 | `brickbox-logo.tsx` | BrickBox SVG logo component |
 | `index.ts` | Barrel export for all components |
 
-## Protected Routes
+## Routes
 
-- `/protected/profile` - User profile page with collection display
+- `/profile` - User profile page with collection display (auth required)

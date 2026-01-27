@@ -21,8 +21,7 @@ export const mockUserStats: UserStats = {
 export const mockNavItems: NavItem[] = [
   { label: "Home", href: "/", isActive: false },
   { label: "Discover", href: "/discover", isActive: false },
-  { label: "Marketplace", href: "/marketplace", isActive: false },
-  { label: "Profile", href: "/protected/profile", isActive: true },
+  { label: "Profile", href: "/profile", isActive: true },
 ];
 
 export const mockThemeFilters: ThemeFilter[] = [
