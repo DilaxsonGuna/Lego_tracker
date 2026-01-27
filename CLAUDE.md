@@ -70,3 +70,53 @@ npx shadcn@latest add <component-name>
 ```
 
 Path alias `@/*` maps to project root.
+
+## BrickBox Design System
+
+The application uses a custom design system based on the BrickBox theme with Lego yellow as the primary accent color.
+
+**Design Tokens (CSS Variables in `globals.css`):**
+- Primary: `#ffd000` (Lego yellow) - used for accents, buttons, highlights
+- Background: Light `#f8f8f5` / Dark `#212121`
+- Card/Surface: Light `#ffffff` / Dark `#2c2c2c`
+- Border radius: `0.75rem` (12px) default
+
+**Typography:**
+- Font family: Inter (via `font-display` utility)
+- Weights: 400-800 for various text hierarchy
+
+## Type Definitions (`/types`)
+
+- `profile.ts` - `UserProfile`, `UserStats` interfaces
+- `lego-set.ts` - `LegoSet`, `ThemeFilter` interfaces
+- `navigation.ts` - `NavItem` interface
+- `supabase.ts` - Auto-generated Supabase database types
+
+## Mock Data (`/lib/mockdata.ts`)
+
+Development mock data exports:
+- `mockUser` - Sample user profile (BrickMaster99)
+- `mockUserStats` - User statistics (sets, pieces, rank)
+- `mockNavItems` - Navigation menu items
+- `mockLegoSets` - Array of 6 sample Lego sets
+- `mockThemeFilters` - Theme filter options
+
+## Profile Components (`/components/profile`)
+
+Compound components for the profile page:
+
+| Component | Description |
+|-----------|-------------|
+| `header.tsx` | Top navigation with logo, nav links, notification bell, avatar |
+| `profile-header.tsx` | User avatar, name, bio, verified badge, stats, follow button |
+| `stats-bar.tsx` | Sets/Pieces/Rank display with highlight styling |
+| `search-filter-bar.tsx` | Search input + theme filter chips |
+| `filter-chip.tsx` | Individual filter chip button (active/inactive states) |
+| `lego-set-card.tsx` | Card with image, favorite button, piece count, metadata |
+| `lego-set-grid.tsx` | Responsive grid layout for cards |
+| `brickbox-logo.tsx` | BrickBox SVG logo component |
+| `index.ts` | Barrel export for all components |
+
+## Protected Routes
+
+- `/protected/profile` - User profile page with collection display
