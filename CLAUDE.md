@@ -18,8 +18,10 @@ npm start        # Start production server
 ## Architecture
 
 **App Router Structure (`/app`)**
-- `/auth/*` - Authentication pages (login, sign-up, forgot-password, etc.)
-- `/profile` - User profile page with collection display
+- `(app)/` - Route group for all sidebar pages (single shared layout with Sidebar + MobileHeader)
+  - `page.tsx` - Homepage feed (`/`)
+  - `profile/page.tsx` - User profile page (`/profile`)
+- `/auth/*` - Authentication pages (login, sign-up, forgot-password, etc.) — no sidebar
 - Root layout handles theme provider and global styles
 - All routes except `/`, `/login`, and `/auth/*` are protected by middleware
 
@@ -30,7 +32,8 @@ npm start        # Start production server
 
 **Components (`/components`)**
 - `/ui` - shadcn/ui primitives (button, input, card, etc.)
-- `/shared` - Shared layout components (sidebar, mobile header, logo)
+- `/shared` - Shared layout components (sidebar, mobile header, logo, footer)
+- `/home` - Homepage feed-specific components
 - `/profile` - Profile page-specific components
 - Root level - Auth forms, theme switcher
 
@@ -87,6 +90,9 @@ The application uses a custom design system based on the BrickBox theme with Leg
 - Border: Dark `#36301a` (warm)
 - Border radius: `0.75rem` (12px) default
 
+**Custom Utilities (in `globals.css`):**
+- `.scrollbar-hide` - Hides scrollbars across browsers (used for stories carousel)
+
 **Typography:**
 - Font family: Inter (via `font-display` utility)
 - Weights: 400-800 for various text hierarchy
@@ -96,6 +102,7 @@ The application uses a custom design system based on the BrickBox theme with Leg
 - `profile.ts` - `UserProfile` (id, username, fullName, avatarUrl, bio, isVerified, role, isOnline), `UserStats` (setsCount, piecesCount, rank, rankNumber)
 - `lego-set.ts` - `LegoSet` (setNum, name, year, themeId, numParts, setImgUrl, price?), `CollectionTab` type ("collection" | "wishlist")
 - `navigation.ts` - `NavItem` (label, href, icon, isActive?)
+- `feed.ts` - `FeedPost` (id, user, type, actionText, timeAgo, imageUrl, likes, comments, rating?, topComment?), `Story` (id, username, avatarUrl, isAddStory, hasUnviewed), `TrendingSet` (setNum, name, thumbnailUrl, postCount), `SuggestedUser` (id, username, avatarUrl), `PostType` ("build" | "review" | "haul" | "moc")
 - `supabase.ts` - Auto-generated Supabase database types
 
 ## Mock Data (`/lib/mockdata.ts`)
@@ -105,11 +112,18 @@ Development mock data exports:
 - `mockUserStats` - User statistics (setsCount, piecesCount, rank, rankNumber)
 - `mockNavItems` - Sidebar navigation items with icons (Home, Explore, My Shelf/Vault, Profile)
 - `mockLegoSets` - Array of 6 sample Lego sets with prices
+- `mockStories` - Array of 5 story items (1 "Add Build" + 4 user stories, some viewed/unviewed)
+- `mockFeedPosts` - Array of 2 feed posts (build addition + review with rating and comment)
+- `mockTrendingSets` - Array of 3 trending sets with post counts
+- `mockSuggestedUsers` - Array of 2 suggested collectors
 
 ## Layout
 
-- Sidebar is the only component shared between pages
-- Each route that uses the sidebar has its own `layout.tsx` that imports `Sidebar` and `MobileHeader` from `@/components/shared`
+- All sidebar pages live under the `(app)` route group which has a single shared `layout.tsx`
+- The `(app)/layout.tsx` provides Sidebar (desktop) + MobileHeader (mobile) wrapping all children
+- Sidebar uses `usePathname()` to automatically highlight the active nav item — no per-route config needed
+- To add a new sidebar page, create a folder under `app/(app)/` with a `page.tsx`
+- Auth pages (`/auth/*`) live outside the route group and have no sidebar
 - Page-specific content (main area, footer) stays in `page.tsx`
 
 ## Shared Components (`/components/shared`)
@@ -117,9 +131,22 @@ Development mock data exports:
 | Component | Description |
 |-----------|-------------|
 | `legoflex-logo.tsx` | LegoFlex Puzzle icon logo component |
-| `sidebar.tsx` | Desktop sidebar with nav items, Post Build CTA, user footer |
+| `sidebar.tsx` | Desktop sidebar with nav items, Post Build CTA, user footer. Uses `usePathname()` for active state |
 | `mobile-header.tsx` | Mobile-only sticky header with logo and hamburger menu |
+| `footer.tsx` | Brand footer with LegoFlex logo, copyright, and Privacy/Terms/Help links |
 | `index.ts` | Barrel export for all shared components |
+
+## Home Components (`/components/home`)
+
+Page-specific components for the homepage feed:
+
+| Component | Description |
+|-----------|-------------|
+| `stories-carousel.tsx` | Horizontal scrollable story bubbles with gradient borders for unviewed, dashed "Add Build" button |
+| `feed-post.tsx` | Social feed post card: user header, image with optional rating badge, like/comment/share/bookmark actions, comment preview |
+| `feed.tsx` | Feed list container mapping posts + loading spinner |
+| `right-sidebar.tsx` | Right contextual sidebar (xl+ only): search input, trending sets, suggested collectors, footer links |
+| `index.ts` | Barrel export for all home components |
 
 ## Profile Components (`/components/profile`)
 
@@ -132,10 +159,11 @@ Page-specific components for the profile page:
 | `collection-tabs.tsx` | My Collection / My Wishlist toggle, sort button, search bar |
 | `lego-set-card.tsx` | Set card with cover image, set# overlay badge, title, year/pieces, price |
 | `lego-set-grid.tsx` | Responsive 1/2/3 column grid layout for cards |
-| `footer.tsx` | Brand footer with copyright and Privacy/Terms/Help links |
 | `stud-pattern-bg.tsx` | Decorative Lego stud radial-gradient background with overlay |
-| `index.ts` | Barrel export for all profile components |
+| `index.ts` | Barrel export for all profile components (re-exports Footer from shared) |
 
 ## Routes
 
-- `/profile` - User profile page with collection/wishlist display (auth required, has `layout.tsx` with sidebar)
+- `/` - Homepage social feed with stories carousel, posts, trending sets, suggested collectors
+- `/profile` - User profile page with collection/wishlist display
+- `/auth/*` - Authentication pages (no sidebar)

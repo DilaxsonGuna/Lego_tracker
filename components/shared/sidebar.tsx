@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Home,
   Compass,
@@ -32,6 +33,8 @@ interface SidebarProps {
 }
 
 export function Sidebar({ navItems, user }: SidebarProps) {
+  const pathname = usePathname();
+
   return (
     <aside className="sticky top-0 z-50 hidden h-screen w-64 flex-col border-r border-border bg-card/95 backdrop-blur-md px-6 py-6 md:flex">
       <div className="mb-10 flex items-center gap-3 px-2">
@@ -44,13 +47,17 @@ export function Sidebar({ navItems, user }: SidebarProps) {
       <nav className="flex flex-1 flex-col gap-2">
         {navItems.map((item) => {
           const Icon = iconMap[item.icon] || Home;
+          const isActive =
+            item.href === "/"
+              ? pathname === "/"
+              : pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
                 "flex items-center gap-4 rounded-xl px-4 py-3 text-sm font-medium transition-colors",
-                item.isActive
+                isActive
                   ? "bg-surface-accent text-primary font-bold"
                   : "text-muted-foreground hover:bg-surface-accent hover:text-foreground"
               )}

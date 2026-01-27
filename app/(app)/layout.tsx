@@ -1,7 +1,7 @@
 import { Sidebar, MobileHeader } from "@/components/shared";
-import { mockUser, mockNavItems } from "@/lib/mockdata";
+import { mockNavItems, mockUser } from "@/lib/mockdata";
 
-export default function ProfileLayout({
+export default function AppLayout({
   children,
 }: {
   children: React.ReactNode;
