@@ -101,7 +101,7 @@ The application uses a custom design system based on the BrickBox theme with Leg
 
 ## Type Definitions (`/types`)
 
-- `profile.ts` - `UserProfile` (id, username, fullName, avatarUrl, bio, isVerified, role, isOnline), `UserStats` (setsCount, piecesCount, rank, rankNumber)
+- `profile.ts` - `UserProfile` (id, username, fullName, avatarUrl, bio, isVerified, role, isOnline, followers, following, friends, interests), `UserStats` (setsCount, piecesCount, rank, rankNumber, vaultValue), `FavoriteSet` (setNum, name, imageUrl), `Milestone` (id, icon, label)
 - `lego-set.ts` - `LegoSet` (setNum, name, year, themeId, numParts, setImgUrl, price?), `CollectionTab` type ("collection" | "wishlist")
 - `navigation.ts` - `NavItem` (label, href, icon, isActive?)
 - `feed.ts` - `FeedPost` (id, user, type, actionText, timeAgo, imageUrl, likes, comments, rating?, topComment?), `Story` (id, username, avatarUrl, isAddStory, hasUnviewed), `TrendingSet` (setNum, name, thumbnailUrl, postCount), `SuggestedUser` (id, username, avatarUrl), `PostType` ("build" | "review" | "haul" | "moc")
@@ -111,9 +111,11 @@ The application uses a custom design system based on the BrickBox theme with Leg
 ## Mock Data (`/lib/mockdata.ts`)
 
 Development mock data exports:
-- `mockUser` - Sample user profile (Legoman, Master Builder role)
-- `mockUserStats` - User statistics (setsCount, piecesCount, rank, rankNumber)
-- `mockNavItems` - Sidebar navigation items with icons (Home, Explore, My Shelf/Vault, Profile)
+- `mockUser` - Sample user profile (Legoman, Master Builder role, social stats, interests)
+- `mockUserStats` - User statistics (setsCount, piecesCount, rank, rankNumber, vaultValue)
+- `mockFavoriteSets` - Array of 4 favorite set images for profile display
+- `mockMilestones` - Array of 5 achievement milestones (100k Bricks, 10 Years, Designer, Top 100, Verified)
+- `mockNavItems` - Sidebar navigation items with icons (Home, Explore, Vault, Profile)
 - `mockLegoSets` - Array of 6 sample Lego sets with prices
 - `mockStories` - Array of 5 story items (1 "Add Build" + 4 user stories, some viewed/unviewed)
 - `mockFeedPosts` - Array of 2 feed posts (build addition + review with rating and comment)
@@ -167,21 +169,25 @@ Page-specific components for the explore/discovery page:
 
 ## Profile Components (`/components/profile`)
 
-Page-specific components for the profile page:
+Page-specific components for the profile "Digital ID" page:
 
 | Component | Description |
 |-----------|-------------|
-| `profile-hero.tsx` | Centered avatar with glow effect, @username, role badge, bio |
-| `stats-card.tsx` | 3-column stats card: Sets Owned, Total Bricks, World Rank with trend |
-| `collection-tabs.tsx` | My Collection / My Wishlist toggle, sort button, search bar |
-| `lego-set-card.tsx` | Set card with cover image, set# overlay badge, title, year/pieces, price |
-| `lego-set-grid.tsx` | Responsive 1/2/3 column grid layout for cards |
+| `profile-hero.tsx` | Large avatar (size-44) with primary border + glow, verified badge, role pill, follower/following/friends stats row |
+| `favorites-grid.tsx` | 4-column grid of favorite set images with grayscale hover effect and gradient overlay |
+| `profile-bio.tsx` | Bio text + interest hashtag chips |
+| `profile-stats-row.tsx` | 3-card row: Vault Value, Total Parts, Global Rank |
+| `milestone-vault.tsx` | 3-column grid of achievement badges with emoji icons + add placeholder |
+| `profile-footer.tsx` | Digital Identity UUID + Vault Guide/Privacy Protocol/Support links |
 | `stud-pattern-bg.tsx` | Decorative Lego stud radial-gradient background with overlay |
-| `index.ts` | Barrel export for all profile components (re-exports Footer from shared) |
+| `index.ts` | Barrel export for all profile components |
+
+Legacy components (no longer used by profile page but still in codebase):
+- `stats-card.tsx`, `collection-tabs.tsx`, `lego-set-card.tsx`, `lego-set-grid.tsx`
 
 ## Routes
 
 - `/` - Homepage social feed with stories carousel, posts, trending sets, suggested collectors
 - `/explore` - Discovery catalog with search, theme filtering, and responsive set grid
-- `/profile` - User profile page with collection/wishlist display
+- `/profile` - User Digital ID page with avatar, social stats, favorites grid, bio, vault stats, milestones
 - `/auth/*` - Authentication pages (no sidebar)

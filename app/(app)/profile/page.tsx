@@ -1,50 +1,39 @@
-"use client";
-
-import { useState } from "react";
 import {
   ProfileHero,
-  StatsCard,
-  CollectionTabs,
-  LegoSetGrid,
-  Footer,
+  FavoritesGrid,
+  ProfileBio,
+  ProfileStatsRow,
+  MilestoneVault,
+  ProfileFooter,
   StudPatternBg,
 } from "@/components/profile";
 import {
   mockUser,
   mockUserStats,
-  mockLegoSets,
+  mockFavoriteSets,
+  mockMilestones,
 } from "@/lib/mockdata";
-import { CollectionTab } from "@/types/lego-set";
 
 export default function ProfilePage() {
-  const [activeTab, setActiveTab] = useState<CollectionTab>("collection");
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const filteredSets = mockLegoSets.filter((set) =>
-    set.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   return (
-    <>
-      <main className="flex-1 relative">
-        <StudPatternBg />
+    <main className="flex-1 relative">
+      <StudPatternBg />
 
-        <div className="relative z-10 mx-auto max-w-[1000px] px-6 py-12 flex flex-col gap-10">
-          <ProfileHero user={mockUser} />
+      <div className="relative z-10 mx-auto max-w-[1100px] px-8 py-12">
+        <ProfileHero user={mockUser} />
 
-          <StatsCard stats={mockUserStats} />
+        <FavoritesGrid favorites={mockFavoriteSets} />
 
-          <CollectionTabs
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            onSearch={setSearchQuery}
-          />
-
-          <LegoSetGrid sets={filteredSets} />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          <div className="lg:col-span-2 space-y-8">
+            <ProfileBio user={mockUser} />
+            <ProfileStatsRow stats={mockUserStats} />
+          </div>
+          <MilestoneVault milestones={mockMilestones} />
         </div>
-      </main>
 
-      <Footer />
-    </>
+        <ProfileFooter />
+      </div>
+    </main>
   );
 }

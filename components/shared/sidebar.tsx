@@ -5,11 +5,11 @@ import { usePathname } from "next/navigation";
 import {
   Home,
   Compass,
-  BookOpen,
   Store,
   User,
   Plus,
   MoreHorizontal,
+  Lock,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 const iconMap: Record<string, LucideIcon> = {
   home: Home,
   compass: Compass,
-  "book-open": BookOpen,
+  vault: Lock,
   store: Store,
   user: User,
 };

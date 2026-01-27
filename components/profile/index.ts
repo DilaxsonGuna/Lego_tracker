@@ -1,7 +1,7 @@
 export { ProfileHero } from "./profile-hero";
-export { StatsCard } from "./stats-card";
-export { CollectionTabs } from "./collection-tabs";
-export { LegoSetCard } from "./lego-set-card";
-export { LegoSetGrid } from "./lego-set-grid";
-export { Footer } from "@/components/shared/footer";
+export { FavoritesGrid } from "./favorites-grid";
+export { ProfileBio } from "./profile-bio";
+export { ProfileStatsRow } from "./profile-stats-row";
+export { MilestoneVault } from "./milestone-vault";
+export { ProfileFooter } from "./profile-footer";
 export { StudPatternBg } from "./stud-pattern-bg";

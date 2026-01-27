@@ -1,4 +1,4 @@
-import { UserProfile, UserStats } from "@/types/profile";
+import { UserProfile, UserStats, FavoriteSet, Milestone } from "@/types/profile";
 import { LegoSet } from "@/types/lego-set";
 import { NavItem } from "@/types/navigation";
 import { FeedPost, Story, TrendingSet, SuggestedUser } from "@/types/feed";
@@ -10,23 +10,63 @@ export const mockUser: UserProfile = {
   fullName: "Lego Man",
   avatarUrl:
     "https://lh3.googleusercontent.com/aida-public/AB6AXuB_HlMUYDl-51eWMKQkskGzfD6jJxnT8GY5JeLPGQWZqF2Q-FvLxm5y_N-yUYFHv6kG0GXfQAH_Xsgd0DBjWnFVRtieadMrBzW2wLCja9FJNGx5bEb-IRHSvOz_w0FKy54bFKsh4OteUQ_QuFYrzIP6erA46V4ZAlQS-dcR_o7nP3Mz_JjUXJaJQOFZyA6bJs4MwemhsTs7g1VydCR7-DS2stDt5_gHzgE4r8u_M5pMdOQqvSgKTCEg50MDf7ohQcFZSYJ5YR6XJbbQ",
-  bio: "Technic specialist based in Copenhagen. Obsessed with 1:8 supercars and modular buildings.",
+  bio: "Engineering at heart, plastic in hand. Specialized in high-complexity Technic models and hyper-detailed Modular City expansion. Founding member of the Nordic Brick Council.",
   isVerified: true,
   role: "Master Builder",
   isOnline: true,
+  followers: 12400,
+  following: 842,
+  friends: 156,
+  interests: ["Technic", "StarWars", "ModularCity", "AFOL"],
 };
 
 export const mockUserStats: UserStats = {
   setsCount: 412,
-  piecesCount: 845200,
+  piecesCount: 845210,
   rank: "Master Builder",
   rankNumber: 42,
+  vaultValue: "$42,910",
 };
+
+export const mockFavoriteSets: FavoriteSet[] = [
+  {
+    setNum: "75192",
+    name: "Millennium Falcon",
+    imageUrl:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBhY4K7Go2_YNkFAbzGsmBx0UKkEk5drzm7g3qTJ41obkUUG31u3HYhxUk-xUdbLb5TRI_KkkTiOWKDjP1lNw3eOJgzX4BoUPgs4ohwiZ1Coc-kLj5QP_zdu-DAvNNFCpsqiA9tJxGHaDbHYfuK5B5FNLlcHlXIoX0yC6jcX0e7lDgHBOjWXiHo1FtAaElHav8Ow31dmx9noZyJ4fVUjZIi7rxEzrxrnn1-4wAy1EC7HY3pn7rd6OTYPdEV2i9nY2TIAMDp2Ax9gptj",
+  },
+  {
+    setNum: "10307",
+    name: "Eiffel Tower",
+    imageUrl:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDUi1_YZk4xU9oI1i7UrFQ2ShOJOjgNNl59J9CmIYCBv93Qso-yDa1gZvKfbw93iQTk62F5MvU4aQB31tTadq6a5uNAijy--j6MXaBG-t3gt4jLuVBALJhd4NVbXDzzBufGB-y1F6vkqvxw5PNj1qRLB-UBxXi-FsWp6VPhUyVYw9KcXNcHNpUEYMJ6J4bBsm7ejgH6dxdOSTUZvN7ACJY7ieLE-DD36x5Wsx6r_xUkPpjJV1qf5ivgDwdRUUtHLwvJbv3iyZZOEdVW",
+  },
+  {
+    setNum: "10294",
+    name: "Titanic",
+    imageUrl:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDTOm544GICKazkLOR4XwI1icdRyi4I0Rcjo57hPrIJpNc5_ipj9YBlHokrqmXyf6o0wWniIF-anVVm4JShweHHjw4ji8zGD6oSOhzIVPprrnCGpYFOV9yLul5yPHIvmfDK0nEFOSQTAwazDflSn2YedmAhULmCUgEF6foTHt8mZctpXEB_4ygu4pqyXdYkXBlCjtXGJDbOddLv8hs_jMLk-LxTBCHapqGEffkye1VOPkvdK70902DYSI8W37vqnP5WCCfR6xptTaK3",
+  },
+  {
+    setNum: "10316",
+    name: "Rivendell",
+    imageUrl:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAEeNMakIHacoTSayt_KjS7NXqIn0wRP01evPksT2PKPbGsJYtTUHhYrAuZLI-f_zZhLaf9QQvT5eKr-AV49QUE8Nawts6W-yT7e8VNKb45lrvUwb_lGYE_cXVes0bCFuywLdU0hTLPBMFGRviUeury9jG3rOEt82Ff0Rth-1rTup1BFFM-nS00CACTbwum5YqhWoLCZr6bYr3dOkzLdtDQ0xsahc0YLQ0hpt8glhcH33CpAN8GsCMTQ7feshUoE-k8KoQ1mBUhGJPa",
+  },
+];
+
+export const mockMilestones: Milestone[] = [
+  { id: "m1", icon: "diamond", label: "100k Bricks" },
+  { id: "m2", icon: "history_edu", label: "10 Years" },
+  { id: "m3", icon: "architecture", label: "Designer" },
+  { id: "m4", icon: "social_leaderboard", label: "Top 100" },
+  { id: "m5", icon: "verified_user", label: "Verified" },
+];
 
 export const mockNavItems: NavItem[] = [
   { label: "Home", href: "/", icon: "home" },
   { label: "Explore", href: "/explore", icon: "compass" },
-  { label: "My Shelf/Vault", href: "/shelf", icon: "book-open" },
+  { label: "Vault", href: "/vault", icon: "vault" },
   { label: "Profile", href: "/profile", icon: "user" },
 ];
 
@@ -144,7 +184,7 @@ export const mockFeedPosts: FeedPost[] = [
         "https://lh3.googleusercontent.com/aida-public/AB6AXuAqDcHwLbr5TVkILNLk_77OlVCJ6RsiDqJb6RHhGXouptMSQJkJQ3wxSx3SP2CTzXEf3N8HWuUUrBBnn74NOBXgB4p7gmR7y-EyM-9wSCdXRvv_1MVTmpZD-xqddKfJwhlYNAGzhIptwJV_vgU8IuzVr5EkjSA6ap1SKsKxuk_gqoSgHJ6i5HRypgj7q5U6PzyVQ_N_RxhYfuD4YRe_UfCMYnY_pjz4nW8ICyQvS9_fGWlW5MWxTsNadhV18vuL7rKRyp5vGoCHYFde",
     },
     type: "build",
-    actionText: "just added 'The Titanic (10294)' to their shelf!",
+    actionText: "just added 'The Titanic (10294)' to their vault!",
     timeAgo: "2h ago",
     imageUrl:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuDtsTVZq_DlQYz8Kvm89xs1sZADtT2ybJoQxN7zoblJaabGJOhh4La4m_1dCVZZXKeI1fiOMYXFNY5fqHfB50ImdzNzp470J9NXwjnhb-Dk6-p-iFaGgjFDoHZ7Ut1O1X9YJr7IB_v2xYAN46IvAQQl_2HgozTQAb6LIZUrvQfouOh6KmJKrugvUiZCX9Djlvz8UdKhrylDkVTTBHng0Z3X2l-00kadhb59u9zV62FXCBhvQhaNXCWO1cIubxUhYcS9iaXJ9SZKKeY1",
