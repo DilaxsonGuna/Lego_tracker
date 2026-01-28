@@ -1,4 +1,4 @@
-export type Json =
+type Json =
   | string
   | number
   | boolean
@@ -16,36 +16,38 @@ export type Database = {
     Tables: {
       lego_sets: {
         Row: {
-          last_fetched: string | null
+          img_url: string | null
           name: string
           num_parts: number | null
-          set_img_url: string | null
           set_num: string
-          set_url: string | null
           theme_id: number | null
           year: number | null
         }
         Insert: {
-          last_fetched?: string | null
+          img_url?: string | null
           name: string
           num_parts?: number | null
-          set_img_url?: string | null
           set_num: string
-          set_url?: string | null
           theme_id?: number | null
           year?: number | null
         }
         Update: {
-          last_fetched?: string | null
+          img_url?: string | null
           name?: string
           num_parts?: number | null
-          set_img_url?: string | null
           set_num?: string
-          set_url?: string | null
           theme_id?: number | null
           year?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "lego_sets_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "themes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -70,6 +72,32 @@ export type Database = {
           username?: string | null
         }
         Relationships: []
+      }
+      themes: {
+        Row: {
+          id: number
+          name: string
+          parent_id: number | null
+        }
+        Insert: {
+          id: number
+          name: string
+          parent_id?: number | null
+        }
+        Update: {
+          id?: number
+          name?: string
+          parent_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "themes_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "themes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_sets: {
         Row: {
@@ -118,7 +146,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
       [_ in never]: never
