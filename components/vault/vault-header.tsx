@@ -1,0 +1,62 @@
+"use client";
+
+import { Search, Settings } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import type { VaultStats } from "@/types/vault";
+
+interface VaultHeaderProps {
+  stats: VaultStats;
+  onSearch: (query: string) => void;
+}
+
+export function VaultHeader({ stats, onSearch }: VaultHeaderProps) {
+  return (
+    <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border">
+      <div className="mx-auto flex flex-col md:flex-row items-start md:items-center justify-between px-6 md:px-8 py-4 md:h-20 gap-4 md:gap-0 max-w-7xl">
+        <div className="flex items-center gap-6 md:gap-8">
+          <div className="flex flex-col">
+            <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
+              Total Market Value
+            </span>
+            <span className="text-xl font-black text-primary">
+              {stats.totalValue}
+            </span>
+          </div>
+          <div className="hidden md:block h-8 w-px bg-border" />
+          <div className="flex flex-col">
+            <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
+              Total Pieces
+            </span>
+            <span className="text-xl font-bold text-foreground">
+              {stats.totalPieces}
+            </span>
+          </div>
+          <div className="hidden md:block h-8 w-px bg-border" />
+          <div className="flex flex-col">
+            <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
+              Unique Themes
+            </span>
+            <span className="text-xl font-bold text-foreground">
+              {stats.uniqueThemes}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <label className="relative flex items-center flex-1 md:flex-initial group">
+            <Search className="absolute left-3 size-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+            <Input
+              type="text"
+              placeholder="Filter vault..."
+              className="h-9 w-full md:w-48 pl-9 pr-4 rounded-lg bg-card border-none text-xs focus-visible:ring-1 focus-visible:ring-primary/50"
+              onChange={(e) => onSearch(e.target.value)}
+            />
+          </label>
+          <button className="flex h-9 w-9 items-center justify-center rounded-lg bg-card text-muted-foreground hover:text-foreground transition-colors">
+            <Settings className="size-5" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -3,6 +3,7 @@ import { LegoSet } from "@/types/lego-set";
 import { NavItem } from "@/types/navigation";
 import { FeedPost, Story, TrendingSet, SuggestedUser } from "@/types/feed";
 import { ThemeCategory, DiscoverySet } from "@/types/explore";
+import { VaultSet, VaultStats } from "@/types/vault";
 
 export const mockUser: UserProfile = {
   id: "1",
@@ -335,5 +336,54 @@ export const mockDiscoverySets: DiscoverySet[] = [
     theme: "icons",
     setImgUrl:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuBlZhG33-0xtTjoSVSuZh2a6wmTkrlHVpvkhzJ1ysuWrLHatCbx18U1ddkO-XQbJtJ6gpEIK-2o4kLRzockbYZImFnTiC4_eVbCiPEK9rDKGab0khPXD2k_XPoEXgD4f6Y5Csy6XYC1CwSLebwsnnuSOO1pqn8t2G9uTV4t9rLsI-F-ugLff52zr5BviMPKUvyf-ViP7n9ak9re0VReDsre0RbnuWjxQ_R-vUztu6RpjMe6KSlEZ1phvK0gJvEGJhhpdVzXqxDtA6eL",
+  },
+];
+
+export const mockVaultStats: VaultStats = {
+  totalValue: "$42,850.32",
+  totalPieces: "845,212",
+  uniqueThemes: 28,
+};
+
+export const mockVaultSets: VaultSet[] = [
+  {
+    setNum: "75192",
+    name: "Millennium Falcon\u2122",
+    year: 2017,
+    numParts: 7541,
+    setImgUrl:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBhY4K7Go2_YNkFAbzGsmBx0UKkEk5drzm7g3qTJ41obkUUG31u3HYhxUk-xUdbLb5TRI_KkkTiOWKDjP1lNw3eOJgzX4BoUPgs4ohwiZ1Coc-kLj5QP_zdu-DAvNNFCpsqiA9tJxGHaDbHYfuK5B5FNLlcHlXIoX0yC6jcX0e7lDgHBOjWXiHo1FtAaElHav8Ow31dmx9noZyJ4fVUjZIi7rxEzrxrnn1-4wAy1EC7HY3pn7rd6OTYPdEV2i9nY2TIAMDp2Ax9gptj",
+    price: "$849.99",
+    status: "built",
+  },
+  {
+    setNum: "10307",
+    name: "Eiffel Tower",
+    year: 2022,
+    numParts: 10001,
+    setImgUrl:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDUi1_YZk4xU9oI1i7UrFQ2ShOJOjgNNl59J9CmIYCBv93Qso-yDa1gZvKfbw93iQTk62F5MvU4aQB31tTadq6a5uNAijy--j6MXaBG-t3gt4jLuVBALJhd4NVbXDzzBufGB-y1F6vkqvxw5PNj1qRLB-UBxXi-FsWp6VPhUyVYw9KcXNcHNpUEYMJ6J4bBsm7ejgH6dxdOSTUZvN7ACJY7ieLE-DD36x5Wsx6r_xUkPpjJV1qf5ivgDwdRUUtHLwvJbv3iyZZOEdVW",
+    price: "$629.99",
+    status: "in-box",
+  },
+  {
+    setNum: "10294",
+    name: "Titanic",
+    year: 2021,
+    numParts: 9090,
+    setImgUrl:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDTOm544GICKazkLOR4XwI1icdRyi4I0Rcjo57hPrIJpNc5_ipj9YBlHokrqmXyf6o0wWniIF-anVVm4JShweHHjw4ji8zGD6oSOhzIVPprrnCGpYFOV9yLul5yPHIvmfDK0nEFOSQTAwazDflSn2YedmAhULmCUgEF6foTHt8mZctpXEB_4ygu4pqyXdYkXBlCjtXGJDbOddLv8hs_jMLk-LxTBCHapqGEffkye1VOPkvdK70902DYSI8W37vqnP5WCCfR6xptTaK3",
+    price: "$679.99",
+    status: "built",
+  },
+  {
+    setNum: "10305",
+    name: "Lion Knights\u2019 Castle",
+    year: 2022,
+    numParts: 4514,
+    setImgUrl:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuC3080c2qWrJU1aq1uM7SkxA9SySQ0QL6Gu6_vZfbwuj3fylCP9JaDmn-R_ox0NuqAEEcLvRoy7qYxjZzI4DzmPHNEVCXvtLcMxfNIoqnyY0U4ts-cSUR3MZudcMUs3Vt3LqURj2H3OyzxN8acmRAQgYnNCJ2AJpkBTiKT3PlcpnxMqLw8SkoF3bwEcuAmFp2jTOxcg593aplxgIMUFpw7uiupQrnM2uCl8pJMmWoNFqLYZ7tksN1GHklS1iZRS68ByNaGxPvQImaXF",
+    price: "$399.99",
+    status: "missing-parts",
   },
 ];
