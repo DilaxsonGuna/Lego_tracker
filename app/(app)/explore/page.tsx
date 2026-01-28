@@ -1,15 +1,16 @@
 import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
-import { getDiscoverySets, getThemeCategories } from "@/lib/queries/explore";
+import { getDiscoverySets, getParentThemes, getFeaturedThemes } from "@/lib/queries/explore";
 import { ExplorePageClient } from "./explore-client";
 
 async function ExploreContent() {
-  const [sets, categories] = await Promise.all([
+  const [sets, categories, topThemes] = await Promise.all([
     getDiscoverySets(),
-    getThemeCategories(),
+    getParentThemes(),
+    getFeaturedThemes(),
   ]);
 
-  return <ExplorePageClient initialSets={sets} categories={categories} />;
+  return <ExplorePageClient initialSets={sets} categories={categories} topThemes={topThemes} />;
 }
 
 export default function ExplorePage() {

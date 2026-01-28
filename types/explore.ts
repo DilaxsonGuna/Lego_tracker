@@ -1,5 +1,5 @@
 export interface ThemeCategory {
-  id: string;
+  id: number | "all";
   label: string;
 }
 

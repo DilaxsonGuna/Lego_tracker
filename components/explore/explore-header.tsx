@@ -1,14 +1,22 @@
 "use client";
 
-import { Search, ChevronDown, SlidersHorizontal, LayoutGrid, ArrowDownWideNarrow } from "lucide-react";
+import { Search, ArrowDownWideNarrow } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ThemeChips } from "./theme-chips";
 import type { ThemeCategory, OrderByOption } from "@/types/explore";
 
 interface ExploreHeaderProps {
   categories: ThemeCategory[];
-  activeCategory: string;
-  onCategoryChange: (id: string) => void;
+  topThemes: ThemeCategory[];
+  activeCategory: number | "all";
+  onCategoryChange: (id: number | "all") => void;
   onSearch: (query: string) => void;
   orderBy: OrderByOption;
   onOrderByChange: (orderBy: OrderByOption) => void;
@@ -21,6 +29,7 @@ const ORDER_BY_OPTIONS: { value: OrderByOption; label: string }[] = [
 
 export function ExploreHeader({
   categories,
+  topThemes,
   activeCategory,
   onCategoryChange,
   onSearch,
@@ -54,28 +63,28 @@ export function ExploreHeader({
         {/* Left: Theme dropdown + chips */}
         <div className="flex items-center gap-3 overflow-hidden">
           {/* All Themes Dropdown */}
-          <div className="relative flex-shrink-0">
-            <select
-              value={activeCategory}
-              onChange={(e) => onCategoryChange(e.target.value)}
-              className="appearance-none flex items-center gap-2 h-10 pl-4 pr-10 rounded-xl bg-primary text-primary-foreground font-bold text-sm shadow-sm hover:brightness-110 transition-all cursor-pointer"
-            >
+          <Select
+            value={String(activeCategory)}
+            onValueChange={(val) => onCategoryChange(val === "all" ? "all" : Number(val))}
+          >
+            <SelectTrigger className="h-10 px-4 rounded-xl bg-primary text-primary font-bold text-sm shadow-sm hover:brightness-110 transition-all border-none">
+              <SelectValue placeholder="All Themes" />
+            </SelectTrigger>
+            <SelectContent>
               {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
+                <SelectItem key={cat.id} value={String(cat.id)}>
                   {cat.label}
-                </option>
+                </SelectItem>
               ))}
-            </select>
-            <LayoutGrid className="absolute left-4 top-1/2 -translate-y-1/2 size-4 pointer-events-none hidden" />
-            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 size-4 pointer-events-none" />
-          </div>
+            </SelectContent>
+          </Select>
 
           {/* Divider */}
           <div className="h-6 w-px bg-border mx-1 flex-shrink-0" />
 
-          {/* Theme Quick Chips */}
+          {/* Top Theme Quick Chips */}
           <ThemeChips
-            categories={categories}
+            categories={topThemes}
             activeId={activeCategory}
             onSelect={onCategoryChange}
           />
@@ -88,20 +97,19 @@ export function ExploreHeader({
             <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground whitespace-nowrap">
               Order By:
             </span>
-            <div className="relative">
-              <select
-                value={orderBy}
-                onChange={(e) => onOrderByChange(e.target.value as OrderByOption)}
-                className="appearance-none h-10 pl-4 pr-10 rounded-xl bg-card border border-border focus:ring-2 focus:ring-primary text-sm font-bold cursor-pointer transition-all"
-              >
+            <Select value={orderBy} onValueChange={(val) => onOrderByChange(val as OrderByOption)}>
+              <SelectTrigger className="h-10 px-4 rounded-xl bg-card border border-border text-primary text-sm font-bold">
+                <ArrowDownWideNarrow className="size-4 text-muted-foreground" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
                 {ORDER_BY_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
+                  <SelectItem key={opt.value} value={opt.value}>
                     {opt.label}
-                  </option>
+                  </SelectItem>
                 ))}
-              </select>
-              <ArrowDownWideNarrow className="absolute right-3 top-1/2 -translate-y-1/2 size-4 pointer-events-none text-muted-foreground" />
-            </div>
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </div>

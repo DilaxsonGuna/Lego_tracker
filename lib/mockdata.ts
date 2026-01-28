@@ -263,13 +263,13 @@ export const mockSuggestedUsers: SuggestedUser[] = [
 
 export const mockThemeCategories: ThemeCategory[] = [
   { id: "all", label: "All" },
-  { id: "star-wars", label: "Star Wars" },
-  { id: "technic", label: "Technic" },
-  { id: "icons", label: "Icons" },
-  { id: "ideas", label: "Ideas" },
-  { id: "architecture", label: "Architecture" },
-  { id: "marvel", label: "Marvel" },
-  { id: "harry-potter", label: "Harry Potter" },
+  { id: 158, label: "Star Wars" },
+  { id: 1, label: "Technic" },
+  { id: 621, label: "Icons" },
+  { id: 577, label: "Ideas" },
+  { id: 252, label: "Architecture" },
+  { id: 696, label: "Marvel" },
+  { id: 246, label: "Harry Potter" },
 ];
 
 export const mockDiscoverySets: DiscoverySet[] = [

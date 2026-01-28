@@ -11,13 +11,15 @@ import type { DiscoverySet, ThemeCategory, OrderByOption } from "@/types/explore
 interface ExplorePageClientProps {
   initialSets: DiscoverySet[];
   categories: ThemeCategory[];
+  topThemes: ThemeCategory[];
 }
 
 export function ExplorePageClient({
   initialSets,
   categories,
+  topThemes,
 }: ExplorePageClientProps) {
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [activeCategory, setActiveCategory] = useState<number | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [orderBy, setOrderBy] = useState<OrderByOption>("newest");
@@ -43,7 +45,7 @@ export function ExplorePageClient({
       const results = await fetchSets({
         offset: 0,
         search: debouncedSearch || undefined,
-        theme: activeCategory !== "all" ? activeCategory : undefined,
+        themeId: activeCategory !== "all" ? activeCategory : undefined,
         orderBy,
       });
       setSets(results);
@@ -56,7 +58,7 @@ export function ExplorePageClient({
       const nextSets = await fetchSets({
         offset: sets.length,
         search: debouncedSearch || undefined,
-        theme: activeCategory !== "all" ? activeCategory : undefined,
+        themeId: activeCategory !== "all" ? activeCategory : undefined,
         orderBy,
       });
       if (nextSets.length < PAGE_SIZE) {
@@ -70,6 +72,7 @@ export function ExplorePageClient({
     <main className="flex-1 flex flex-col min-h-0">
       <ExploreHeader
         categories={categories}
+        topThemes={topThemes}
         activeCategory={activeCategory}
         onCategoryChange={setActiveCategory}
         onSearch={setSearchQuery}
