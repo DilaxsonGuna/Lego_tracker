@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { ExploreHeader, DiscoveryGrid } from "@/components/explore";
 import { Button } from "@/components/ui/button";
 import { fetchSets } from "./actions";
+import { addUserSet, deleteUserSet } from "@/lib/commands";
 import { PAGE_SIZE } from "@/lib/constants";
 import type { DiscoverySet, ThemeCategory, OrderByOption } from "@/types/explore";
 
@@ -12,12 +13,14 @@ interface ExplorePageClientProps {
   initialSets: DiscoverySet[];
   categories: ThemeCategory[];
   topThemes: ThemeCategory[];
+  initialCollectionSetNums: string[];
 }
 
 export function ExplorePageClient({
   initialSets,
   categories,
   topThemes,
+  initialCollectionSetNums,
 }: ExplorePageClientProps) {
   const [activeCategory, setActiveCategory] = useState<number | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -27,6 +30,12 @@ export function ExplorePageClient({
   const [hasMore, setHasMore] = useState(initialSets.length >= PAGE_SIZE);
   const [isPending, startTransition] = useTransition();
   const isInitialMount = useRef(true);
+
+  // Collection state
+  const [collectionSetNums, setCollectionSetNums] = useState<Set<string>>(
+    () => new Set(initialCollectionSetNums)
+  );
+  const [pendingToggles, setPendingToggles] = useState<Set<string>>(new Set());
 
   // Debounce search input
   useEffect(() => {
@@ -68,6 +77,53 @@ export function ExplorePageClient({
     });
   }, [sets.length, debouncedSearch, activeCategory, orderBy]);
 
+  const handleToggleCollection = useCallback(
+    async (setNum: string) => {
+      const isCurrentlyInCollection = collectionSetNums.has(setNum);
+
+      // Mark as pending
+      setPendingToggles((prev) => new Set(prev).add(setNum));
+
+      // Optimistic update
+      setCollectionSetNums((prev) => {
+        const next = new Set(prev);
+        if (isCurrentlyInCollection) {
+          next.delete(setNum);
+        } else {
+          next.add(setNum);
+        }
+        return next;
+      });
+
+      // Call server action
+      const result = isCurrentlyInCollection
+        ? await deleteUserSet(setNum)
+        : await addUserSet(setNum);
+
+      // Remove from pending
+      setPendingToggles((prev) => {
+        const next = new Set(prev);
+        next.delete(setNum);
+        return next;
+      });
+
+      // Revert on error
+      if (result.error) {
+        setCollectionSetNums((prev) => {
+          const next = new Set(prev);
+          if (isCurrentlyInCollection) {
+            next.add(setNum);
+          } else {
+            next.delete(setNum);
+          }
+          return next;
+        });
+        console.error("Failed to toggle collection:", result.error);
+      }
+    },
+    [collectionSetNums]
+  );
+
   return (
     <main className="flex-1 flex flex-col min-h-0">
       <ExploreHeader
@@ -86,7 +142,12 @@ export function ExplorePageClient({
             <Loader2 className="size-6 text-muted-foreground animate-spin" />
           </div>
         ) : (
-          <DiscoveryGrid sets={sets} />
+          <DiscoveryGrid
+            sets={sets}
+            collectionSetNums={collectionSetNums}
+            pendingToggles={pendingToggles}
+            onToggleCollection={handleToggleCollection}
+          />
         )}
 
         {hasMore && (

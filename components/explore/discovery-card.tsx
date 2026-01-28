@@ -1,14 +1,22 @@
 "use client";
 
-import { Heart, Plus } from "lucide-react";
+import { Heart, Plus, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { DiscoverySet } from "@/types/explore";
 
 interface DiscoveryCardProps {
   set: DiscoverySet;
+  isInCollection: boolean;
+  isPending: boolean;
+  onToggle: () => void;
 }
 
-export function DiscoveryCard({ set }: DiscoveryCardProps) {
+export function DiscoveryCard({
+  set,
+  isInCollection,
+  isPending,
+  onToggle,
+}: DiscoveryCardProps) {
   return (
     <div className="group relative flex flex-col bg-card rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20 hover:ring-1 hover:ring-primary/50 transition-all duration-300 cursor-pointer h-full">
       {/* Image */}
@@ -37,11 +45,26 @@ export function DiscoveryCard({ set }: DiscoveryCardProps) {
             {set.numParts.toLocaleString()} pcs
           </p>
           <Button
-            variant="secondary"
+            variant={isInCollection ? "default" : "secondary"}
             size="icon"
-            className="size-8 rounded-full hover:bg-primary hover:text-primary-foreground transition-colors"
+            className={`size-8 rounded-full transition-colors ${
+              isInCollection
+                ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                : "hover:bg-primary hover:text-primary-foreground"
+            }`}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggle();
+            }}
+            disabled={isPending}
           >
-            <Plus className="size-5" />
+            {isPending ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : isInCollection ? (
+              <Check className="size-5" />
+            ) : (
+              <Plus className="size-5" />
+            )}
           </Button>
         </div>
       </div>
