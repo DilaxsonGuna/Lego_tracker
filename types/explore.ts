@@ -10,3 +10,5 @@ export interface DiscoverySet {
   setImgUrl: string;
   theme: string;
 }
+
+export type OrderByOption = "newest" | "oldest";

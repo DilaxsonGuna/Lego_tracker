@@ -20,24 +20,51 @@ npm start        # Start production server
 **App Router Structure (`/app`)**
 - `(app)/` - Route group for all sidebar pages (single shared layout with Sidebar + MobileHeader)
   - `page.tsx` - Homepage feed (`/`)
-  - `profile/page.tsx` - User profile page (`/profile`)
-  - `explore/page.tsx` - Discovery catalog with search and theme filtering (`/explore`)
+  - `explore/` - Discovery catalog (`/explore`)
+    - `page.tsx` - Server component with Suspense
+    - `explore-client.tsx` - Client component for interactivity
+    - `actions.ts` - Server actions for data fetching
+  - `profile/` - User profile page (`/profile`)
+    - `page.tsx` - Page component
+    - `actions.ts` - Server actions for profile CRUD
+  - `vault/` - User collection vault (`/vault`)
+    - `page.tsx` - Page component
+    - `actions.ts` - Server actions for vault CRUD
 - `/auth/*` - Authentication pages (login, sign-up, forgot-password, etc.) — no sidebar
 - Root layout handles theme provider and global styles
 - All routes except `/`, `/login`, and `/auth/*` are protected by middleware
+
+**Data Flow Pattern**
+```
+page.tsx → actions.ts → lib/queries/*.ts → Supabase
+```
+- Pages call server actions for data mutations
+- Server actions delegate to query functions in `lib/queries/`
+- Query functions handle Supabase client creation and data transformation
 
 **Supabase Integration (`/lib/supabase`)**
 - `client.ts` - Browser client for client components
 - `server.ts` - Server client for server components/actions
 - `proxy.ts` - Middleware proxy handling session cookies and auth redirects
 
+**Data Fetching Layer (`/lib/queries`)**
+- `explore.ts` - Discovery page queries (getDiscoverySets, getThemeCategories)
+- `home.ts` - Homepage feed queries (getFeedPosts, getStories, getTrendingSets)
+- `profile.ts` - Profile queries (getUserProfile, getUserStats, getFavoriteSets)
+- `vault.ts` - Vault queries (getVaultSets, getVaultStats)
+
+**Client Hooks (`/lib/hooks`)**
+- `use-user.ts` - Hook to get current authenticated user with auth state listener
+- `index.ts` - Barrel export
+
 **Components (`/components`)**
 - `/ui` - shadcn/ui primitives (button, input, card, etc.)
 - `/shared` - Shared layout components (sidebar, mobile header, logo, footer)
+- `/auth` - Authentication forms (login, sign-up, forgot-password, update-password, auth-button, logout-button)
 - `/home` - Homepage feed-specific components
 - `/explore` - Explore/Discovery page components
 - `/profile` - Profile page-specific components
-- Root level - Auth forms, theme switcher
+- `/vault` - Vault page-specific components
 
 **Authentication Flow**
 - Cookie-based auth via `@supabase/ssr`
@@ -48,13 +75,16 @@ npm start        # Start production server
 ## Database Schema (Supabase)
 
 **Tables:**
-- `profiles` - Extends Supabase auth.users (id, username, full_name, avatar_url)
-- `lego_sets` - Cached set data from Rebrickable API (set_num PK, name, year, theme_id, num_parts, images)
-- `user_sets` - Join table tracking user collections (user_id → profiles, set_num → lego_sets, quantity, notes)
+- `profiles` - Extends Supabase auth.users (id, username, full_name, avatar_url, updated_at)
+- `lego_sets` - Cached set data from Rebrickable API (set_num PK, name, year, theme_id, num_parts, img_url)
+- `themes` - Lego theme hierarchy (id PK, name, parent_id → self-referential for sub-themes)
+- `user_sets` - Join table tracking user collections (id, user_id → profiles, set_num → lego_sets, quantity, notes, created_at)
 
 **Key Relationships:**
 - `user_sets.user_id` → `profiles.id` (cascade delete)
 - `user_sets.set_num` → `lego_sets.set_num` (cascade delete)
+- `lego_sets.theme_id` → `themes.id`
+- `themes.parent_id` → `themes.id` (self-referential for theme hierarchy)
 - Unique constraint on (user_id, set_num) prevents duplicate entries
 
 **Row Level Security (RLS):**
@@ -94,6 +124,7 @@ The application uses a custom design system based on the BrickBox theme with Leg
 
 **Custom Utilities (in `globals.css`):**
 - `.scrollbar-hide` - Hides scrollbars across browsers (used for stories carousel)
+- `.stud-bg` - Lego stud pattern background using radial gradient (24px grid)
 
 **Typography:**
 - Font family: Inter (via `font-display` utility)
@@ -105,7 +136,8 @@ The application uses a custom design system based on the BrickBox theme with Leg
 - `lego-set.ts` - `LegoSet` (setNum, name, year, themeId, numParts, setImgUrl, price?), `CollectionTab` type ("collection" | "wishlist")
 - `navigation.ts` - `NavItem` (label, href, icon, isActive?)
 - `feed.ts` - `FeedPost` (id, user, type, actionText, timeAgo, imageUrl, likes, comments, rating?, topComment?), `Story` (id, username, avatarUrl, isAddStory, hasUnviewed), `TrendingSet` (setNum, name, thumbnailUrl, postCount), `SuggestedUser` (id, username, avatarUrl), `PostType` ("build" | "review" | "haul" | "moc")
-- `explore.ts` - `ThemeCategory` (id, label), `DiscoverySet` (setNum, name, numParts, setImgUrl, theme)
+- `explore.ts` - `ThemeCategory` (id, label), `DiscoverySet` (setNum, name, numParts, setImgUrl, theme), `OrderByOption` ("newest" | "oldest")
+- `vault.ts` - `VaultSet` (setNum, name, year, numParts, setImgUrl, price, status), `VaultStats` (totalValue, totalPieces, uniqueThemes), `VaultSetStatus` ("built" | "in-box" | "missing-parts" | "for-sale"), `VaultViewMode` ("grid" | "list")
 - `supabase.ts` - Auto-generated Supabase database types
 
 ## Mock Data (`/lib/mockdata.ts`)
@@ -123,6 +155,8 @@ Development mock data exports:
 - `mockSuggestedUsers` - Array of 2 suggested collectors
 - `mockThemeCategories` - Array of 8 theme filter categories (All, Star Wars, Technic, Icons, Ideas, Architecture, Marvel, Harry Potter)
 - `mockDiscoverySets` - Array of 8 discovery catalog sets with theme tags
+- `mockVaultStats` - Vault statistics (totalValue, totalPieces, uniqueThemes)
+- `mockVaultSets` - Array of 4 vault sets (Millennium Falcon, Eiffel Tower, Titanic, Lion Knights' Castle)
 
 ## Layout
 
@@ -182,12 +216,52 @@ Page-specific components for the profile "Digital ID" page:
 | `stud-pattern-bg.tsx` | Decorative Lego stud radial-gradient background with overlay |
 | `index.ts` | Barrel export for all profile components |
 
-Legacy components (no longer used by profile page but still in codebase):
-- `stats-card.tsx`, `collection-tabs.tsx`, `lego-set-card.tsx`, `lego-set-grid.tsx`
+## Vault Components (`/components/vault`)
+
+Page-specific components for the vault/collection page:
+
+| Component | Description |
+|-----------|-------------|
+| `vault-header.tsx` | Header with search input |
+| `vault-filters.tsx` | Theme/status/view-mode filter controls |
+| `vault-card.tsx` | Set card for vault display |
+| `vault-grid.tsx` | Responsive grid of vault cards |
+| `vault-bulk-actions.tsx` | Bottom action bar for bulk operations |
+| `index.ts` | Barrel export for all vault components |
+
+## Auth Components (`/components/auth`)
+
+Authentication form components:
+
+| Component | Description |
+|-----------|-------------|
+| `login-form.tsx` | Email/password login form with error handling |
+| `sign-up-form.tsx` | Registration form with password confirmation |
+| `forgot-password-form.tsx` | Password reset request form |
+| `update-password-form.tsx` | New password form for reset flow |
+| `auth-button.tsx` | Server component showing login/logout based on session |
+| `logout-button.tsx` | Client logout button with redirect |
+| `index.ts` | Barrel export for all auth components |
 
 ## Routes
 
 - `/` - Homepage social feed with stories carousel, posts, trending sets, suggested collectors
 - `/explore` - Discovery catalog with search, theme filtering, and responsive set grid
 - `/profile` - User Digital ID page with avatar, social stats, favorites grid, bio, vault stats, milestones
+- `/vault` - User's Lego collection with search, filters, and set management
 - `/auth/*` - Authentication pages (no sidebar)
+
+## Adding New Features
+
+**To add a new sidebar page:**
+1. Create folder under `app/(app)/your-page/`
+2. Add `page.tsx` for the page component
+3. Add `actions.ts` for server actions
+4. Create `lib/queries/your-page.ts` for data fetching functions
+5. Create `components/your-page/` for page-specific components with `index.ts` barrel export
+6. Add types to `types/your-page.ts`
+
+**To add a new component to an existing page:**
+1. Create the component in the appropriate `components/{page}/` directory
+2. Export it from the `index.ts` barrel file
+3. Import using `import { Component } from "@/components/{page}"`

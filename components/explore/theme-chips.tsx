@@ -10,17 +10,20 @@ interface ThemeChipsProps {
 }
 
 export function ThemeChips({ categories, activeId, onSelect }: ThemeChipsProps) {
+  // Filter out "All" since it's handled by the dropdown
+  const chips = categories.filter((cat) => cat.id !== "all");
+
   return (
-    <div className="flex gap-3 pb-2 overflow-x-auto scrollbar-hide">
-      {categories.map((cat) => (
+    <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide flex-1 mask-gradient-right">
+      {chips.map((cat) => (
         <button
           key={cat.id}
           onClick={() => onSelect(cat.id)}
           className={cn(
-            "flex-shrink-0 h-9 px-5 rounded-lg font-medium text-sm transition-all whitespace-nowrap",
+            "flex-shrink-0 h-10 px-4 rounded-xl font-medium text-sm transition-all whitespace-nowrap",
             cat.id === activeId
               ? "bg-primary text-primary-foreground font-bold shadow-sm"
-              : "bg-card border border-transparent hover:border-primary/50 text-muted-foreground"
+              : "bg-card border border-border hover:border-primary/50 text-muted-foreground"
           )}
         >
           {cat.label}
