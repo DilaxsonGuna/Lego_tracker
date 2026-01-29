@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { getVaultSets, getVaultStats } from "@/lib/queries/vault";
+import { getVaultSets, getVaultStats, getVaultThemes } from "@/lib/queries/vault";
 import type { VaultSetStatus } from "@/types/vault";
 
 export async function fetchVaultSets(params: {
@@ -25,6 +25,15 @@ export async function fetchVaultStats() {
   if (!user) return null;
 
   return getVaultStats(user.id);
+}
+
+export async function fetchVaultThemes() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) return [];
+
+  return getVaultThemes(user.id);
 }
 
 export async function addSetToVault(setNum: string, quantity: number = 1) {

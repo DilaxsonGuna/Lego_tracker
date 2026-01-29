@@ -8,6 +8,7 @@ export interface VaultSet {
   setImgUrl: string;
   price: string;
   status: VaultSetStatus;
+  themeName: string;
 }
 
 export interface VaultStats {

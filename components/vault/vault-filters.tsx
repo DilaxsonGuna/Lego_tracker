@@ -1,9 +1,22 @@
 "use client";
 
 import { LayoutGrid, List } from "lucide-react";
-import type { VaultSetStatus, VaultViewMode } from "@/types/vault";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import type { VaultViewMode } from "@/types/vault";
+
+interface VaultTheme {
+  id: number;
+  name: string;
+}
 
 interface VaultFiltersProps {
+  themes: VaultTheme[];
   themeFilter: string;
   statusFilter: string;
   viewMode: VaultViewMode;
@@ -11,16 +24,6 @@ interface VaultFiltersProps {
   onStatusChange: (status: string) => void;
   onViewModeChange: (mode: VaultViewMode) => void;
 }
-
-const THEME_OPTIONS = [
-  "All Themes",
-  "Ninjago",
-  "City",
-  "Harry Potter",
-  "Technic",
-  "Star Wars",
-  "Icons",
-];
 
 const STATUS_OPTIONS: { label: string; value: string }[] = [
   { label: "Any Status", value: "all" },
@@ -31,6 +34,7 @@ const STATUS_OPTIONS: { label: string; value: string }[] = [
 ];
 
 export function VaultFilters({
+  themes,
   themeFilter,
   statusFilter,
   viewMode,
@@ -46,17 +50,19 @@ export function VaultFilters({
           <span className="text-xs font-bold text-muted-foreground uppercase tracking-tighter">
             Theme
           </span>
-          <select
-            value={themeFilter}
-            onChange={(e) => onThemeChange(e.target.value)}
-            className="bg-card border border-border rounded-lg text-xs font-medium text-foreground focus:ring-primary focus:border-primary px-3 py-1.5 min-w-[140px]"
-          >
-            {THEME_OPTIONS.map((theme) => (
-              <option key={theme} value={theme}>
-                {theme}
-              </option>
-            ))}
-          </select>
+          <Select value={themeFilter} onValueChange={onThemeChange}>
+            <SelectTrigger size="sm" className="min-w-[140px] text-xs">
+              <SelectValue placeholder="All Themes" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Themes</SelectItem>
+              {themes.map((theme) => (
+                <SelectItem key={theme.id} value={theme.name}>
+                  {theme.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Status filter */}
@@ -64,17 +70,18 @@ export function VaultFilters({
           <span className="text-xs font-bold text-muted-foreground uppercase tracking-tighter">
             Status
           </span>
-          <select
-            value={statusFilter}
-            onChange={(e) => onStatusChange(e.target.value)}
-            className="bg-card border border-border rounded-lg text-xs font-medium text-foreground focus:ring-primary focus:border-primary px-3 py-1.5 min-w-[140px]"
-          >
-            {STATUS_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
+          <Select value={statusFilter} onValueChange={onStatusChange}>
+            <SelectTrigger size="sm" className="min-w-[140px] text-xs">
+              <SelectValue placeholder="Any Status" />
+            </SelectTrigger>
+            <SelectContent>
+              {STATUS_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* View mode toggle */}

@@ -71,6 +71,7 @@ export async function getVaultSets({
       setImgUrl: set.img_url ?? "",
       price: "$0", // TODO: Add price when available
       status: "built" as VaultSetStatus,
+      themeName: set.themes?.name ?? "",
     };
   });
 }
@@ -105,4 +106,41 @@ export async function getVaultStats(userId: string): Promise<VaultStats | null> 
     totalPieces: totalParts.toLocaleString(),
     uniqueThemes: themeIds.size,
   };
+}
+
+export interface VaultTheme {
+  id: number;
+  name: string;
+}
+
+export async function getVaultThemes(userId: string): Promise<VaultTheme[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("user_sets")
+    .select(`
+      lego_sets!inner(
+        theme_id,
+        themes!inner(id, name)
+      )
+    `)
+    .eq("user_id", userId);
+
+  if (error || !data) return [];
+
+  // Extract unique themes
+  const themesMap = new Map<number, string>();
+  for (const row of data) {
+    const set = row.lego_sets as unknown as {
+      theme_id: number;
+      themes: { id: number; name: string };
+    };
+    if (set.themes && !themesMap.has(set.themes.id)) {
+      themesMap.set(set.themes.id, set.themes.name);
+    }
+  }
+
+  return Array.from(themesMap.entries())
+    .map(([id, name]) => ({ id, name }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
