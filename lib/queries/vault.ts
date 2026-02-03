@@ -1,21 +1,22 @@
 import { createClient } from "@/lib/supabase/server";
-import type { VaultSet, VaultStats, VaultSetStatus } from "@/types/vault";
+import type { VaultSet, VaultStats, CollectionStats, WishlistStats } from "@/types/vault";
+import type { CollectionTab } from "@/types/lego-set";
 import { PAGE_SIZE } from "@/lib/constants";
 
 interface GetVaultSetsParams {
   userId: string;
+  collectionType: CollectionTab;
   offset?: number;
   search?: string;
   theme?: string;
-  status?: VaultSetStatus;
 }
 
 export async function getVaultSets({
   userId,
+  collectionType,
   offset = 0,
   search,
   theme,
-  status,
 }: GetVaultSetsParams): Promise<VaultSet[]> {
   const supabase = await createClient();
 
@@ -24,6 +25,7 @@ export async function getVaultSets({
     .select(`
       quantity,
       notes,
+      collection_type,
       lego_sets!inner(
         set_num,
         name,
@@ -33,7 +35,8 @@ export async function getVaultSets({
         themes(name)
       )
     `)
-    .eq("user_id", userId);
+    .eq("user_id", userId)
+    .eq("collection_type", collectionType);
 
   if (search) {
     query = query.or(
@@ -44,9 +47,6 @@ export async function getVaultSets({
   if (theme && theme !== "all") {
     query = query.eq("lego_sets.themes.name", theme);
   }
-
-  // TODO: Add status filtering when status column is added to user_sets
-  void status;
 
   const { data, error } = await query
     .order("lego_sets(year)", { ascending: false })
@@ -70,8 +70,8 @@ export async function getVaultSets({
       numParts: set.num_parts ?? 0,
       setImgUrl: set.img_url ?? "",
       price: "$0", // TODO: Add price when available
-      status: "built" as VaultSetStatus,
       themeName: set.themes?.name ?? "",
+      collectionType: row.collection_type as CollectionTab,
     };
   });
 }
@@ -111,6 +111,80 @@ export async function getVaultStats(userId: string): Promise<VaultStats | null> 
 export interface VaultTheme {
   id: number;
   name: string;
+}
+
+export async function getCollectionStats(userId: string): Promise<CollectionStats | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("user_sets")
+    .select(`
+      quantity,
+      lego_sets!inner(num_parts)
+    `)
+    .eq("user_id", userId)
+    .eq("collection_type", "collection");
+
+  if (error || !data) return null;
+
+  const totalParts = data.reduce((sum, row) => {
+    const set = row.lego_sets as unknown as { num_parts: number };
+    return sum + (set.num_parts ?? 0) * (row.quantity ?? 1);
+  }, 0);
+
+  return {
+    totalValue: "$0", // TODO: Calculate when prices are added
+    totalPieces: totalParts.toLocaleString(),
+    setsOwned: data.length,
+  };
+}
+
+export async function getWishlistStats(userId: string): Promise<WishlistStats | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("user_sets")
+    .select(`
+      quantity,
+      lego_sets!inner(num_parts)
+    `)
+    .eq("user_id", userId)
+    .eq("collection_type", "wishlist");
+
+  if (error || !data) return null;
+
+  const totalParts = data.reduce((sum, row) => {
+    const set = row.lego_sets as unknown as { num_parts: number };
+    return sum + (set.num_parts ?? 0) * (row.quantity ?? 1);
+  }, 0);
+
+  return {
+    estimatedCost: "$0", // TODO: Calculate when prices are added
+    targetBricks: totalParts.toLocaleString(),
+    savedSets: data.length,
+  };
+}
+
+export async function getCollectionCount(userId: string): Promise<number> {
+  const supabase = await createClient();
+  const { count, error } = await supabase
+    .from("user_sets")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .eq("collection_type", "collection");
+
+  return count ?? 0;
+}
+
+export async function getWishlistCount(userId: string): Promise<number> {
+  const supabase = await createClient();
+  const { count, error } = await supabase
+    .from("user_sets")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .eq("collection_type", "wishlist");
+
+  return count ?? 0;
 }
 
 export async function getVaultThemes(userId: string): Promise<VaultTheme[]> {

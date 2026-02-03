@@ -1,18 +1,23 @@
 import { DiscoveryCard } from "./discovery-card";
 import type { DiscoverySet } from "@/types/explore";
+import type { CollectionTab } from "@/types/lego-set";
 
 interface DiscoveryGridProps {
   sets: DiscoverySet[];
-  collectionSetNums: Set<string>;
+  userSets: Map<string, CollectionTab>;
   pendingToggles: Set<string>;
-  onToggleCollection: (setNum: string) => void;
+  onAddToWishlist: (setNum: string) => void;
+  onAddToCollection: (setNum: string) => void;
+  onRemove: (setNum: string) => void;
 }
 
 export function DiscoveryGrid({
   sets,
-  collectionSetNums,
+  userSets,
   pendingToggles,
-  onToggleCollection,
+  onAddToWishlist,
+  onAddToCollection,
+  onRemove,
 }: DiscoveryGridProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -20,9 +25,11 @@ export function DiscoveryGrid({
         <DiscoveryCard
           key={set.setNum}
           set={set}
-          isInCollection={collectionSetNums.has(set.setNum)}
+          collectionType={userSets.get(set.setNum)}
           isPending={pendingToggles.has(set.setNum)}
-          onToggle={() => onToggleCollection(set.setNum)}
+          onAddToWishlist={() => onAddToWishlist(set.setNum)}
+          onAddToCollection={() => onAddToCollection(set.setNum)}
+          onRemove={() => onRemove(set.setNum)}
         />
       ))}
     </div>

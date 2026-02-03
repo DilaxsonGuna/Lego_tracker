@@ -1,14 +1,22 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { getVaultSets, getVaultStats, getVaultThemes } from "@/lib/queries/vault";
-import type { VaultSetStatus } from "@/types/vault";
+import {
+  getVaultSets,
+  getVaultStats,
+  getVaultThemes,
+  getCollectionStats,
+  getWishlistStats,
+  getCollectionCount,
+  getWishlistCount,
+} from "@/lib/queries/vault";
+import type { CollectionTab } from "@/types/lego-set";
 
 export async function fetchVaultSets(params: {
+  collectionType: CollectionTab;
   offset?: number;
   search?: string;
   theme?: string;
-  status?: VaultSetStatus;
 }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -27,6 +35,42 @@ export async function fetchVaultStats() {
   return getVaultStats(user.id);
 }
 
+export async function fetchCollectionStats() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
+  return getCollectionStats(user.id);
+}
+
+export async function fetchWishlistStats() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
+  return getWishlistStats(user.id);
+}
+
+export async function fetchCollectionCount() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) return 0;
+
+  return getCollectionCount(user.id);
+}
+
+export async function fetchWishlistCount() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) return 0;
+
+  return getWishlistCount(user.id);
+}
+
 export async function fetchVaultThemes() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -36,7 +80,11 @@ export async function fetchVaultThemes() {
   return getVaultThemes(user.id);
 }
 
-export async function addSetToVault(setNum: string, quantity: number = 1) {
+export async function addSetToVault(
+  setNum: string,
+  quantity: number = 1,
+  collectionType: CollectionTab = "collection"
+) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -48,9 +96,29 @@ export async function addSetToVault(setNum: string, quantity: number = 1) {
       user_id: user.id,
       set_num: setNum,
       quantity,
+      collection_type: collectionType,
     }, {
       onConflict: "user_id,set_num",
     });
+
+  if (error) return { error: error.message };
+
+  return { success: true };
+}
+
+export async function moveToCollection(setNum: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  const { error } = await supabase
+    .from("user_sets")
+    .update({
+      collection_type: "collection",
+    })
+    .eq("user_id", user.id)
+    .eq("set_num", setNum);
 
   if (error) return { error: error.message };
 

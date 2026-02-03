@@ -1,12 +1,25 @@
 "use client";
 
-import { Bookmark, Hammer, Trash2 } from "lucide-react";
+import { Package, Trash2, Loader2 } from "lucide-react";
+import type { CollectionTab } from "@/types/lego-set";
 
 interface VaultBulkActionsProps {
   selectedCount: number;
+  selectedSetNums: string[];
+  activeTab: CollectionTab;
+  onRemove: () => Promise<void>;
+  onMoveToCollection: () => Promise<void>;
+  isProcessing: boolean;
 }
 
-export function VaultBulkActions({ selectedCount }: VaultBulkActionsProps) {
+export function VaultBulkActions({
+  selectedCount,
+  selectedSetNums,
+  activeTab,
+  onRemove,
+  onMoveToCollection,
+  isProcessing,
+}: VaultBulkActionsProps) {
   if (selectedCount === 0) return null;
 
   return (
@@ -16,16 +29,32 @@ export function VaultBulkActions({ selectedCount }: VaultBulkActionsProps) {
           {selectedCount} Item{selectedCount !== 1 ? "s" : ""} Selected
         </span>
         <div className="h-4 w-px bg-white/20 mr-2" />
-        <button className="flex items-center gap-2 text-xs font-bold text-gray-300 hover:text-primary px-3 py-1.5 transition-colors">
-          <Bookmark className="size-[18px]" />
-          Wishlist
-        </button>
-        <button className="flex items-center gap-2 text-xs font-bold text-gray-300 hover:text-primary px-3 py-1.5 transition-colors">
-          <Hammer className="size-[18px]" />
-          Mark Built
-        </button>
-        <button className="flex items-center gap-2 text-xs font-bold text-red-400 hover:text-red-300 px-3 py-1.5 transition-colors">
-          <Trash2 className="size-[18px]" />
+
+        {activeTab === "wishlist" && (
+          <button
+            onClick={onMoveToCollection}
+            disabled={isProcessing}
+            className="flex items-center gap-2 text-xs font-bold text-gray-300 hover:text-primary px-3 py-1.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isProcessing ? (
+              <Loader2 className="size-[18px] animate-spin" />
+            ) : (
+              <Package className="size-[18px]" />
+            )}
+            Move to Collection
+          </button>
+        )}
+
+        <button
+          onClick={onRemove}
+          disabled={isProcessing}
+          className="flex items-center gap-2 text-xs font-bold text-red-400 hover:text-red-300 px-3 py-1.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isProcessing ? (
+            <Loader2 className="size-[18px] animate-spin" />
+          ) : (
+            <Trash2 className="size-[18px]" />
+          )}
           Remove
         </button>
       </div>

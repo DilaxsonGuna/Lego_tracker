@@ -2,42 +2,46 @@
 
 import { Search, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import type { VaultStats } from "@/types/vault";
+import type { CollectionStats, WishlistStats } from "@/types/vault";
+import type { CollectionTab } from "@/types/lego-set";
 
 interface VaultHeaderProps {
-  stats: VaultStats;
+  stats: CollectionStats | WishlistStats;
+  activeTab: CollectionTab;
   onSearch: (query: string) => void;
 }
 
-export function VaultHeader({ stats, onSearch }: VaultHeaderProps) {
+export function VaultHeader({ stats, activeTab, onSearch }: VaultHeaderProps) {
+  const isCollection = activeTab === "collection";
+
   return (
     <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="mx-auto flex flex-col md:flex-row items-start md:items-center justify-between px-6 md:px-8 py-4 md:h-20 gap-4 md:gap-0 max-w-7xl">
         <div className="flex items-center gap-6 md:gap-8">
           <div className="flex flex-col">
             <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
-              Total Market Value
+              {isCollection ? "Total Market Value" : "Estimated Cost"}
             </span>
             <span className="text-xl font-black text-primary">
-              {stats.totalValue}
+              {isCollection ? (stats as CollectionStats).totalValue : (stats as WishlistStats).estimatedCost}
             </span>
           </div>
           <div className="hidden md:block h-8 w-px bg-border" />
           <div className="flex flex-col">
             <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
-              Total Pieces
+              {isCollection ? "Total Pieces" : "Target Bricks"}
             </span>
             <span className="text-xl font-bold text-foreground">
-              {stats.totalPieces}
+              {isCollection ? (stats as CollectionStats).totalPieces : (stats as WishlistStats).targetBricks}
             </span>
           </div>
           <div className="hidden md:block h-8 w-px bg-border" />
           <div className="flex flex-col">
             <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
-              Unique Themes
+              {isCollection ? "Sets Owned" : "Saved Sets"}
             </span>
             <span className="text-xl font-bold text-foreground">
-              {stats.uniqueThemes}
+              {isCollection ? (stats as CollectionStats).setsOwned : (stats as WishlistStats).savedSets}
             </span>
           </div>
         </div>

@@ -107,6 +107,7 @@ export type Database = {
           quantity: number | null
           set_num: string
           user_id: string
+          collection_type: string
         }
         Insert: {
           created_at?: string | null
@@ -115,6 +116,7 @@ export type Database = {
           quantity?: number | null
           set_num: string
           user_id: string
+          collection_type?: string
         }
         Update: {
           created_at?: string | null
@@ -123,6 +125,7 @@ export type Database = {
           quantity?: number | null
           set_num?: string
           user_id?: string
+          collection_type?: string
         }
         Relationships: [
           {
