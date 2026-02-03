@@ -13,7 +13,7 @@ export async function getDiscoverySets({
   offset = 0,
   search,
   themeId,
-  orderBy = "newest",
+  orderBy = "most-popular",
 }: GetDiscoverySetsParams = {}): Promise<DiscoverySet[]> {
   const supabase = await createClient();
 
@@ -28,9 +28,20 @@ export async function getDiscoverySets({
     themeIds = [themeId, ...(childThemes?.map((t) => t.id) ?? [])];
   }
 
-  let query = supabase
-    .from("lego_sets")
-    .select("set_num, name, num_parts, img_url, themes(name)");
+  // Conditional query based on orderBy for performance optimization
+  let query;
+
+  if (orderBy === "most-popular") {
+    // For popularity sort: include user_sets for owner count
+    query = supabase
+      .from("lego_sets")
+      .select("set_num, name, year, num_parts, img_url, themes(name), user_sets(user_id)");
+  } else {
+    // For date-based sorts: simpler query without user_sets
+    query = supabase
+      .from("lego_sets")
+      .select("set_num, name, year, num_parts, img_url, themes(name)");
+  }
 
   if (search) {
     query = query.or(`name.ilike.%${search}%,set_num.ilike.%${search}%`);
@@ -40,23 +51,52 @@ export async function getDiscoverySets({
     query = query.in("theme_id", themeIds);
   }
 
-  // Order by release date (year)
-  const ascending = orderBy === "oldest";
+  // Conditional ordering based on sort option
+  if (orderBy === "most-popular") {
+    // Use RPC to call a Postgres function for efficient aggregation
+    const { data, error } = await supabase.rpc("get_popular_sets", {
+      p_offset: offset,
+      p_limit: PAGE_SIZE,
+      p_search: search || null,
+      p_theme_ids: themeIds.length > 0 ? themeIds : null,
+    });
 
-  const { data, error } = await query
-    .order("year", { ascending })
-    .order("set_num", { ascending: true })
-    .range(offset, offset + PAGE_SIZE - 1);
+    if (error) {
+      console.error("Most popular query error:", error);
+      // Fallback to empty array if function doesn't exist yet
+      return [];
+    }
 
-  if (error || !data) return [];
+    if (!data) return [];
 
-  return data.map((row) => ({
-    setNum: row.set_num,
-    name: row.name,
-    numParts: row.num_parts ?? 0,
-    setImgUrl: row.img_url ?? "",
-    theme: (row.themes as unknown as { name: string } | null)?.name ?? "",
-  }));
+    return data.map((row: any) => ({
+      setNum: row.set_num,
+      name: row.name,
+      year: row.year,
+      numParts: row.num_parts ?? 0,
+      setImgUrl: row.img_url ?? "",
+      theme: row.theme_name ?? "",
+      ownerCount: row.owner_count ?? 0,
+    }));
+  } else {
+    // Standard date-based sorting
+    const ascending = orderBy === "oldest";
+    const { data, error } = await query
+      .order("year", { ascending, nullsLast: true })
+      .order("set_num", { ascending: true })
+      .range(offset, offset + PAGE_SIZE - 1);
+
+    if (error || !data) return [];
+
+    return data.map((row) => ({
+      setNum: row.set_num,
+      name: row.name,
+      year: row.year,
+      numParts: row.num_parts ?? 0,
+      setImgUrl: row.img_url ?? "",
+      theme: (row.themes as unknown as { name: string } | null)?.name ?? "",
+    }));
+  }
 }
 
 export async function getParentThemes(): Promise<ThemeCategory[]> {

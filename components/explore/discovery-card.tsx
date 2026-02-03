@@ -25,9 +25,29 @@ export function DiscoveryCard({
           className="size-full bg-center bg-contain bg-no-repeat transition-transform duration-500 group-hover:scale-105"
           style={{ backgroundImage: `url("${set.setImgUrl}")` }}
         />
+
+        {/* Year badge (top-left) */}
+        {set.year && (
+          <div className="absolute top-3 left-3">
+            <span className="bg-black/60 backdrop-blur-md text-xs font-bold px-2.5 py-1 rounded-md text-primary border border-primary/20">
+              {set.year}
+            </span>
+          </div>
+        )}
+
+        {/* Heart button (top-right) */}
         <button className="absolute top-3 right-3 p-2 rounded-full bg-black/20 hover:bg-black/50 text-white backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
           <Heart className="size-5" />
         </button>
+
+        {/* Theme badge (bottom-left) */}
+        {set.theme && (
+          <div className="absolute bottom-3 left-3">
+            <span className="bg-primary/90 backdrop-blur-sm text-[10px] font-bold px-2.5 py-1 rounded-md text-primary-foreground uppercase tracking-wide line-clamp-1 max-w-[220px]">
+              {set.theme}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Info */}

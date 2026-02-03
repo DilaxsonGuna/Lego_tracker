@@ -141,7 +141,7 @@ The application uses a custom design system based on the BrickBox theme with Leg
 - `lego-set.ts` - `LegoSet` (setNum, name, year, themeId, numParts, setImgUrl, price?), `CollectionTab` type ("collection" | "wishlist")
 - `navigation.ts` - `NavItem` (label, href, icon, isActive?)
 - `feed.ts` - `FeedPost` (id, user, type, actionText, timeAgo, imageUrl, likes, comments, rating?, topComment?), `Story` (id, username, avatarUrl, isAddStory, hasUnviewed), `TrendingSet` (setNum, name, thumbnailUrl, postCount), `SuggestedUser` (id, username, avatarUrl), `PostType` ("build" | "review" | "haul" | "moc")
-- `explore.ts` - `ThemeCategory` (id, label), `DiscoverySet` (setNum, name, numParts, setImgUrl, theme), `OrderByOption` ("newest" | "oldest")
+- `explore.ts` - `ThemeCategory` (id, label), `DiscoverySet` (setNum, name, numParts, setImgUrl, theme, year, ownerCount?), `OrderByOption` ("newest" | "oldest" | "most-popular")
 - `vault.ts` - `VaultSet` (setNum, name, year, numParts, setImgUrl, price, status), `VaultStats` (totalValue, totalPieces, uniqueThemes), `VaultSetStatus` ("built" | "in-box" | "missing-parts" | "for-sale"), `VaultViewMode` ("grid" | "list")
 - `supabase.ts` - Auto-generated Supabase database types
 
@@ -200,7 +200,7 @@ Page-specific components for the explore/discovery page:
 
 | Component | Description |
 |-----------|-------------|
-| `explore-header.tsx` | Sticky header with "Discovery" title, search input, sort select (newest/oldest), theme filter chips |
+| `explore-header.tsx` | Sticky header with "Discovery" title, search input, sort select (newest/oldest/most-popular), theme filter chips |
 | `theme-chips.tsx` | Horizontal scrollable theme category filter buttons with active state |
 | `discovery-card.tsx` | Set card with 4:3 contained image, add-to-vault button with loading state, title, set#, piece count |
 | `discovery-grid.tsx` | Responsive 1/2/3/4 column grid of discovery cards with user's collection context |
@@ -251,7 +251,7 @@ Authentication form components:
 ## Routes
 
 - `/` - Homepage social feed with stories carousel, posts, trending sets, suggested collectors
-- `/explore` - Discovery catalog with real Lego sets, search, theme filtering, sort options (newest/oldest), and add-to-vault functionality
+- `/explore` - Discovery catalog with real Lego sets, search, theme filtering, sort options (newest/oldest/most-popular), and add-to-vault functionality
 - `/profile` - User Digital ID page with avatar, social stats, favorites grid, bio, vault stats, milestones
 - `/vault` - User's Lego collection with search, theme/status filters, grid/list view modes, bulk selection, and remove operations
 - `/auth/*` - Authentication pages (no sidebar)
@@ -284,7 +284,7 @@ Authentication form components:
 **Explore Page:**
 - Real Lego sets fetched from Supabase `lego_sets` table
 - Theme filtering with `themes` table relationship
-- Sort by newest/oldest release year
+- Sort by newest/oldest release year or most popular (by owner count)
 - Add sets directly to vault from explore page
 - User collection context to show which sets are already owned
 - Search functionality across set names

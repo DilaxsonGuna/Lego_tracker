@@ -25,6 +25,7 @@ interface ExploreHeaderProps {
 const ORDER_BY_OPTIONS: { value: OrderByOption; label: string }[] = [
   { value: "newest", label: "Most Recent" },
   { value: "oldest", label: "Least Recent" },
+  { value: "most-popular", label: "Most Popular" },
 ];
 
 export function ExploreHeader({

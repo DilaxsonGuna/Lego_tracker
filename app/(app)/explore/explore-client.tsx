@@ -25,7 +25,7 @@ export function ExplorePageClient({
   const [activeCategory, setActiveCategory] = useState<number | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [orderBy, setOrderBy] = useState<OrderByOption>("newest");
+  const [orderBy, setOrderBy] = useState<OrderByOption>("most-popular");
   const [sets, setSets] = useState(initialSets);
   const [hasMore, setHasMore] = useState(initialSets.length >= PAGE_SIZE);
   const [isPending, startTransition] = useTransition();

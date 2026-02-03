@@ -9,6 +9,8 @@ export interface DiscoverySet {
   numParts: number;
   setImgUrl: string;
   theme: string;
+  year: number | null;
+  ownerCount?: number;
 }
 
-export type OrderByOption = "newest" | "oldest";
+export type OrderByOption = "newest" | "oldest" | "most-popular";
