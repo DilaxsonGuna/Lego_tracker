@@ -8,19 +8,20 @@ import { fetchSets } from "./actions";
 import { addUserSet, deleteUserSet } from "@/lib/commands";
 import { PAGE_SIZE } from "@/lib/constants";
 import type { DiscoverySet, ThemeCategory, OrderByOption } from "@/types/explore";
+import type { CollectionTab } from "@/types/lego-set";
 
 interface ExplorePageClientProps {
   initialSets: DiscoverySet[];
   categories: ThemeCategory[];
   topThemes: ThemeCategory[];
-  initialCollectionSetNums: string[];
+  initialUserSets: { setNum: string; collectionType: CollectionTab }[];
 }
 
 export function ExplorePageClient({
   initialSets,
   categories,
   topThemes,
-  initialCollectionSetNums,
+  initialUserSets,
 }: ExplorePageClientProps) {
   const [activeCategory, setActiveCategory] = useState<number | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -31,10 +32,14 @@ export function ExplorePageClient({
   const [isPending, startTransition] = useTransition();
   const isInitialMount = useRef(true);
 
-  // Collection state
-  const [collectionSetNums, setCollectionSetNums] = useState<Set<string>>(
-    () => new Set(initialCollectionSetNums)
-  );
+  // User sets state (Map of setNum -> collectionType)
+  const [userSets, setUserSets] = useState<Map<string, CollectionTab>>(() => {
+    const map = new Map<string, CollectionTab>();
+    initialUserSets.forEach(({ setNum, collectionType }) => {
+      map.set(setNum, collectionType);
+    });
+    return map;
+  });
   const [pendingToggles, setPendingToggles] = useState<Set<string>>(new Set());
 
   // Debounce search input
@@ -77,28 +82,87 @@ export function ExplorePageClient({
     });
   }, [sets.length, debouncedSearch, activeCategory, orderBy]);
 
-  const handleToggleCollection = useCallback(
+  const handleAddToWishlist = useCallback(async (setNum: string) => {
+    // Mark as pending
+    setPendingToggles((prev) => new Set(prev).add(setNum));
+
+    // Optimistic update
+    setUserSets((prev) => {
+      const next = new Map(prev);
+      next.set(setNum, "wishlist");
+      return next;
+    });
+
+    // Call server action
+    const result = await addUserSet(setNum, 1, "wishlist");
+
+    // Remove from pending
+    setPendingToggles((prev) => {
+      const next = new Set(prev);
+      next.delete(setNum);
+      return next;
+    });
+
+    // Revert on error
+    if (result.error) {
+      setUserSets((prev) => {
+        const next = new Map(prev);
+        next.delete(setNum);
+        return next;
+      });
+      console.error("Failed to add to wishlist:", result.error);
+    }
+  }, []);
+
+  const handleAddToCollection = useCallback(async (setNum: string) => {
+    // Mark as pending
+    setPendingToggles((prev) => new Set(prev).add(setNum));
+
+    // Optimistic update
+    setUserSets((prev) => {
+      const next = new Map(prev);
+      next.set(setNum, "collection");
+      return next;
+    });
+
+    // Call server action
+    const result = await addUserSet(setNum, 1, "collection");
+
+    // Remove from pending
+    setPendingToggles((prev) => {
+      const next = new Set(prev);
+      next.delete(setNum);
+      return next;
+    });
+
+    // Revert on error
+    if (result.error) {
+      setUserSets((prev) => {
+        const next = new Map(prev);
+        next.delete(setNum);
+        return next;
+      });
+      console.error("Failed to add to collection:", result.error);
+    }
+  }, []);
+
+  const handleRemove = useCallback(
     async (setNum: string) => {
-      const isCurrentlyInCollection = collectionSetNums.has(setNum);
+      const currentType = userSets.get(setNum);
+      if (!currentType) return;
 
       // Mark as pending
       setPendingToggles((prev) => new Set(prev).add(setNum));
 
       // Optimistic update
-      setCollectionSetNums((prev) => {
-        const next = new Set(prev);
-        if (isCurrentlyInCollection) {
-          next.delete(setNum);
-        } else {
-          next.add(setNum);
-        }
+      setUserSets((prev) => {
+        const next = new Map(prev);
+        next.delete(setNum);
         return next;
       });
 
       // Call server action
-      const result = isCurrentlyInCollection
-        ? await deleteUserSet(setNum)
-        : await addUserSet(setNum);
+      const result = await deleteUserSet(setNum);
 
       // Remove from pending
       setPendingToggles((prev) => {
@@ -109,19 +173,15 @@ export function ExplorePageClient({
 
       // Revert on error
       if (result.error) {
-        setCollectionSetNums((prev) => {
-          const next = new Set(prev);
-          if (isCurrentlyInCollection) {
-            next.add(setNum);
-          } else {
-            next.delete(setNum);
-          }
+        setUserSets((prev) => {
+          const next = new Map(prev);
+          next.set(setNum, currentType);
           return next;
         });
-        console.error("Failed to toggle collection:", result.error);
+        console.error("Failed to remove from vault:", result.error);
       }
     },
-    [collectionSetNums]
+    [userSets]
   );
 
   return (
@@ -144,9 +204,11 @@ export function ExplorePageClient({
         ) : (
           <DiscoveryGrid
             sets={sets}
-            collectionSetNums={collectionSetNums}
+            userSets={userSets}
             pendingToggles={pendingToggles}
-            onToggleCollection={handleToggleCollection}
+            onAddToWishlist={handleAddToWishlist}
+            onAddToCollection={handleAddToCollection}
+            onRemove={handleRemove}
           />
         )}
 

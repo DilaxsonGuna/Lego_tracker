@@ -18,28 +18,16 @@ interface VaultTheme {
 interface VaultFiltersProps {
   themes: VaultTheme[];
   themeFilter: string;
-  statusFilter: string;
   viewMode: VaultViewMode;
   onThemeChange: (theme: string) => void;
-  onStatusChange: (status: string) => void;
   onViewModeChange: (mode: VaultViewMode) => void;
 }
-
-const STATUS_OPTIONS: { label: string; value: string }[] = [
-  { label: "Any Status", value: "all" },
-  { label: "Built", value: "built" },
-  { label: "In Box", value: "in-box" },
-  { label: "Missing Parts", value: "missing-parts" },
-  { label: "For Sale", value: "for-sale" },
-];
 
 export function VaultFilters({
   themes,
   themeFilter,
-  statusFilter,
   viewMode,
   onThemeChange,
-  onStatusChange,
   onViewModeChange,
 }: VaultFiltersProps) {
   return (
@@ -59,25 +47,6 @@ export function VaultFilters({
               {themes.map((theme) => (
                 <SelectItem key={theme.id} value={theme.name}>
                   {theme.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Status filter */}
-        <div className="flex items-center gap-3">
-          <span className="text-xs font-bold text-muted-foreground uppercase tracking-tighter">
-            Status
-          </span>
-          <Select value={statusFilter} onValueChange={onStatusChange}>
-            <SelectTrigger size="sm" className="min-w-[140px] text-xs">
-              <SelectValue placeholder="Any Status" />
-            </SelectTrigger>
-            <SelectContent>
-              {STATUS_OPTIONS.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
                 </SelectItem>
               ))}
             </SelectContent>

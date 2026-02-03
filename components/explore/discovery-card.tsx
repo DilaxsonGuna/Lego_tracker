@@ -1,24 +1,33 @@
 "use client";
 
-import { Heart, Plus, Check, Loader2 } from "lucide-react";
+import { Heart, Plus, Check, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { DiscoverySet } from "@/types/explore";
+import type { CollectionTab } from "@/types/lego-set";
 
 interface DiscoveryCardProps {
   set: DiscoverySet;
-  isInCollection: boolean;
+  collectionType?: CollectionTab; // undefined = not in vault
   isPending: boolean;
-  onToggle: () => void;
+  onAddToWishlist: () => void;
+  onAddToCollection: () => void;
+  onRemove: () => void;
 }
 
 export function DiscoveryCard({
   set,
-  isInCollection,
+  collectionType,
   isPending,
-  onToggle,
+  onAddToWishlist,
+  onAddToCollection,
+  onRemove,
 }: DiscoveryCardProps) {
+  const isInWishlist = collectionType === "wishlist";
+  const isInCollection = collectionType === "collection";
+  const isInVault = isInWishlist || isInCollection;
+
   return (
-    <div className="group relative flex flex-col bg-card rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20 hover:ring-1 hover:ring-primary/50 transition-all duration-300 cursor-pointer h-full">
+    <div className="group relative flex flex-col bg-card rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20 hover:ring-1 hover:ring-primary/50 transition-all duration-300 h-full">
       {/* Image */}
       <div className="relative w-full aspect-[4/3] bg-muted flex items-center justify-center p-6">
         <div
@@ -35,10 +44,34 @@ export function DiscoveryCard({
           </div>
         )}
 
-        {/* Heart button (top-right) */}
-        <button className="absolute top-3 right-3 p-2 rounded-full bg-black/20 hover:bg-black/50 text-white backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
-          <Heart className="size-5" />
-        </button>
+        {/* Wishlist Heart Button - Top right */}
+        {!isInCollection && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (isInWishlist) {
+                onRemove();
+              } else {
+                onAddToWishlist();
+              }
+            }}
+            disabled={isPending}
+            title={isInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
+            className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-sm transition-all ${
+              isInWishlist
+                ? "bg-primary/20 text-primary opacity-100"
+                : "bg-black/20 hover:bg-black/50 text-white opacity-0 group-hover:opacity-100"
+            }`}
+          >
+            {isPending ? (
+              <Loader2 className="size-5 animate-spin" />
+            ) : (
+              <Heart
+                className={`size-5 ${isInWishlist ? "fill-current" : ""}`}
+              />
+            )}
+          </button>
+        )}
 
         {/* Theme badge (bottom-left) */}
         {set.theme && (
@@ -64,28 +97,52 @@ export function DiscoveryCard({
           <p className="text-sm text-muted-foreground font-medium">
             {set.numParts.toLocaleString()} pcs
           </p>
-          <Button
-            variant={isInCollection ? "default" : "secondary"}
-            size="icon"
-            className={`size-8 rounded-full transition-colors ${
-              isInCollection
-                ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                : "hover:bg-primary hover:text-primary-foreground"
-            }`}
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggle();
-            }}
-            disabled={isPending}
-          >
-            {isPending ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : isInCollection ? (
-              <Check className="size-5" />
-            ) : (
-              <Plus className="size-5" />
-            )}
-          </Button>
+
+          {/* Collection Button - Bottom right */}
+          {isInCollection ? (
+            // In Collection - Show check with remove on hover
+            <div className="relative group/btn">
+              <Button
+                variant="default"
+                size="icon"
+                className="size-8 rounded-full bg-primary text-primary-foreground hover:bg-red-500 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemove();
+                }}
+                disabled={isPending}
+                title="Remove from Collection"
+              >
+                {isPending ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <>
+                    <Check className="size-5 group-hover/btn:hidden" />
+                    <X className="size-5 hidden group-hover/btn:block" />
+                  </>
+                )}
+              </Button>
+            </div>
+          ) : (
+            // Not in collection - Show add button
+            <Button
+              variant="secondary"
+              size="icon"
+              className="size-8 rounded-full hover:bg-primary hover:text-primary-foreground transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                onAddToCollection();
+              }}
+              disabled={isPending}
+              title="Add to Collection"
+            >
+              {isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Plus className="size-5" />
+              )}
+            </Button>
+          )}
         </div>
       </div>
     </div>

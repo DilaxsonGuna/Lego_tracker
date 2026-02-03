@@ -1,3 +1,5 @@
+import type { CollectionTab } from "./lego-set";
+
 export type VaultSetStatus = "built" | "in-box" | "missing-parts" | "for-sale";
 
 export interface VaultSet {
@@ -7,14 +9,26 @@ export interface VaultSet {
   numParts: number;
   setImgUrl: string;
   price: string;
-  status: VaultSetStatus;
   themeName: string;
+  collectionType: CollectionTab;
 }
 
 export interface VaultStats {
   totalValue: string;
   totalPieces: string;
   uniqueThemes: number;
+}
+
+export interface CollectionStats {
+  totalValue: string;
+  totalPieces: string;
+  setsOwned: number;
+}
+
+export interface WishlistStats {
+  estimatedCost: string;
+  targetBricks: string;
+  savedSets: number;
 }
 
 export type VaultViewMode = "grid" | "list";

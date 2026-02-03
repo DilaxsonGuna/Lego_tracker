@@ -1,15 +1,15 @@
 import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
 import { getDiscoverySets, getParentThemes, getFeaturedThemes } from "@/lib/queries/explore";
-import { getUserSetNums } from "@/lib/commands";
+import { getUserSetsWithType } from "@/lib/commands";
 import { ExplorePageClient } from "./explore-client";
 
 async function ExploreContent() {
-  const [sets, categories, topThemes, userCollectionSetNums] = await Promise.all([
+  const [sets, categories, topThemes, userSetsInfo] = await Promise.all([
     getDiscoverySets(),
     getParentThemes(),
     getFeaturedThemes(),
-    getUserSetNums(),
+    getUserSetsWithType(),
   ]);
 
   return (
@@ -17,7 +17,7 @@ async function ExploreContent() {
       initialSets={sets}
       categories={categories}
       topThemes={topThemes}
-      initialCollectionSetNums={userCollectionSetNums}
+      initialUserSets={userSetsInfo}
     />
   );
 }
