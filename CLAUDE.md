@@ -28,8 +28,9 @@ npm start        # Start production server
     - `page.tsx` - Page component
     - `actions.ts` - Server actions for profile CRUD
   - `vault/` - User collection vault (`/vault`)
-    - `page.tsx` - Page component
-    - `actions.ts` - Server actions for vault CRUD
+    - `page.tsx` - Server component with data fetching
+    - `vault-client.tsx` - Client component for interactivity and state management
+    - `actions.ts` - Server actions (fetchVaultSets, fetchVaultStats, fetchVaultThemes, addSetToVault, removeSetFromVault, updateSetQuantity)
 - `/auth/*` - Authentication pages (login, sign-up, forgot-password, etc.) — no sidebar
 - Root layout handles theme provider and global styles
 - All routes except `/`, `/login`, and `/auth/*` are protected by middleware
@@ -51,7 +52,11 @@ page.tsx → actions.ts → lib/queries/*.ts → Supabase
 - `explore.ts` - Discovery page queries (getDiscoverySets, getThemeCategories)
 - `home.ts` - Homepage feed queries (getFeedPosts, getStories, getTrendingSets)
 - `profile.ts` - Profile queries (getUserProfile, getUserStats, getFavoriteSets)
-- `vault.ts` - Vault queries (getVaultSets, getVaultStats)
+- `vault.ts` - Vault queries (getVaultSets, getVaultStats, getVaultThemes)
+
+**Commands Layer (`/lib/commands`)**
+- `user-sets.ts` - CRUD operations for user_sets table (addUserSet, deleteUserSet, getUserSetNums)
+- `index.ts` - Barrel export
 
 **Client Hooks (`/lib/hooks`)**
 - `use-user.ts` - Hook to get current authenticated user with auth state listener
@@ -195,10 +200,10 @@ Page-specific components for the explore/discovery page:
 
 | Component | Description |
 |-----------|-------------|
-| `explore-header.tsx` | Sticky header with "Discovery" title, search input with filter icon, theme chips |
+| `explore-header.tsx` | Sticky header with "Discovery" title, search input, sort select (newest/oldest), theme filter chips |
 | `theme-chips.tsx` | Horizontal scrollable theme category filter buttons with active state |
-| `discovery-card.tsx` | Set card with 4:3 contained image, hover favorite button, title, set#, piece count, add button |
-| `discovery-grid.tsx` | Responsive 1/2/3/4 column grid of discovery cards |
+| `discovery-card.tsx` | Set card with 4:3 contained image, add-to-vault button with loading state, title, set#, piece count |
+| `discovery-grid.tsx` | Responsive 1/2/3/4 column grid of discovery cards with user's collection context |
 | `index.ts` | Barrel export for all explore components |
 
 ## Profile Components (`/components/profile`)
@@ -223,10 +228,10 @@ Page-specific components for the vault/collection page:
 | Component | Description |
 |-----------|-------------|
 | `vault-header.tsx` | Header with search input |
-| `vault-filters.tsx` | Theme/status/view-mode filter controls |
-| `vault-card.tsx` | Set card for vault display |
+| `vault-filters.tsx` | Theme/status/view-mode filter controls with dynamic theme loading |
+| `vault-card.tsx` | Set card for vault display with selection checkbox |
 | `vault-grid.tsx` | Responsive grid of vault cards |
-| `vault-bulk-actions.tsx` | Bottom action bar for bulk operations |
+| `vault-bulk-actions.tsx` | Bottom sticky action bar for bulk operations (wishlist, remove) with loading states |
 | `index.ts` | Barrel export for all vault components |
 
 ## Auth Components (`/components/auth`)
@@ -246,9 +251,9 @@ Authentication form components:
 ## Routes
 
 - `/` - Homepage social feed with stories carousel, posts, trending sets, suggested collectors
-- `/explore` - Discovery catalog with search, theme filtering, and responsive set grid
+- `/explore` - Discovery catalog with real Lego sets, search, theme filtering, sort options (newest/oldest), and add-to-vault functionality
 - `/profile` - User Digital ID page with avatar, social stats, favorites grid, bio, vault stats, milestones
-- `/vault` - User's Lego collection with search, filters, and set management
+- `/vault` - User's Lego collection with search, theme/status filters, grid/list view modes, bulk selection, and remove operations
 - `/auth/*` - Authentication pages (no sidebar)
 
 ## Adding New Features
@@ -265,3 +270,27 @@ Authentication form components:
 1. Create the component in the appropriate `components/{page}/` directory
 2. Export it from the `index.ts` barrel file
 3. Import using `import { Component } from "@/components/{page}"`
+
+## Recent Features
+
+**Vault Page (Latest):**
+- Theme filtering with dynamic theme loading from user's collection
+- Bulk selection of sets with multi-select capability
+- Bulk remove operation with loading states and optimistic UI updates
+- Client-side state management via `vault-client.tsx`
+- Server actions for all vault CRUD operations (add, remove, update quantity)
+- Router refresh pattern for data synchronization after mutations
+
+**Explore Page:**
+- Real Lego sets fetched from Supabase `lego_sets` table
+- Theme filtering with `themes` table relationship
+- Sort by newest/oldest release year
+- Add sets directly to vault from explore page
+- User collection context to show which sets are already owned
+- Search functionality across set names
+
+**Data Patterns:**
+- Server components fetch initial data, pass to client components for interactivity
+- Client components use `router.refresh()` after mutations to re-fetch server data
+- Server actions handle authentication and database operations
+- Query functions in `lib/queries/` encapsulate complex joins and transformations
