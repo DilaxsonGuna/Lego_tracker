@@ -11,24 +11,13 @@ export interface VaultSet {
   price: string;
   themeName: string;
   collectionType: CollectionTab;
+  isFavorite: boolean;
 }
 
 export interface VaultStats {
   totalValue: string;
   totalPieces: string;
   uniqueThemes: number;
-}
-
-export interface CollectionStats {
-  totalValue: string;
-  totalPieces: string;
-  setsOwned: number;
-}
-
-export interface WishlistStats {
-  estimatedCost: string;
-  targetBricks: string;
-  savedSets: number;
 }
 
 export type VaultViewMode = "grid" | "list";

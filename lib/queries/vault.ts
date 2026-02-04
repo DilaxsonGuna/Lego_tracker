@@ -33,10 +33,12 @@ export async function getVaultSets({
         num_parts,
         img_url,
         themes(name)
-      )
+      ),
+      user_favorites(set_num)
     `)
     .eq("user_id", userId)
-    .eq("collection_type", collectionType);
+    .eq("collection_type", collectionType)
+    .eq("user_favorites.user_id", userId);
 
   if (search) {
     query = query.or(
@@ -63,6 +65,9 @@ export async function getVaultSets({
       img_url: string;
       themes: { name: string } | null;
     };
+    const favorites = row.user_favorites as unknown as { set_num: string }[] | null;
+    const isFavorite = favorites && favorites.length > 0;
+
     return {
       setNum: set.set_num,
       name: set.name,
@@ -72,8 +77,10 @@ export async function getVaultSets({
       price: "$0", // TODO: Add price when available
       themeName: set.themes?.name ?? "",
       collectionType: row.collection_type as CollectionTab,
+      isFavorite: isFavorite ?? false,
     };
   });
+}
 }
 
 export async function getVaultStats(userId: string): Promise<VaultStats | null> {

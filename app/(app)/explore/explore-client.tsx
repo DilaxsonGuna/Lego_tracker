@@ -4,8 +4,7 @@ import { useState, useEffect, useRef, useCallback, useTransition } from "react";
 import { Loader2 } from "lucide-react";
 import { ExploreHeader, DiscoveryGrid } from "@/components/explore";
 import { Button } from "@/components/ui/button";
-import { fetchSets } from "./actions";
-import { addUserSet, deleteUserSet } from "@/lib/commands";
+import { fetchSets, addSetToCollection, removeSetFromCollection } from "./actions";
 import { PAGE_SIZE } from "@/lib/constants";
 import type { DiscoverySet, ThemeCategory, OrderByOption } from "@/types/explore";
 import type { CollectionTab } from "@/types/lego-set";
@@ -162,7 +161,7 @@ export function ExplorePageClient({
       });
 
       // Call server action
-      const result = await deleteUserSet(setNum);
+      const result = await removeSetFromCollection(setNum);
 
       // Remove from pending
       setPendingToggles((prev) => {

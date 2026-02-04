@@ -356,6 +356,7 @@ export const mockVaultSets: VaultSet[] = [
     price: "$849.99",
     status: "built",
     themeName: "Star Wars",
+    isFavorite: false,
   },
   {
     setNum: "10307",
@@ -367,6 +368,7 @@ export const mockVaultSets: VaultSet[] = [
     price: "$629.99",
     status: "in-box",
     themeName: "Icons",
+    isFavorite: false,
   },
   {
     setNum: "10294",
@@ -378,6 +380,7 @@ export const mockVaultSets: VaultSet[] = [
     price: "$679.99",
     status: "built",
     themeName: "Icons",
+    isFavorite: false,
   },
   {
     setNum: "10305",
@@ -389,5 +392,6 @@ export const mockVaultSets: VaultSet[] = [
     price: "$399.99",
     status: "missing-parts",
     themeName: "Icons",
+    isFavorite: false,
   },
 ];

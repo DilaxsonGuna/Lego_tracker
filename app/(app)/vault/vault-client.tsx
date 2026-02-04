@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 import {
   VaultHeader,
   CollectionTabs,
@@ -9,7 +10,7 @@ import {
   VaultGrid,
   VaultBulkActions,
 } from "@/components/vault";
-import { moveToCollection, removeSetFromVault } from "./actions";
+import { moveToCollection, removeSetFromVault, toggleFavorite } from "./actions";
 import type { VaultSet, CollectionStats, WishlistStats, VaultViewMode } from "@/types/vault";
 import type { CollectionTab } from "@/types/lego-set";
 
@@ -72,6 +73,15 @@ export function VaultPageClient({
       return next;
     });
   }, []);
+
+  const handleToggleFavorite = useCallback(async (setNum: string) => {
+    const result = await toggleFavorite(setNum);
+    if (result.error) {
+      toast.error(result.error);
+    } else {
+      router.refresh();
+    }
+  }, [router]);
 
   const filteredSets = useMemo(() => {
     return initialSets.filter((set) => {
@@ -157,6 +167,7 @@ export function VaultPageClient({
             sets={filteredSets}
             selectedSets={selectedSets}
             onToggleSelect={toggleSelect}
+            onToggleFavorite={handleToggleFavorite}
           />
         </div>
       </div>

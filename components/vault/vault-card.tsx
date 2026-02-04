@@ -1,11 +1,14 @@
 "use client";
 
+import { Heart } from "lucide-react";
 import type { VaultSet, VaultSetStatus } from "@/types/vault";
 
 interface VaultCardProps {
   set: VaultSet;
   isSelected: boolean;
   onToggleSelect: (setNum: string) => void;
+  isFavorite: boolean;
+  onToggleFavorite: (setNum: string) => void;
 }
 
 const STATUS_STYLES: Record<VaultSetStatus, string> = {
@@ -22,7 +25,7 @@ const STATUS_LABELS: Record<VaultSetStatus, string> = {
   "for-sale": "For Sale",
 };
 
-export function VaultCard({ set, isSelected, onToggleSelect }: VaultCardProps) {
+export function VaultCard({ set, isSelected, onToggleSelect, isFavorite, onToggleFavorite }: VaultCardProps) {
   return (
     <div className="group relative flex flex-col rounded-xl bg-card border border-border transition-all hover:border-primary/50 overflow-hidden">
       {/* Checkbox */}
@@ -34,6 +37,22 @@ export function VaultCard({ set, isSelected, onToggleSelect }: VaultCardProps) {
           className="h-4 w-4 rounded border-border bg-background text-primary focus:ring-primary cursor-pointer"
         />
       </div>
+
+      {/* Favorite Heart */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleFavorite(set.setNum);
+        }}
+        className="absolute top-3 right-3 z-20 p-2 rounded-full bg-black/20 hover:bg-black/50 backdrop-blur-sm transition-all hover:scale-110"
+        aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+      >
+        <Heart
+          className={`size-5 transition-colors ${
+            isFavorite ? "fill-primary text-primary" : "text-white"
+          }`}
+        />
+      </button>
 
       {/* Image */}
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-black/50">
