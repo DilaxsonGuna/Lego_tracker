@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart, Plus, Check, Loader2 } from "lucide-react";
+import { Plus, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { DiscoverySet } from "@/types/explore";
 
@@ -25,9 +25,6 @@ export function DiscoveryCard({
           className="size-full bg-center bg-contain bg-no-repeat transition-transform duration-500 group-hover:scale-105"
           style={{ backgroundImage: `url("${set.setImgUrl}")` }}
         />
-        <button className="absolute top-3 right-3 p-2 rounded-full bg-black/20 hover:bg-black/50 text-white backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
-          <Heart className="size-5" />
-        </button>
       </div>
 
       {/* Info */}

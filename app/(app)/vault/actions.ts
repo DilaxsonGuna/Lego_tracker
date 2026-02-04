@@ -2,6 +2,12 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { getVaultSets, getVaultStats, getVaultThemes } from "@/lib/queries/vault";
+import {
+  getUserFavoriteSetNums,
+  getUserFavoritesCount,
+  addUserFavorite,
+  removeUserFavorite,
+} from "@/lib/commands";
 import type { VaultSetStatus } from "@/types/vault";
 
 export async function fetchVaultSets(params: {
@@ -89,4 +95,33 @@ export async function updateSetQuantity(setNum: string, quantity: number) {
   if (error) return { error: error.message };
 
   return { success: true };
+}
+
+export async function toggleFavorite(setNum: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  // Check if already favorited
+  const favoriteSetNums = await getUserFavoriteSetNums(user.id);
+  const isFavorited = favoriteSetNums.has(setNum);
+
+  if (isFavorited) {
+    // Remove from favorites
+    const result = await removeUserFavorite(user.id, setNum);
+    if (result.error) return { error: result.error };
+    return { success: true };
+  } else {
+    // Check if user already has 4 favorites
+    const count = await getUserFavoritesCount(user.id);
+    if (count >= 4) {
+      return { error: "Maximum 4 favorites allowed" };
+    }
+
+    // Add to favorites
+    const result = await addUserFavorite(user.id, setNum);
+    if (result.error) return { error: result.error };
+    return { success: true };
+  }
 }

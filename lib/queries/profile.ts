@@ -37,13 +37,37 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
   return null;
 }
 
-// TODO: Implement when favorites feature is added
 export async function getFavoriteSets(userId: string): Promise<FavoriteSet[]> {
   const supabase = await createClient();
-  // Placeholder - will query user's favorited sets
-  void supabase;
-  void userId;
-  return [];
+
+  const { data, error } = await supabase
+    .from("user_favorites")
+    .select(`
+      set_num,
+      lego_sets!inner(
+        set_num,
+        name,
+        img_url
+      )
+    `)
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(4);
+
+  if (error || !data) return [];
+
+  return data.map((row) => {
+    const set = row.lego_sets as unknown as {
+      set_num: string;
+      name: string;
+      img_url: string;
+    };
+    return {
+      setNum: set.set_num,
+      name: set.name,
+      imageUrl: set.img_url ?? "",
+    };
+  });
 }
 
 // TODO: Implement when milestones feature is added

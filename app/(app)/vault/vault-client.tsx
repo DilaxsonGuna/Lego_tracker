@@ -1,12 +1,15 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   VaultHeader,
   VaultFilters,
   VaultGrid,
   VaultBulkActions,
 } from "@/components/vault";
+import { toggleFavorite } from "./actions";
 import type { VaultSet, VaultStats, VaultViewMode } from "@/types/vault";
 
 interface VaultTheme {
@@ -25,6 +28,7 @@ export function VaultPageClient({
   stats,
   themes,
 }: VaultPageClientProps) {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [themeFilter, setThemeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -42,6 +46,15 @@ export function VaultPageClient({
       return next;
     });
   }, []);
+
+  const handleToggleFavorite = useCallback(async (setNum: string) => {
+    const result = await toggleFavorite(setNum);
+    if (result.error) {
+      toast.error(result.error);
+    } else {
+      router.refresh();
+    }
+  }, [router]);
 
   const filteredSets = useMemo(() => {
     return initialSets.filter((set) => {
@@ -77,6 +90,7 @@ export function VaultPageClient({
             sets={filteredSets}
             selectedSets={selectedSets}
             onToggleSelect={toggleSelect}
+            onToggleFavorite={handleToggleFavorite}
           />
         </div>
       </div>

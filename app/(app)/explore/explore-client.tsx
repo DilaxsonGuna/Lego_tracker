@@ -4,8 +4,7 @@ import { useState, useEffect, useRef, useCallback, useTransition } from "react";
 import { Loader2 } from "lucide-react";
 import { ExploreHeader, DiscoveryGrid } from "@/components/explore";
 import { Button } from "@/components/ui/button";
-import { fetchSets } from "./actions";
-import { addUserSet, deleteUserSet } from "@/lib/commands";
+import { fetchSets, addSetToCollection, removeSetFromCollection } from "./actions";
 import { PAGE_SIZE } from "@/lib/constants";
 import type { DiscoverySet, ThemeCategory, OrderByOption } from "@/types/explore";
 
@@ -97,8 +96,8 @@ export function ExplorePageClient({
 
       // Call server action
       const result = isCurrentlyInCollection
-        ? await deleteUserSet(setNum)
-        : await addUserSet(setNum);
+        ? await removeSetFromCollection(setNum)
+        : await addSetToCollection(setNum);
 
       // Remove from pending
       setPendingToggles((prev) => {

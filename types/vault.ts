@@ -9,6 +9,7 @@ export interface VaultSet {
   price: string;
   status: VaultSetStatus;
   themeName: string;
+  isFavorite: boolean;
 }
 
 export interface VaultStats {
