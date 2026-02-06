@@ -6,6 +6,8 @@ import { ArrowLeft, AtSign, MapPin, Plus } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { AvatarSelector, getAvatarColor } from "@/components/auth/avatar-selector";
 import { updateProfile } from "@/app/(app)/profile/actions";
 import { toast } from "sonner";
@@ -147,12 +149,12 @@ export function EditProfileForm({ initialData }: EditProfileFormProps) {
             <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">
               Bio
             </label>
-            <textarea
+            <Textarea
               value={bio}
               onChange={(e) => setBio(e.target.value.slice(0, maxBioLength))}
               placeholder="Tell the community about your building journey..."
               rows={4}
-              className="w-full bg-card border border-border rounded-xl p-4 text-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-muted-foreground resize-none"
+              className="bg-card border-border rounded-xl p-4 resize-none"
             />
             <div className="flex justify-end">
               <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">
@@ -168,26 +170,28 @@ export function EditProfileForm({ initialData }: EditProfileFormProps) {
             </label>
             <div className="flex flex-wrap gap-2">
               {tags.map((tag) => (
-                <button
+                <Badge
                   key={tag.id}
-                  type="button"
-                  onClick={() => toggleTag(tag.id)}
-                  className={`px-4 py-2 rounded-full border text-sm font-medium transition-colors ${
+                  variant={tag.active ? "default" : "outline"}
+                  className={`px-4 py-2 rounded-full text-sm font-medium cursor-pointer transition-colors ${
                     tag.active
-                      ? "border-primary text-primary bg-primary/5"
-                      : "border-border text-muted-foreground hover:border-muted-foreground"
+                      ? "border-primary bg-primary/5 text-primary hover:bg-primary/10"
+                      : "border-border text-muted-foreground hover:border-muted-foreground hover:bg-transparent"
                   }`}
+                  onClick={() => toggleTag(tag.id)}
                 >
                   {tag.label}
-                </button>
+                </Badge>
               ))}
-              <button
+              <Button
                 type="button"
-                className="px-4 py-2 rounded-full border border-primary/20 bg-primary/5 text-primary text-sm font-medium flex items-center gap-1"
+                variant="outline"
+                size="sm"
+                className="px-4 py-2 h-auto rounded-full border-primary/20 bg-primary/5 text-primary hover:bg-primary/10"
               >
                 <Plus className="size-4" />
                 Add Tag
-              </button>
+              </Button>
             </div>
             <p className="text-[10px] text-muted-foreground ml-1">
               Theme tags are mocked for now

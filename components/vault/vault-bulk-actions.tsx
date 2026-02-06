@@ -1,6 +1,8 @@
 "use client";
 
 import { Package, Trash2, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import type { CollectionTab } from "@/types/lego-set";
 
 interface VaultBulkActionsProps {
@@ -28,13 +30,15 @@ export function VaultBulkActions({
         <span className="text-xs font-bold text-white mr-4">
           {selectedCount} Item{selectedCount !== 1 ? "s" : ""} Selected
         </span>
-        <div className="h-4 w-px bg-white/20 mr-2" />
+        <Separator orientation="vertical" className="h-4 bg-white/20" />
 
         {activeTab === "wishlist" && (
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={onMoveToCollection}
             disabled={isProcessing}
-            className="flex items-center gap-2 text-xs font-bold text-gray-300 hover:text-primary px-3 py-1.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-xs font-bold text-gray-300 hover:text-primary hover:bg-transparent px-3 py-1.5 h-auto"
           >
             {isProcessing ? (
               <Loader2 className="size-[18px] animate-spin" />
@@ -42,13 +46,15 @@ export function VaultBulkActions({
               <Package className="size-[18px]" />
             )}
             Move to Collection
-          </button>
+          </Button>
         )}
 
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={onRemove}
           disabled={isProcessing}
-          className="flex items-center gap-2 text-xs font-bold text-red-400 hover:text-red-300 px-3 py-1.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="text-xs font-bold text-red-400 hover:text-red-300 hover:bg-transparent px-3 py-1.5 h-auto"
         >
           {isProcessing ? (
             <Loader2 className="size-[18px] animate-spin" />
@@ -56,7 +62,7 @@ export function VaultBulkActions({
             <Trash2 className="size-[18px]" />
           )}
           Remove
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -2,6 +2,7 @@
 
 import { Heart, Plus, Check, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import type { DiscoverySet } from "@/types/explore";
 import type { CollectionTab } from "@/types/lego-set";
 
@@ -38,15 +39,17 @@ export function DiscoveryCard({
         {/* Year badge (top-left) */}
         {set.year && (
           <div className="absolute top-3 left-3">
-            <span className="bg-black/60 backdrop-blur-md text-xs font-bold px-2.5 py-1 rounded-md text-primary border border-primary/20">
+            <Badge variant="outline" className="bg-black/60 backdrop-blur-md text-xs font-bold px-2.5 py-1 rounded-md text-primary border-primary/20">
               {set.year}
-            </span>
+            </Badge>
           </div>
         )}
 
         {/* Wishlist Heart Button - Top right */}
         {!isInCollection && (
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={(e) => {
               e.stopPropagation();
               if (isInWishlist) {
@@ -57,9 +60,9 @@ export function DiscoveryCard({
             }}
             disabled={isPending}
             title={isInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
-            className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-sm transition-all ${
+            className={`absolute top-3 right-3 size-9 rounded-full backdrop-blur-sm transition-all ${
               isInWishlist
-                ? "bg-primary/20 text-primary opacity-100"
+                ? "bg-primary/20 text-primary opacity-100 hover:bg-primary/30"
                 : "bg-black/20 hover:bg-black/50 text-white opacity-0 group-hover:opacity-100"
             }`}
           >
@@ -70,15 +73,15 @@ export function DiscoveryCard({
                 className={`size-5 ${isInWishlist ? "fill-current" : ""}`}
               />
             )}
-          </button>
+          </Button>
         )}
 
         {/* Theme badge (bottom-left) */}
         {set.theme && (
           <div className="absolute bottom-3 left-3">
-            <span className="bg-primary/90 backdrop-blur-sm text-[10px] font-bold px-2.5 py-1 rounded-md text-primary-foreground uppercase tracking-wide line-clamp-1 max-w-[220px]">
+            <Badge className="bg-primary/90 backdrop-blur-sm text-[10px] font-bold px-2.5 py-1 rounded-md text-primary-foreground uppercase tracking-wide line-clamp-1 max-w-[220px] border-transparent hover:bg-primary/80">
               {set.theme}
-            </span>
+            </Badge>
           </div>
         )}
       </div>

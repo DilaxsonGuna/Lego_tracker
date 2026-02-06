@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import type { UserProfile } from "@/types/profile";
 
 interface ProfileBioProps {
@@ -15,12 +16,13 @@ export function ProfileBio({ user }: ProfileBioProps) {
       </p>
       <div className="flex flex-wrap gap-2 mt-6">
         {user.interests.map((tag) => (
-          <span
+          <Badge
             key={tag}
-            className="px-4 py-1.5 rounded-full bg-card border border-border text-xs font-bold text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+            variant="outline"
+            className="px-4 py-1.5 rounded-full bg-card border-border text-xs font-bold text-muted-foreground hover:text-primary hover:border-primary/50 transition-colors cursor-pointer"
           >
             #{tag}
-          </span>
+          </Badge>
         ))}
       </div>
     </div>

@@ -9,6 +9,9 @@ import {
   MoreHorizontal,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import type { FeedPost as FeedPostType } from "@/types/feed";
 
 function formatCount(n: number): string {
@@ -22,7 +25,7 @@ interface FeedPostProps {
 
 export function FeedPost({ post }: FeedPostProps) {
   return (
-    <article className="bg-card rounded-2xl overflow-hidden shadow-xl shadow-black/10 border border-border">
+    <Card className="rounded-2xl overflow-hidden shadow-xl shadow-black/10">
       {/* Header */}
       <div className="p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -46,12 +49,14 @@ export function FeedPost({ post }: FeedPostProps) {
             </p>
           </div>
         </div>
-        <button
-          className="text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-muted-foreground hover:text-foreground size-8"
           aria-label="More options"
         >
           <MoreHorizontal className="size-5" />
-        </button>
+        </Button>
       </div>
 
       {/* Image */}
@@ -64,40 +69,44 @@ export function FeedPost({ post }: FeedPostProps) {
       >
         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         {post.rating != null && (
-          <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-md text-white text-xs px-3 py-1 rounded-full border border-white/10 flex items-center gap-1">
-            <Star className="size-3.5 text-primary fill-primary" />
+          <Badge variant="outline" className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-md text-white text-xs px-3 py-1 rounded-full border-white/10">
+            <Star className="size-3.5 text-primary fill-primary mr-1" />
             {post.rating}/10 Rating
-          </div>
+          </Badge>
         )}
       </div>
 
       {/* Actions */}
       <div className="p-4">
-        <div className="flex items-center gap-6">
-          <button className="group flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-            <Grid2X2 className="size-6 group-hover:text-primary transition-colors" />
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" className="group text-muted-foreground hover:text-foreground h-auto px-2 py-1">
+            <Grid2X2 className="size-5 group-hover:text-primary transition-colors mr-1.5" />
             <span className="text-sm font-medium">
               {formatCount(post.likes)} Likes
             </span>
-          </button>
-          <button className="group flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-            <MessageCircle className="size-6 group-hover:text-blue-400 transition-colors" />
+          </Button>
+          <Button variant="ghost" size="sm" className="group text-muted-foreground hover:text-foreground h-auto px-2 py-1">
+            <MessageCircle className="size-5 group-hover:text-blue-400 transition-colors mr-1.5" />
             <span className="text-sm font-medium">
               {formatCount(post.comments)} Comments
             </span>
-          </button>
-          <button
-            className="group text-muted-foreground hover:text-foreground transition-colors ml-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="group text-muted-foreground hover:text-foreground ml-auto size-8"
             aria-label="Share post"
           >
-            <Share2 className="size-6 group-hover:text-green-400 transition-colors" />
-          </button>
-          <button
-            className="group text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
+            <Share2 className="size-5 group-hover:text-green-400 transition-colors" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="group text-muted-foreground hover:text-foreground size-8"
             aria-label="Bookmark post"
           >
-            <Bookmark className="size-6 group-hover:text-yellow-400 transition-colors" />
-          </button>
+            <Bookmark className="size-5 group-hover:text-yellow-400 transition-colors" />
+          </Button>
         </div>
 
         {/* Comment preview */}
@@ -114,6 +123,6 @@ export function FeedPost({ post }: FeedPostProps) {
           </div>
         )}
       </div>
-    </article>
+    </Card>
   );
 }

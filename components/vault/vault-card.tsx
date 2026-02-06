@@ -1,6 +1,9 @@
 "use client";
 
 import { Heart } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import type { VaultSet, VaultSetStatus } from "@/types/vault";
 
 interface VaultCardProps {
@@ -11,11 +14,11 @@ interface VaultCardProps {
   onToggleFavorite: (setNum: string) => void;
 }
 
-const STATUS_STYLES: Record<VaultSetStatus, string> = {
-  built: "bg-green-500/80 text-white",
-  "in-box": "bg-blue-500/80 text-white",
-  "missing-parts": "bg-amber-500/80 text-white",
-  "for-sale": "bg-red-500/80 text-white",
+const STATUS_VARIANTS: Record<VaultSetStatus, string> = {
+  built: "bg-green-500/80 text-white border-transparent hover:bg-green-500/70",
+  "in-box": "bg-blue-500/80 text-white border-transparent hover:bg-blue-500/70",
+  "missing-parts": "bg-amber-500/80 text-white border-transparent hover:bg-amber-500/70",
+  "for-sale": "bg-red-500/80 text-white border-transparent hover:bg-red-500/70",
 };
 
 const STATUS_LABELS: Record<VaultSetStatus, string> = {
@@ -30,21 +33,22 @@ export function VaultCard({ set, isSelected, onToggleSelect, isFavorite, onToggl
     <div className="group relative flex flex-col rounded-xl bg-card border border-border transition-all hover:border-primary/50 overflow-hidden">
       {/* Checkbox */}
       <div className="absolute top-3 left-3 z-10">
-        <input
-          type="checkbox"
+        <Checkbox
           checked={isSelected}
-          onChange={() => onToggleSelect(set.setNum)}
-          className="h-4 w-4 rounded border-border bg-background text-primary focus:ring-primary cursor-pointer"
+          onCheckedChange={() => onToggleSelect(set.setNum)}
+          className="bg-background/80 backdrop-blur-sm"
         />
       </div>
 
       {/* Favorite Heart */}
-      <button
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={(e) => {
           e.stopPropagation();
           onToggleFavorite(set.setNum);
         }}
-        className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/20 hover:bg-black/50 backdrop-blur-sm transition-all hover:scale-110"
+        className="absolute top-3 right-3 z-10 size-9 rounded-full bg-black/20 hover:bg-black/50 backdrop-blur-sm transition-all hover:scale-110"
         aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
       >
         <Heart
@@ -52,7 +56,7 @@ export function VaultCard({ set, isSelected, onToggleSelect, isFavorite, onToggl
             isFavorite ? "fill-primary text-primary" : "text-white"
           }`}
         />
-      </button>
+      </Button>
 
       {/* Image */}
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-black/50">
@@ -61,15 +65,13 @@ export function VaultCard({ set, isSelected, onToggleSelect, isFavorite, onToggl
           style={{ backgroundImage: `url("${set.setImgUrl}")` }}
         />
         <div className="absolute bottom-2 right-2 flex gap-1">
-          <span className="bg-black/60 backdrop-blur-md text-[10px] font-bold px-2 py-0.5 rounded text-white border border-white/10">
+          <Badge variant="outline" className="bg-black/60 backdrop-blur-md text-[10px] font-bold px-2 py-0.5 text-white border-white/10">
             {set.setNum}
-          </span>
+          </Badge>
           {set.status && (
-            <span
-              className={`backdrop-blur-md text-[10px] font-bold px-2 py-0.5 rounded uppercase ${STATUS_STYLES[set.status]}`}
-            >
+            <Badge className={`backdrop-blur-md text-[10px] font-bold px-2 py-0.5 uppercase ${STATUS_VARIANTS[set.status]}`}>
               {STATUS_LABELS[set.status]}
-            </span>
+            </Badge>
           )}
         </div>
       </div>

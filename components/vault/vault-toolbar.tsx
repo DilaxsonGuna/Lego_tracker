@@ -2,6 +2,7 @@
 
 import { Search, LayoutGrid, List } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -69,30 +70,34 @@ export function VaultToolbar({
 
         {/* View mode toggle */}
         <div className="ml-auto flex items-center bg-card/50 rounded-lg p-1">
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => onViewModeChange("grid")}
             aria-label="Grid view"
             aria-pressed={viewMode === "grid"}
-            className={`flex items-center justify-center p-1.5 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+            className={`size-7 rounded ${
               viewMode === "grid"
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:text-foreground"
+                ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                : "text-muted-foreground hover:text-foreground hover:bg-transparent"
             }`}
           >
             <LayoutGrid className="size-[18px]" />
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => onViewModeChange("list")}
             aria-label="List view"
             aria-pressed={viewMode === "list"}
-            className={`flex items-center justify-center p-1.5 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+            className={`size-7 rounded ${
               viewMode === "list"
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:text-foreground"
+                ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                : "text-muted-foreground hover:text-foreground hover:bg-transparent"
             }`}
           >
             <List className="size-[18px]" />
-          </button>
+          </Button>
         </div>
       </div>
     </div>

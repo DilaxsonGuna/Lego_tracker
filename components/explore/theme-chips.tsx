@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import type { ThemeCategory } from "@/types/explore";
 
 interface ThemeChipsProps {
@@ -16,18 +17,19 @@ export function ThemeChips({ categories, activeId, onSelect }: ThemeChipsProps) 
   return (
     <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide flex-1">
       {chips.map((cat) => (
-        <button
+        <Button
           key={cat.id}
+          variant={cat.id === activeId ? "default" : "outline"}
           onClick={() => onSelect(cat.id)}
           className={cn(
-            "flex-shrink-0 h-10 px-4 rounded-xl font-medium text-sm transition-all whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+            "flex-shrink-0 h-10 px-4 rounded-xl font-medium text-sm whitespace-nowrap",
             cat.id === activeId
-              ? "bg-primary text-primary-foreground font-bold shadow-sm"
-              : "bg-card border border-border hover:border-primary/50 text-primary"
+              ? "font-bold shadow-sm"
+              : "bg-card hover:border-primary/50 text-primary"
           )}
         >
           {cat.label}
-        </button>
+        </Button>
       ))}
     </div>
   );
