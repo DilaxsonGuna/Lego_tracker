@@ -13,7 +13,11 @@ export async function fetchSets(params: {
   return getDiscoverySets(params);
 }
 
-export async function addSetToCollection(setNum: string, quantity: number = 1) {
+export async function addSetToCollection(
+  setNum: string,
+  quantity: number = 1,
+  collectionType: "collection" | "wishlist" = "collection"
+) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -25,6 +29,7 @@ export async function addSetToCollection(setNum: string, quantity: number = 1) {
       user_id: user.id,
       set_num: setNum,
       quantity,
+      collection_type: collectionType,
     }, {
       onConflict: "user_id,set_num",
     });

@@ -93,7 +93,7 @@ export function ExplorePageClient({
     });
 
     // Call server action
-    const result = await addUserSet(setNum, 1, "wishlist");
+    const result = await addSetToCollection(setNum, 1, "wishlist");
 
     // Remove from pending
     setPendingToggles((prev) => {
@@ -125,7 +125,7 @@ export function ExplorePageClient({
     });
 
     // Call server action
-    const result = await addUserSet(setNum, 1, "collection");
+    const result = await addSetToCollection(setNum, 1, "collection");
 
     // Remove from pending
     setPendingToggles((prev) => {

@@ -20,6 +20,14 @@ export async function getVaultSets({
 }: GetVaultSetsParams): Promise<VaultSet[]> {
   const supabase = await createClient();
 
+  // First, get user's favorite set numbers
+  const { data: favoritesData } = await supabase
+    .from("user_favorites")
+    .select("set_num")
+    .eq("user_id", userId);
+
+  const favoriteSetNums = new Set(favoritesData?.map((f) => f.set_num) ?? []);
+
   let query = supabase
     .from("user_sets")
     .select(`
@@ -33,12 +41,10 @@ export async function getVaultSets({
         num_parts,
         img_url,
         themes(name)
-      ),
-      user_favorites(set_num)
+      )
     `)
     .eq("user_id", userId)
-    .eq("collection_type", collectionType)
-    .eq("user_favorites.user_id", userId);
+    .eq("collection_type", collectionType);
 
   if (search) {
     query = query.or(
@@ -65,8 +71,6 @@ export async function getVaultSets({
       img_url: string;
       themes: { name: string } | null;
     };
-    const favorites = row.user_favorites as unknown as { set_num: string }[] | null;
-    const isFavorite = favorites && favorites.length > 0;
 
     return {
       setNum: set.set_num,
@@ -77,10 +81,9 @@ export async function getVaultSets({
       price: "$0", // TODO: Add price when available
       themeName: set.themes?.name ?? "",
       collectionType: row.collection_type as CollectionTab,
-      isFavorite: isFavorite ?? false,
+      isFavorite: favoriteSetNums.has(set.set_num),
     };
   });
-}
 }
 
 export async function getVaultStats(userId: string): Promise<VaultStats | null> {
