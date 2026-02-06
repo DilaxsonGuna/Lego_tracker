@@ -20,20 +20,27 @@ npm start        # Start production server
 **App Router Structure (`/app`)**
 - `(app)/` - Route group for all sidebar pages (single shared layout with Sidebar + MobileHeader)
   - `page.tsx` - Homepage feed (`/`)
+  - `actions.ts` - Shared server actions (getCurrentUser)
   - `explore/` - Discovery catalog (`/explore`)
     - `page.tsx` - Server component with Suspense
     - `explore-client.tsx` - Client component for interactivity
-    - `actions.ts` - Server actions for data fetching
+    - `actions.ts` - Server actions for data fetching and favorites
   - `profile/` - User profile page (`/profile`)
-    - `page.tsx` - Page component
+    - `page.tsx` - Page component with real data fetching
     - `actions.ts` - Server actions for profile CRUD
   - `vault/` - User collection vault (`/vault`)
     - `page.tsx` - Server component with data fetching
     - `vault-client.tsx` - Client component for interactivity and state management
-    - `actions.ts` - Server actions (fetchVaultSets, fetchVaultStats, fetchVaultThemes, addSetToVault, removeSetFromVault, updateSetQuantity)
-- `/auth/*` - Authentication pages (login, sign-up, forgot-password, etc.) — no sidebar
-- Root layout handles theme provider and global styles
+    - `actions.ts` - Server actions (fetchVaultSets, fetchVaultStats, fetchVaultThemes, addSetToVault, removeSetFromVault, toggleFavorite, moveToWishlist, moveToCollection)
+  - `settings/` - User settings page (`/settings`)
+    - `page.tsx` - Settings page with account, collection, appearance, integrations, system sections
+- `/auth/*` - Authentication pages (login, sign-up, forgot-password, onboarding, etc.) — no sidebar
+  - `onboarding/` - New user onboarding flow (`/auth/onboarding`)
+    - `page.tsx` - Onboarding page
+    - `actions.ts` - Server actions for profile setup (completeOnboarding)
+- Root layout handles theme provider, global styles, and Toaster
 - All routes except `/`, `/login`, and `/auth/*` are protected by middleware
+- New users are redirected to `/auth/onboarding` after email confirmation if profile is incomplete
 
 **Data Flow Pattern**
 ```
@@ -51,11 +58,14 @@ page.tsx → actions.ts → lib/queries/*.ts → Supabase
 **Data Fetching Layer (`/lib/queries`)**
 - `explore.ts` - Discovery page queries (getDiscoverySets, getThemeCategories)
 - `home.ts` - Homepage feed queries (getFeedPosts, getStories, getTrendingSets)
-- `profile.ts` - Profile queries (getUserProfile, getUserStats, getFavoriteSets)
-- `vault.ts` - Vault queries (getVaultSets, getVaultStats, getVaultThemes)
+- `profile.ts` - Profile queries (getUserProfile, getUserStats, getFavoriteSets, getFollowCounts)
+- `vault.ts` - Vault queries (getVaultSets, getVaultStats, getVaultThemes, getUserFavoriteSetNums)
+- `social.ts` - Social feature queries (getSuggestedUsersWithFollowStatus, getFollowCounts, isFollowing)
 
 **Commands Layer (`/lib/commands`)**
-- `user-sets.ts` - CRUD operations for user_sets table (addUserSet, deleteUserSet, getUserSetNums)
+- `user-sets.ts` - CRUD operations for user_sets table (addUserSet, deleteUserSet, getUserSetNums, updateUserSetCollection)
+- `user-favorites.ts` - CRUD operations for user_favorites table (addFavorite, removeFavorite, getUserFavoriteSetNums) with max 4 favorites limit
+- `follows.ts` - Social follow operations (followUser, unfollowUser, isFollowing, getFollowCounts)
 - `index.ts` - Barrel export
 
 **Client Hooks (`/lib/hooks`)**
@@ -63,13 +73,14 @@ page.tsx → actions.ts → lib/queries/*.ts → Supabase
 - `index.ts` - Barrel export
 
 **Components (`/components`)**
-- `/ui` - shadcn/ui primitives (button, input, card, etc.)
-- `/shared` - Shared layout components (sidebar, mobile header, logo, footer)
-- `/auth` - Authentication forms (login, sign-up, forgot-password, update-password, auth-button, logout-button)
+- `/ui` - shadcn/ui primitives (button, input, card, sonner, etc.)
+- `/shared` - Shared layout components (sidebar, sidebar-wrapper, mobile header, logo, footer)
+- `/auth` - Authentication forms (login, sign-up, forgot-password, update-password, onboarding-form, avatar-selector, auth-button, logout-button)
 - `/home` - Homepage feed-specific components
 - `/explore` - Explore/Discovery page components
 - `/profile` - Profile page-specific components
 - `/vault` - Vault page-specific components
+- `/settings` - Settings page components (sections, link items, toggle items, integrations)
 
 **Authentication Flow**
 - Cookie-based auth via `@supabase/ssr`
@@ -80,22 +91,39 @@ page.tsx → actions.ts → lib/queries/*.ts → Supabase
 ## Database Schema (Supabase)
 
 **Tables:**
-- `profiles` - Extends Supabase auth.users (id, username, full_name, avatar_url, updated_at)
+- `profiles` - Extends Supabase auth.users (id, username, full_name, avatar_url, avatar_color, bio, updated_at)
 - `lego_sets` - Cached set data from Rebrickable API (set_num PK, name, year, theme_id, num_parts, img_url)
 - `themes` - Lego theme hierarchy (id PK, name, parent_id → self-referential for sub-themes)
-- `user_sets` - Join table tracking user collections (id, user_id → profiles, set_num → lego_sets, quantity, notes, created_at)
+- `user_sets` - Join table tracking user collections (id, user_id → profiles, set_num → lego_sets, quantity, notes, collection_type, created_at)
+- `user_favorites` - User's favorite sets, max 4 (id, user_id → profiles, set_num → lego_sets, created_at)
+- `follows` - Social follow relationships (id, follower_id → profiles, following_id → profiles, created_at)
 
 **Key Relationships:**
 - `user_sets.user_id` → `profiles.id` (cascade delete)
 - `user_sets.set_num` → `lego_sets.set_num` (cascade delete)
+- `user_favorites.user_id` → `profiles.id` (cascade delete)
+- `user_favorites.set_num` → `lego_sets.set_num` (cascade delete)
+- `follows.follower_id` → `profiles.id` (cascade delete)
+- `follows.following_id` → `profiles.id` (cascade delete)
 - `lego_sets.theme_id` → `themes.id`
 - `themes.parent_id` → `themes.id` (self-referential for theme hierarchy)
-- Unique constraint on (user_id, set_num) prevents duplicate entries
+- Unique constraint on (user_id, set_num) in user_sets prevents duplicate entries
+- Unique constraint on (user_id, set_num) in user_favorites prevents duplicate favorites
+- Unique constraint on (follower_id, following_id) in follows prevents duplicate follows
 
 **Row Level Security (RLS):**
-- Profiles: Public read, users update own
+- Profiles: Public read, users insert/update own
 - Lego sets: Public read (cached data)
 - User sets: Full CRUD only for own records (`auth.uid() = user_id`)
+- User favorites: Full CRUD only for own records (`auth.uid() = user_id`)
+- Follows: Select all, insert/delete only for own follower_id
+
+**Migrations (`/supabase/migrations`):**
+- `001_create_user_favorites.sql` - Creates user_favorites table with RLS policies
+- `002_create_follows.sql` - Creates follows table with RLS policies
+- `003_profiles_insert_policy.sql` - Adds insert policy for profiles table
+- `004_add_profile_fields.sql` - Adds avatar_color and bio fields to profiles
+- `get_popular_sets.sql` - PostgreSQL function for sorting sets by popularity (owner count)
 
 ## Environment Variables
 
@@ -113,6 +141,9 @@ npx shadcn@latest add <component-name>
 ```
 
 Path alias `@/*` maps to project root.
+
+**Custom UI Components:**
+- `sonner.tsx` - Toast notifications wrapper with custom styling for the Toaster component
 
 ## BrickBox Design System
 
@@ -142,7 +173,8 @@ The application uses a custom design system based on the BrickBox theme with Leg
 - `navigation.ts` - `NavItem` (label, href, icon, isActive?)
 - `feed.ts` - `FeedPost` (id, user, type, actionText, timeAgo, imageUrl, likes, comments, rating?, topComment?), `Story` (id, username, avatarUrl, isAddStory, hasUnviewed), `TrendingSet` (setNum, name, thumbnailUrl, postCount), `SuggestedUser` (id, username, avatarUrl), `PostType` ("build" | "review" | "haul" | "moc")
 - `explore.ts` - `ThemeCategory` (id, label), `DiscoverySet` (setNum, name, numParts, setImgUrl, theme, year, ownerCount?), `OrderByOption` ("newest" | "oldest" | "most-popular")
-- `vault.ts` - `VaultSet` (setNum, name, year, numParts, setImgUrl, price, status), `VaultStats` (totalValue, totalPieces, uniqueThemes), `VaultSetStatus` ("built" | "in-box" | "missing-parts" | "for-sale"), `VaultViewMode` ("grid" | "list")
+- `vault.ts` - `VaultSet` (setNum, name, year, numParts, setImgUrl, price, themeName, collectionType, isFavorite, status?), `VaultStats` (totalValue, totalPieces, uniqueThemes), `VaultSetStatus` ("built" | "in-box" | "missing-parts" | "for-sale"), `VaultViewMode` ("grid" | "list"), `CollectionStats` (totalValue, totalPieces, setsOwned), `WishlistStats` (estimatedCost, targetBricks, savedSets)
+- `social.ts` - `FollowRelationship` (id, followerId, followingId, createdAt), `SuggestedUserWithFollowStatus` (id, username, avatarUrl, isFollowing), `FollowCounts` (followers, following)
 - `supabase.ts` - Auto-generated Supabase database types
 
 ## Mock Data (`/lib/mockdata.ts`)
@@ -152,7 +184,7 @@ Development mock data exports:
 - `mockUserStats` - User statistics (setsCount, piecesCount, rank, rankNumber, vaultValue)
 - `mockFavoriteSets` - Array of 4 favorite set images for profile display
 - `mockMilestones` - Array of 5 achievement milestones (100k Bricks, 10 Years, Designer, Top 100, Verified)
-- `mockNavItems` - Sidebar navigation items with icons (Home, Explore, Vault, Profile)
+- `mockNavItems` - Sidebar navigation items with icons (Home, Explore, Vault, Profile, Settings)
 - `mockLegoSets` - Array of 6 sample Lego sets with prices
 - `mockStories` - Array of 5 story items (1 "Add Build" + 4 user stories, some viewed/unviewed)
 - `mockFeedPosts` - Array of 2 feed posts (build addition + review with rating and comment)
@@ -161,7 +193,7 @@ Development mock data exports:
 - `mockThemeCategories` - Array of 8 theme filter categories (All, Star Wars, Technic, Icons, Ideas, Architecture, Marvel, Harry Potter)
 - `mockDiscoverySets` - Array of 8 discovery catalog sets with theme tags
 - `mockVaultStats` - Vault statistics (totalValue, totalPieces, uniqueThemes)
-- `mockVaultSets` - Array of 4 vault sets (Millennium Falcon, Eiffel Tower, Titanic, Lion Knights' Castle)
+- `mockVaultSets` - Array of 4 vault sets with themeName, collectionType, and isFavorite fields (Millennium Falcon, Eiffel Tower, Titanic, Lion Knights' Castle)
 
 ## Layout
 
@@ -177,7 +209,8 @@ Development mock data exports:
 | Component | Description |
 |-----------|-------------|
 | `legoflex-logo.tsx` | LegoFlex Puzzle icon logo component |
-| `sidebar.tsx` | Desktop sidebar with nav items, Post Build CTA, user footer. Uses `usePathname()` for active state |
+| `sidebar.tsx` | Desktop sidebar with nav items, Post Build CTA, user footer with color avatar. Uses `usePathname()` for active state |
+| `sidebar-wrapper.tsx` | Server component wrapper that fetches current user and passes to Sidebar |
 | `mobile-header.tsx` | Mobile-only sticky header with logo and hamburger menu |
 | `footer.tsx` | Brand footer with LegoFlex logo, copyright, and Privacy/Terms/Help links |
 | `index.ts` | Barrel export for all shared components |
@@ -227,12 +260,26 @@ Page-specific components for the vault/collection page:
 
 | Component | Description |
 |-----------|-------------|
-| `vault-header.tsx` | Header with search input |
-| `vault-filters.tsx` | Theme/status/view-mode filter controls with dynamic theme loading |
-| `vault-card.tsx` | Set card for vault display with selection checkbox |
-| `vault-grid.tsx` | Responsive grid of vault cards |
-| `vault-bulk-actions.tsx` | Bottom sticky action bar for bulk operations (wishlist, remove) with loading states |
+| `vault-stats-hero.tsx` | Hero section with collection/wishlist stats (value, pieces, sets count) |
+| `vault-toolbar.tsx` | Search input and view mode toggle controls |
+| `collection-tabs.tsx` | Tab switcher between Collection and Wishlist views with counts |
+| `vault-card.tsx` | Set card with selection checkbox, favorite heart icon (max 4), year badge |
+| `vault-grid.tsx` | Responsive grid of vault cards with favorite state |
+| `vault-bulk-actions.tsx` | Bottom sticky action bar for bulk operations (move to wishlist/collection, remove) with loading states |
 | `index.ts` | Barrel export for all vault components |
+
+## Settings Components (`/components/settings`)
+
+Page-specific components for the settings page:
+
+| Component | Description |
+|-----------|-------------|
+| `settings-section.tsx` | Section wrapper with title label |
+| `settings-link-item.tsx` | Navigation link item with icon, title, description, and chevron |
+| `settings-toggle-item.tsx` | Toggle switch item with icon, title, and description |
+| `settings-integration-card.tsx` | Integration card for external services (e.g., Rebrickable API) |
+| `settings-sign-out.tsx` | Sign out button with confirmation |
+| `index.ts` | Barrel export for all settings components |
 
 ## Auth Components (`/components/auth`)
 
@@ -244,17 +291,21 @@ Authentication form components:
 | `sign-up-form.tsx` | Registration form with password confirmation |
 | `forgot-password-form.tsx` | Password reset request form |
 | `update-password-form.tsx` | New password form for reset flow |
+| `onboarding-form.tsx` | New user profile setup form (username, bio, avatar color) |
+| `avatar-selector.tsx` | Color picker for avatar background (8 preset colors), includes `getAvatarColor` helper |
 | `auth-button.tsx` | Server component showing login/logout based on session |
 | `logout-button.tsx` | Client logout button with redirect |
 | `index.ts` | Barrel export for all auth components |
 
 ## Routes
 
-- `/` - Homepage social feed with stories carousel, posts, trending sets, suggested collectors
-- `/explore` - Discovery catalog with real Lego sets, search, theme filtering, sort options (newest/oldest/most-popular), and add-to-vault functionality
-- `/profile` - User Digital ID page with avatar, social stats, favorites grid, bio, vault stats, milestones
-- `/vault` - User's Lego collection with search, theme/status filters, grid/list view modes, bulk selection, and remove operations
+- `/` - Homepage social feed with stories carousel, posts, trending sets, suggested collectors with follow buttons
+- `/explore` - Discovery catalog with real Lego sets, search, theme filtering, sort options (newest/oldest/most-popular), add-to-collection/wishlist functionality
+- `/profile` - User Digital ID page with real data: avatar, follow counts, favorites grid (from user_favorites), bio, vault stats, milestones
+- `/vault` - User's Lego collection with Collection/Wishlist tabs, search, grid/list view modes, bulk selection, move between tabs, favorites (max 4), and remove operations
+- `/settings` - User settings page with account, collection, appearance, integrations, and system sections
 - `/auth/*` - Authentication pages (no sidebar)
+- `/auth/onboarding` - New user profile setup (username, bio, avatar color) after email confirmation
 
 ## Adding New Features
 
@@ -273,19 +324,57 @@ Authentication form components:
 
 ## Recent Features
 
-**Vault Page (Latest):**
-- Theme filtering with dynamic theme loading from user's collection
-- Bulk selection of sets with multi-select capability
-- Bulk remove operation with loading states and optimistic UI updates
-- Client-side state management via `vault-client.tsx`
-- Server actions for all vault CRUD operations (add, remove, update quantity)
-- Router refresh pattern for data synchronization after mutations
+**Onboarding Flow (Latest):**
+- New user onboarding at `/auth/onboarding` after email confirmation
+- Profile setup form: username, bio, avatar color selection
+- 8 preset avatar colors with visual picker
+- Server-side profile validation and creation
+- Automatic redirect to home after completion
+
+**Settings Page:**
+- Account settings (edit profile, password & security)
+- Collection settings (profile visibility, default view)
+- Appearance settings (theme selection)
+- Integrations section (Rebrickable API connection placeholder)
+- System settings (email notifications)
+- Sign out and delete account options
+
+**Wishlist System:**
+- Collection tabs to switch between "Collection" and "Wishlist" views
+- Add sets to collection or wishlist from explore page
+- Move sets between collection and wishlist
+- Separate stats for collection (value, pieces, sets owned) vs wishlist (estimated cost, target bricks, saved sets)
+- Bulk actions: move to wishlist, move to collection, remove
+
+**Favorites Functionality:**
+- Heart icon on vault cards to mark favorites
+- Maximum 4 favorites enforced server-side
+- Profile page displays real favorite sets from `user_favorites` table
+- Toast notifications for favorites actions (using shadcn/sonner)
+
+**Social Features:**
+- `follows` table with follower/following relationships
+- Follow/unfollow buttons on suggested collectors
+- Real follower/following counts on profile
+- Suggested users with follow status in right sidebar
+
+**Vault UI Refactoring:**
+- Replaced header/filters with stats hero and toolbar
+- `VaultStatsHero` shows collection or wishlist stats based on active tab
+- `VaultToolbar` has search input and view mode toggle
+- `CollectionTabs` switches between Collection and Wishlist with counts
+- Vault cards show year badge and favorite heart icon
+
+**Profile Page Updates:**
+- Real data fetching for user profile, stats, and favorites
+- Real follower/following counts from `follows` table
+- Favorites grid populated from `user_favorites` table
 
 **Explore Page:**
 - Real Lego sets fetched from Supabase `lego_sets` table
 - Theme filtering with `themes` table relationship
 - Sort by newest/oldest release year or most popular (by owner count)
-- Add sets directly to vault from explore page
+- Add sets directly to collection or wishlist from explore page
 - User collection context to show which sets are already owned
 - Search functionality across set names
 
@@ -294,3 +383,4 @@ Authentication form components:
 - Client components use `router.refresh()` after mutations to re-fetch server data
 - Server actions handle authentication and database operations
 - Query functions in `lib/queries/` encapsulate complex joins and transformations
+- Commands layer (`lib/commands/`) handles write operations with proper error handling

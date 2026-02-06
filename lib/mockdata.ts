@@ -69,6 +69,7 @@ export const mockNavItems: NavItem[] = [
   { label: "Explore", href: "/explore", icon: "compass" },
   { label: "Vault", href: "/vault", icon: "vault" },
   { label: "Profile", href: "/profile", icon: "user" },
+  { label: "Settings", href: "/settings", icon: "settings" },
 ];
 
 export const mockLegoSets: LegoSet[] = [

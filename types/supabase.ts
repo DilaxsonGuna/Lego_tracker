@@ -1,4 +1,4 @@
-type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      follows: {
+        Row: {
+          created_at: string | null
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string | null
+          follower_id?: string
+          following_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "follows_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "follows_following_id_fkey"
+            columns: ["following_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lego_sets: {
         Row: {
           img_url: string | null
@@ -52,22 +88,31 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          bio: string | null
+          date_of_birth: string | null
           full_name: string | null
           id: string
+          location: string | null
           updated_at: string | null
           username: string | null
         }
         Insert: {
           avatar_url?: string | null
+          bio?: string | null
+          date_of_birth?: string | null
           full_name?: string | null
           id: string
+          location?: string | null
           updated_at?: string | null
           username?: string | null
         }
         Update: {
           avatar_url?: string | null
+          bio?: string | null
+          date_of_birth?: string | null
           full_name?: string | null
           id?: string
+          location?: string | null
           updated_at?: string | null
           username?: string | null
         }
@@ -99,33 +144,69 @@ export type Database = {
           },
         ]
       }
+      user_favorites: {
+        Row: {
+          created_at: string | null
+          id: string
+          set_num: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          set_num: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          set_num?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_favorites_set_num_fkey"
+            columns: ["set_num"]
+            isOneToOne: false
+            referencedRelation: "lego_sets"
+            referencedColumns: ["set_num"]
+          },
+          {
+            foreignKeyName: "user_favorites_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_sets: {
         Row: {
+          collection_type: string
           created_at: string | null
           id: string
           notes: string | null
           quantity: number | null
           set_num: string
           user_id: string
-          collection_type: string
         }
         Insert: {
+          collection_type?: string
           created_at?: string | null
           id?: string
           notes?: string | null
           quantity?: number | null
           set_num: string
           user_id: string
-          collection_type?: string
         }
         Update: {
+          collection_type?: string
           created_at?: string | null
           id?: string
           notes?: string | null
           quantity?: number | null
           set_num?: string
           user_id?: string
-          collection_type?: string
         }
         Relationships: [
           {
@@ -149,6 +230,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_popular_sets: {
+        Args: {
+          p_limit?: number
+          p_offset?: number
+          p_search?: string
+          p_theme_ids?: number[]
+        }
+        Returns: {
+          img_url: string
+          name: string
+          num_parts: number
+          owner_count: number
+          set_num: string
+          theme_name: string
+          year: number
+        }[]
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
     }

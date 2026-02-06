@@ -21,7 +21,7 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
     username: data.username ?? "",
     fullName: data.full_name ?? "",
     avatarUrl: data.avatar_url ?? "",
-    bio: "",
+    bio: data.bio ?? "",
     isVerified: false,
     role: "Collector",
     isOnline: true,

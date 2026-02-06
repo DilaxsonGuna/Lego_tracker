@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Compass, Store, User, Plus, Lock } from "lucide-react";
+import { Home, Compass, Store, User, Plus, Lock, Settings } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ const iconMap: Record<string, LucideIcon> = {
   vault: Lock,
   store: Store,
   user: User,
+  settings: Settings,
 };
 
 interface SidebarUser {
