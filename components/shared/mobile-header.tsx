@@ -19,7 +19,7 @@ export function MobileHeader({ className }: MobileHeaderProps) {
           LegoFlex
         </h2>
       </div>
-      <Button variant="ghost" size="icon" className="text-foreground">
+      <Button variant="ghost" size="icon" className="text-foreground" aria-label="Open menu">
         <Menu className="size-6" />
       </Button>
     </header>

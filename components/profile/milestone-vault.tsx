@@ -33,9 +33,12 @@ export function MilestoneVault({ milestones }: MilestoneVaultProps) {
             </span>
           </div>
         ))}
-        <div className="flex flex-col items-center justify-center p-4 rounded-xl border border-dashed border-border hover:border-muted-foreground transition-colors cursor-pointer group">
+        <button
+          className="flex flex-col items-center justify-center p-4 rounded-xl border border-dashed border-border hover:border-muted-foreground transition-colors cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          aria-label="Add milestone"
+        >
           <Plus className="size-5 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
-        </div>
+        </button>
       </div>
     </div>
   );

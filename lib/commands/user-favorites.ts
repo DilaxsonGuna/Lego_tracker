@@ -3,15 +3,19 @@ import { createClient } from "@/lib/supabase/server";
 /**
  * Add a set to user's favorites
  */
-export async function addUserFavorite(userId: string, setNum: string) {
+export async function addUserFavorite(setNum: string) {
   const supabase = await createClient();
 
-  const { error } = await supabase
-    .from("user_favorites")
-    .insert({
-      user_id: userId,
-      set_num: setNum,
-    });
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  const { error } = await supabase.from("user_favorites").insert({
+    user_id: user.id,
+    set_num: setNum,
+  });
 
   if (error) return { error: error.message };
   return { success: true };
@@ -20,13 +24,19 @@ export async function addUserFavorite(userId: string, setNum: string) {
 /**
  * Remove a set from user's favorites
  */
-export async function removeUserFavorite(userId: string, setNum: string) {
+export async function removeUserFavorite(setNum: string) {
   const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
 
   const { error } = await supabase
     .from("user_favorites")
     .delete()
-    .eq("user_id", userId)
+    .eq("user_id", user.id)
     .eq("set_num", setNum);
 
   if (error) return { error: error.message };

@@ -12,6 +12,7 @@ export interface VaultSet {
   themeName: string;
   collectionType: CollectionTab;
   isFavorite: boolean;
+  status?: VaultSetStatus;
 }
 
 export interface VaultStats {
@@ -21,3 +22,15 @@ export interface VaultStats {
 }
 
 export type VaultViewMode = "grid" | "list";
+
+export interface CollectionStats {
+  totalValue: string;
+  totalPieces: string;
+  setsOwned: number;
+}
+
+export interface WishlistStats {
+  estimatedCost: string;
+  targetBricks: string;
+  savedSets: number;
+}

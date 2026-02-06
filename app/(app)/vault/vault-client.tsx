@@ -109,7 +109,9 @@ export function VaultPageClient({
 
       const errors = results.filter((r) => r.error);
       if (errors.length > 0) {
-        console.error(`Failed to move ${errors.length} set(s)`);
+        toast.error(`Failed to move ${errors.length} set(s)`);
+      } else {
+        toast.success("Sets moved to collection");
       }
 
       setSelectedSets(new Set());
@@ -128,7 +130,9 @@ export function VaultPageClient({
 
       const errors = results.filter((r) => r.error);
       if (errors.length > 0) {
-        console.error(`Failed to remove ${errors.length} set(s)`);
+        toast.error(`Failed to remove ${errors.length} set(s)`);
+      } else {
+        toast.success("Sets removed from vault");
       }
 
       setSelectedSets(new Set());

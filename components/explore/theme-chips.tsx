@@ -20,7 +20,7 @@ export function ThemeChips({ categories, activeId, onSelect }: ThemeChipsProps) 
           key={cat.id}
           onClick={() => onSelect(cat.id)}
           className={cn(
-            "flex-shrink-0 h-10 px-4 rounded-xl font-medium text-sm transition-all whitespace-nowrap",
+            "flex-shrink-0 h-10 px-4 rounded-xl font-medium text-sm transition-all whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
             cat.id === activeId
               ? "bg-primary text-primary-foreground font-bold shadow-sm"
               : "bg-card border border-border hover:border-primary/50 text-primary"

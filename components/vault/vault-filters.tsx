@@ -57,7 +57,9 @@ export function VaultFilters({
         <div className="ml-auto flex items-center bg-card rounded-lg p-1 border border-border">
           <button
             onClick={() => onViewModeChange("grid")}
-            className={`flex items-center justify-center p-1.5 rounded transition-colors ${
+            aria-label="Grid view"
+            aria-pressed={viewMode === "grid"}
+            className={`flex items-center justify-center p-1.5 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
               viewMode === "grid"
                 ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:text-foreground"
@@ -67,7 +69,9 @@ export function VaultFilters({
           </button>
           <button
             onClick={() => onViewModeChange("list")}
-            className={`flex items-center justify-center p-1.5 rounded transition-colors ${
+            aria-label="List view"
+            aria-pressed={viewMode === "list"}
+            className={`flex items-center justify-center p-1.5 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
               viewMode === "list"
                 ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:text-foreground"

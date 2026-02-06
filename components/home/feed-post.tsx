@@ -46,7 +46,10 @@ export function FeedPost({ post }: FeedPostProps) {
             </p>
           </div>
         </div>
-        <button className="text-muted-foreground hover:text-foreground transition-colors">
+        <button
+          className="text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
+          aria-label="More options"
+        >
           <MoreHorizontal className="size-5" />
         </button>
       </div>
@@ -83,10 +86,16 @@ export function FeedPost({ post }: FeedPostProps) {
               {formatCount(post.comments)} Comments
             </span>
           </button>
-          <button className="group text-muted-foreground hover:text-foreground transition-colors ml-auto">
+          <button
+            className="group text-muted-foreground hover:text-foreground transition-colors ml-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
+            aria-label="Share post"
+          >
             <Share2 className="size-6 group-hover:text-green-400 transition-colors" />
           </button>
-          <button className="group text-muted-foreground hover:text-foreground transition-colors">
+          <button
+            className="group text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
+            aria-label="Bookmark post"
+          >
             <Bookmark className="size-6 group-hover:text-yellow-400 transition-colors" />
           </button>
         </div>

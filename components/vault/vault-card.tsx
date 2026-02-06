@@ -64,11 +64,13 @@ export function VaultCard({ set, isSelected, onToggleSelect, isFavorite, onToggl
           <span className="bg-black/60 backdrop-blur-md text-[10px] font-bold px-2 py-0.5 rounded text-white border border-white/10">
             {set.setNum}
           </span>
-          <span
-            className={`backdrop-blur-md text-[10px] font-bold px-2 py-0.5 rounded uppercase ${STATUS_STYLES[set.status]}`}
-          >
-            {STATUS_LABELS[set.status]}
-          </span>
+          {set.status && (
+            <span
+              className={`backdrop-blur-md text-[10px] font-bold px-2 py-0.5 rounded uppercase ${STATUS_STYLES[set.status]}`}
+            >
+              {STATUS_LABELS[set.status]}
+            </span>
+          )}
         </div>
       </div>
 

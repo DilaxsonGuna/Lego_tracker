@@ -56,7 +56,10 @@ export function VaultHeader({ stats, activeTab, onSearch }: VaultHeaderProps) {
               onChange={(e) => onSearch(e.target.value)}
             />
           </label>
-          <button className="flex h-9 w-9 items-center justify-center rounded-lg bg-card text-muted-foreground hover:text-foreground transition-colors">
+          <button
+            className="flex h-9 w-9 items-center justify-center rounded-lg bg-card text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            aria-label="Vault settings"
+          >
             <Settings className="size-5" />
           </button>
         </div>

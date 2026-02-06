@@ -82,7 +82,7 @@ export async function getDiscoverySets({
     // Standard date-based sorting
     const ascending = orderBy === "oldest";
     const { data, error } = await query
-      .order("year", { ascending, nullsLast: true })
+      .order("year", { ascending, nullsFirst: !ascending })
       .order("set_num", { ascending: true })
       .range(offset, offset + PAGE_SIZE - 1);
 

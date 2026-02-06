@@ -178,7 +178,7 @@ export async function toggleFavorite(setNum: string) {
 
   if (isFavorited) {
     // Remove from favorites
-    const result = await removeUserFavorite(user.id, setNum);
+    const result = await removeUserFavorite(setNum);
     if (result.error) return { error: result.error };
     return { success: true };
   } else {
@@ -189,7 +189,7 @@ export async function toggleFavorite(setNum: string) {
     }
 
     // Add to favorites
-    const result = await addUserFavorite(user.id, setNum);
+    const result = await addUserFavorite(setNum);
     if (result.error) return { error: result.error };
     return { success: true };
   }

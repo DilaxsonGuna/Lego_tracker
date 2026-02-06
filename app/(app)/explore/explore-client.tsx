@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, useTransition } from "react";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { ExploreHeader, DiscoveryGrid } from "@/components/explore";
 import { Button } from "@/components/ui/button";
 import { fetchSets, addSetToCollection, removeSetFromCollection } from "./actions";
@@ -109,7 +110,7 @@ export function ExplorePageClient({
         next.delete(setNum);
         return next;
       });
-      console.error("Failed to add to wishlist:", result.error);
+      toast.error("Failed to add to wishlist");
     }
   }, []);
 
@@ -141,7 +142,7 @@ export function ExplorePageClient({
         next.delete(setNum);
         return next;
       });
-      console.error("Failed to add to collection:", result.error);
+      toast.error("Failed to add to collection");
     }
   }, []);
 
@@ -177,7 +178,7 @@ export function ExplorePageClient({
           next.set(setNum, currentType);
           return next;
         });
-        console.error("Failed to remove from vault:", result.error);
+        toast.error("Failed to remove from vault");
       }
     },
     [userSets]
