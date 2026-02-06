@@ -4,9 +4,9 @@ import { useState, useMemo, useCallback } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import {
-  VaultHeader,
+  VaultToolbar,
+  VaultStatsHero,
   CollectionTabs,
-  VaultFilters,
   VaultGrid,
   VaultBulkActions,
 } from "@/components/vault";
@@ -144,20 +144,9 @@ export function VaultPageClient({
 
   return (
     <main className="flex-1 flex flex-col min-h-0 stud-bg bg-fixed">
-      <VaultHeader
-        stats={activeTab === "collection" ? collectionStats : wishlistStats}
-        activeTab={activeTab}
+      {/* Sticky toolbar - search + filters */}
+      <VaultToolbar
         onSearch={setSearchQuery}
-      />
-
-      <CollectionTabs
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        collectionCount={collectionCount}
-        wishlistCount={wishlistCount}
-      />
-
-      <VaultFilters
         themes={themes}
         themeFilter={themeFilter}
         viewMode={viewMode}
@@ -165,14 +154,32 @@ export function VaultPageClient({
         onViewModeChange={setViewMode}
       />
 
-      <div className="flex-1 overflow-y-auto p-6 md:px-8 pb-20">
-        <div className="mx-auto max-w-7xl">
-          <VaultGrid
-            sets={filteredSets}
-            selectedSets={selectedSets}
-            onToggleSelect={toggleSelect}
-            onToggleFavorite={handleToggleFavorite}
-          />
+      {/* Scrollable content area */}
+      <div className="flex-1 overflow-y-auto">
+        {/* Stats hero - scrolls with content */}
+        <VaultStatsHero
+          stats={activeTab === "collection" ? collectionStats : wishlistStats}
+          activeTab={activeTab}
+        />
+
+        {/* Sticky tabs - sticks to top of scroll area */}
+        <CollectionTabs
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          collectionCount={collectionCount}
+          wishlistCount={wishlistCount}
+        />
+
+        {/* Grid */}
+        <div className="px-6 md:px-8 pb-24">
+          <div className="mx-auto max-w-7xl">
+            <VaultGrid
+              sets={filteredSets}
+              selectedSets={selectedSets}
+              onToggleSelect={toggleSelect}
+              onToggleFavorite={handleToggleFavorite}
+            />
+          </div>
         </div>
       </div>
 

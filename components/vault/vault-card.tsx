@@ -29,7 +29,7 @@ export function VaultCard({ set, isSelected, onToggleSelect, isFavorite, onToggl
   return (
     <div className="group relative flex flex-col rounded-xl bg-card border border-border transition-all hover:border-primary/50 overflow-hidden">
       {/* Checkbox */}
-      <div className="absolute top-3 left-3 z-20">
+      <div className="absolute top-3 left-3 z-10">
         <input
           type="checkbox"
           checked={isSelected}
@@ -44,7 +44,7 @@ export function VaultCard({ set, isSelected, onToggleSelect, isFavorite, onToggl
           e.stopPropagation();
           onToggleFavorite(set.setNum);
         }}
-        className="absolute top-3 right-3 z-20 p-2 rounded-full bg-black/20 hover:bg-black/50 backdrop-blur-sm transition-all hover:scale-110"
+        className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/20 hover:bg-black/50 backdrop-blur-sm transition-all hover:scale-110"
         aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
       >
         <Heart

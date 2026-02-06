@@ -1,6 +1,6 @@
-export { VaultHeader } from "./vault-header";
+export { VaultToolbar } from "./vault-toolbar";
+export { VaultStatsHero } from "./vault-stats-hero";
 export { CollectionTabs } from "./collection-tabs";
-export { VaultFilters } from "./vault-filters";
 export { VaultCard } from "./vault-card";
 export { VaultGrid } from "./vault-grid";
 export { VaultBulkActions } from "./vault-bulk-actions";
