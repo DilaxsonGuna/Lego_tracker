@@ -1,18 +1,76 @@
+"use client";
+
+import { useOptimistic, useTransition } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import type { TrendingSet, SuggestedUser } from "@/types/feed";
+import { toggleFollow } from "@/app/(app)/actions";
+import type { TrendingSet } from "@/types/feed";
+import type { SuggestedUserWithFollowStatus } from "@/types/social";
 
 interface RightSidebarProps {
   trendingSets: TrendingSet[];
-  suggestedUsers: SuggestedUser[];
+  suggestedUsers: SuggestedUserWithFollowStatus[];
+}
+
+interface FollowButtonProps {
+  userId: string;
+  isFollowing: boolean;
+  onToggle: (userId: string, newState: boolean) => void;
+}
+
+function FollowButton({ userId, isFollowing, onToggle }: FollowButtonProps) {
+  const [isPending, startTransition] = useTransition();
+
+  const handleClick = () => {
+    // Optimistically update the UI
+    onToggle(userId, !isFollowing);
+
+    startTransition(async () => {
+      const result = await toggleFollow(userId, isFollowing);
+
+      // If there was an error, revert the optimistic update
+      if (result.error) {
+        onToggle(userId, isFollowing);
+      }
+    });
+  };
+
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={handleClick}
+      disabled={isPending}
+      className={`text-xs font-bold px-2 h-auto py-1 ${
+        isFollowing
+          ? "text-muted-foreground hover:text-foreground"
+          : "text-primary hover:text-foreground"
+      }`}
+    >
+      {isPending ? "..." : isFollowing ? "Following" : "Follow"}
+    </Button>
+  );
 }
 
 export function RightSidebar({
   trendingSets,
   suggestedUsers,
 }: RightSidebarProps) {
+  // Use optimistic state for suggested users
+  const [optimisticUsers, setOptimisticUsers] = useOptimistic(
+    suggestedUsers,
+    (state, { userId, isFollowing }: { userId: string; isFollowing: boolean }) =>
+      state.map((user) =>
+        user.id === userId ? { ...user, isFollowing } : user
+      )
+  );
+
+  const handleToggleFollow = (userId: string, newState: boolean) => {
+    setOptimisticUsers({ userId, isFollowing: newState });
+  };
+
   return (
     <aside className="hidden xl:flex flex-col w-80 flex-shrink-0 gap-8 py-2 sticky top-0 h-screen overflow-y-auto scrollbar-hide">
       {/* Search */}
@@ -67,7 +125,7 @@ export function RightSidebar({
           </h3>
         </div>
         <div className="space-y-4">
-          {suggestedUsers.map((user) => (
+          {optimisticUsers.map((user) => (
             <div key={user.id} className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Avatar className="size-8">
@@ -80,13 +138,11 @@ export function RightSidebar({
                   {user.username}
                 </span>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-primary text-xs font-bold hover:text-foreground px-2 h-auto py-1"
-              >
-                Follow
-              </Button>
+              <FollowButton
+                userId={user.id}
+                isFollowing={user.isFollowing}
+                onToggle={handleToggleFollow}
+              />
             </div>
           ))}
         </div>

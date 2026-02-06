@@ -8,26 +8,51 @@ import {
   ProfileFooter,
   StudPatternBg,
 } from "@/components/profile";
-import {
-  mockUser,
-  mockUserStats,
-  mockMilestones,
-} from "@/lib/mockdata";
-import { fetchFavoriteSets } from "./actions";
-import type { FavoriteSet } from "@/types/profile";
+import { mockMilestones } from "@/lib/mockdata";
+import { fetchProfile, fetchFavoriteSets, fetchUserStats } from "./actions";
 
 async function ProfileContent() {
-  const favoriteSets = await fetchFavoriteSets();
+  const [profile, favoriteSets, userStats] = await Promise.all([
+    fetchProfile(),
+    fetchFavoriteSets(),
+    fetchUserStats(),
+  ]);
+
+  // Fallback for users with no profile
+  const user = profile ?? {
+    id: "",
+    username: "Anonymous",
+    fullName: "",
+    avatarUrl: "",
+    bio: "",
+    isVerified: false,
+    role: "Collector",
+    isOnline: false,
+    followers: 0,
+    following: 0,
+    friends: 0,
+    interests: [],
+  };
+
+  // Fallback for users with no collection
+  const stats = userStats ?? {
+    setsCount: 0,
+    piecesCount: 0,
+    rank: "Newcomer",
+    rankNumber: 0,
+    vaultValue: "Coming Soon",
+  };
+
   return (
     <>
-      <ProfileHero user={mockUser} />
+      <ProfileHero user={user} />
 
       <FavoritesGrid favorites={favoriteSets} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2 space-y-8">
-          <ProfileBio user={mockUser} />
-          <ProfileStatsRow stats={mockUserStats} />
+          <ProfileBio user={user} />
+          <ProfileStatsRow stats={stats} />
         </div>
         <MilestoneVault milestones={mockMilestones} />
       </div>

@@ -2,21 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Home,
-  Compass,
-  Store,
-  User,
-  Plus,
-  MoreHorizontal,
-  Lock,
-} from "lucide-react";
+import { Home, Compass, Store, User, Plus, Lock } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { LegoFlexLogo } from "./legoflex-logo";
 import { NavItem } from "@/types/navigation";
-import { UserProfile } from "@/types/profile";
 import { cn } from "@/lib/utils";
 
 const iconMap: Record<string, LucideIcon> = {
@@ -27,9 +18,14 @@ const iconMap: Record<string, LucideIcon> = {
   user: User,
 };
 
+interface SidebarUser {
+  username: string;
+  avatarUrl: string;
+}
+
 interface SidebarProps {
   navItems: NavItem[];
-  user: UserProfile;
+  user: SidebarUser | null;
 }
 
 export function Sidebar({ navItems, user }: SidebarProps) {
@@ -76,25 +72,27 @@ export function Sidebar({ navItems, user }: SidebarProps) {
         </Button>
       </div>
 
-      <div className="mt-auto flex items-center gap-3 border-t border-border pt-6">
-        <Avatar className="size-10 ring-2 ring-surface-accent">
-          <AvatarImage src={user.avatarUrl} alt={user.username} />
-          <AvatarFallback>{user.username.charAt(0).toUpperCase()}</AvatarFallback>
-        </Avatar>
-        <div className="flex flex-col">
-          <span className="text-sm font-bold text-foreground">
-            @{user.username}
-          </span>
-          <span className="text-xs text-muted-foreground">{user.role}</span>
+      {user && (
+        <div className="mt-auto flex items-center gap-3 border-t border-border pt-6">
+          <Avatar
+            className="size-10 ring-2 ring-surface-accent"
+            style={{ backgroundColor: user.avatarUrl || "#3b82f6" }}
+          >
+            <AvatarFallback
+              style={{ backgroundColor: user.avatarUrl || "#3b82f6" }}
+              className="text-white font-bold"
+            >
+              {user.username.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col">
+            <span className="text-sm font-bold text-foreground">
+              @{user.username}
+            </span>
+            <span className="text-xs text-muted-foreground">Collector</span>
+          </div>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="ml-auto text-muted-foreground hover:text-foreground"
-        >
-          <MoreHorizontal className="size-5" />
-        </Button>
-      </div>
+      )}
     </aside>
   );
 }

@@ -6,6 +6,7 @@ import { LegoFlexLogo } from "./legoflex-logo";
 
 interface MobileHeaderProps {
   className?: string;
+  user?: { username: string; avatarUrl: string } | null;
 }
 
 export function MobileHeader({ className }: MobileHeaderProps) {

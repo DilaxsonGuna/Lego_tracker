@@ -43,3 +43,6 @@ next-env.d.ts
 
 # worktrees
 .trees
+
+# supabase
+.temp

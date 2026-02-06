@@ -4,3 +4,5 @@ export { ForgotPasswordForm } from "./forgot-password-form";
 export { UpdatePasswordForm } from "./update-password-form";
 export { AuthButton } from "./auth-button";
 export { LogoutButton } from "./logout-button";
+export { OnboardingForm } from "./onboarding-form";
+export { AvatarSelector, getAvatarColor } from "./avatar-selector";

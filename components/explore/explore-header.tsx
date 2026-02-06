@@ -55,7 +55,7 @@ export function ExploreHeader({
           </label>
         </div>
         <h2 className="hidden lg:block text-2xl font-black tracking-tight uppercase italic">
-          Discovery
+          Explore
         </h2>
       </div>
 
