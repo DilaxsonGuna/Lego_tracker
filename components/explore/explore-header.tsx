@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { Search, ArrowDownWideNarrow, Plus } from "lucide-react";
+import { Search, ArrowDownWideNarrow, Plus, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,13 +13,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ThemeChips } from "./theme-chips";
+import { ThemeFilterModal } from "./theme-filter-modal";
 import type { ThemeCategory, OrderByOption } from "@/types/explore";
 
 interface ExploreHeaderProps {
   categories: ThemeCategory[];
   topThemes: ThemeCategory[];
-  activeCategory: number | "all";
-  onCategoryChange: (id: number | "all") => void;
+  selectedThemes: number[];
+  onThemesChange: (ids: number[]) => void;
   onSearch: (query: string) => void;
   orderBy: OrderByOption;
   onOrderByChange: (orderBy: OrderByOption) => void;
@@ -34,14 +36,33 @@ const ORDER_BY_OPTIONS: { value: OrderByOption; label: string }[] = [
 export function ExploreHeader({
   categories,
   topThemes,
-  activeCategory,
-  onCategoryChange,
+  selectedThemes,
+  onThemesChange,
   onSearch,
   orderBy,
   onOrderByChange,
   hasUserThemes,
 }: ExploreHeaderProps) {
-  const activeThemeLabel = categories.find((c) => c.id === activeCategory)?.label ?? "All Themes";
+  const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
+
+  // Get button label based on selection
+  const getThemeButtonLabel = () => {
+    if (selectedThemes.length === 0) return "All Themes";
+    if (selectedThemes.length === 1) {
+      const theme = categories.find((c) => c.id === selectedThemes[0]);
+      return theme?.label ?? "1 theme";
+    }
+    return `${selectedThemes.length} themes`;
+  };
+
+  // Handle quick chip toggle
+  const handleChipToggle = (themeId: number) => {
+    if (selectedThemes.includes(themeId)) {
+      onThemesChange(selectedThemes.filter((id) => id !== themeId));
+    } else if (selectedThemes.length < 10) {
+      onThemesChange([...selectedThemes, themeId]);
+    }
+  };
 
   return (
     <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-md pt-6 pb-4 px-6 md:px-10 border-b border-border/50 flex flex-col gap-6">
@@ -65,24 +86,26 @@ export function ExploreHeader({
 
       {/* Row 2: Theme Filters & Order By */}
       <div className="flex flex-col xl:flex-row xl:items-center gap-4 justify-between">
-        {/* Left: Theme dropdown + chips */}
+        {/* Left: Theme filter button + chips */}
         <div className="flex items-center gap-3 overflow-hidden">
-          {/* All Themes Dropdown */}
-          <Select
-            value={String(activeCategory)}
-            onValueChange={(val) => onCategoryChange(val === "all" ? "all" : Number(val))}
+          {/* Theme Filter Button */}
+          <Button
+            onClick={() => setIsThemeModalOpen(true)}
+            className="h-10 px-4 rounded-xl bg-primary text-primary-foreground font-bold text-sm shadow-sm hover:brightness-110 transition-all flex-shrink-0"
           >
-            <SelectTrigger className="h-10 px-4 rounded-xl bg-primary text-primary font-bold text-sm shadow-sm hover:brightness-110 transition-all border-none">
-              <SelectValue placeholder="All Themes" />
-            </SelectTrigger>
-            <SelectContent>
-              {categories.map((cat) => (
-                <SelectItem key={cat.id} value={String(cat.id)}>
-                  {cat.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            {getThemeButtonLabel()}
+            <ChevronDown className="size-4 ml-2" />
+          </Button>
+
+          {/* Theme Filter Modal */}
+          <ThemeFilterModal
+            open={isThemeModalOpen}
+            onOpenChange={setIsThemeModalOpen}
+            themes={categories}
+            selectedThemeIds={selectedThemes}
+            onChange={onThemesChange}
+            maxThemes={10}
+          />
 
           {/* Divider */}
           <div className="h-6 w-px bg-border mx-1 flex-shrink-0" />
@@ -91,8 +114,9 @@ export function ExploreHeader({
           {hasUserThemes ? (
             <ThemeChips
               categories={topThemes}
-              activeId={activeCategory}
-              onSelect={onCategoryChange}
+              selectedIds={selectedThemes}
+              onToggle={handleChipToggle}
+              maxSelected={10}
             />
           ) : (
             <Link href="/settings/profile">

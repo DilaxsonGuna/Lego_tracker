@@ -25,7 +25,7 @@ export function ExplorePageClient({
   initialUserSets,
   hasUserThemes,
 }: ExplorePageClientProps) {
-  const [activeCategory, setActiveCategory] = useState<number | "all">("all");
+  const [selectedThemes, setSelectedThemes] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [orderBy, setOrderBy] = useState<OrderByOption>("most-popular");
@@ -61,20 +61,20 @@ export function ExplorePageClient({
       const results = await fetchSets({
         offset: 0,
         search: debouncedSearch || undefined,
-        themeId: activeCategory !== "all" ? activeCategory : undefined,
+        themeIds: selectedThemes.length > 0 ? selectedThemes : undefined,
         orderBy,
       });
       setSets(results);
       setHasMore(results.length >= PAGE_SIZE);
     });
-  }, [debouncedSearch, activeCategory, orderBy]);
+  }, [debouncedSearch, selectedThemes, orderBy]);
 
   const handleLoadMore = useCallback(() => {
     startTransition(async () => {
       const nextSets = await fetchSets({
         offset: sets.length,
         search: debouncedSearch || undefined,
-        themeId: activeCategory !== "all" ? activeCategory : undefined,
+        themeIds: selectedThemes.length > 0 ? selectedThemes : undefined,
         orderBy,
       });
       if (nextSets.length < PAGE_SIZE) {
@@ -82,7 +82,7 @@ export function ExplorePageClient({
       }
       setSets((prev) => [...prev, ...nextSets]);
     });
-  }, [sets.length, debouncedSearch, activeCategory, orderBy]);
+  }, [sets.length, debouncedSearch, selectedThemes, orderBy]);
 
   const handleAddToWishlist = useCallback(async (setNum: string) => {
     // Mark as pending
@@ -191,8 +191,8 @@ export function ExplorePageClient({
       <ExploreHeader
         categories={categories}
         topThemes={topThemes}
-        activeCategory={activeCategory}
-        onCategoryChange={setActiveCategory}
+        selectedThemes={selectedThemes}
+        onThemesChange={setSelectedThemes}
         onSearch={setSearchQuery}
         orderBy={orderBy}
         onOrderByChange={setOrderBy}

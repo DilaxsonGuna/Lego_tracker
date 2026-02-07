@@ -38,6 +38,7 @@ BEGIN
       p_search IS NULL
       OR ls.name ILIKE '%' || p_search || '%'
       OR ls.set_num ILIKE '%' || p_search || '%'
+      OR t.name ILIKE '%' || p_search || '%'
     )
     -- Theme filter (if provided)
     AND (

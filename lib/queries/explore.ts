@@ -6,65 +6,40 @@ import { PAGE_SIZE } from "@/lib/constants";
 interface GetDiscoverySetsParams {
   offset?: number;
   search?: string;
-  themeId?: number;
+  themeIds?: number[];
   orderBy?: OrderByOption;
 }
 
 export async function getDiscoverySets({
   offset = 0,
   search,
-  themeId,
+  themeIds: inputThemeIds,
   orderBy = "most-popular",
 }: GetDiscoverySetsParams = {}): Promise<DiscoverySet[]> {
   const supabase = await createClient();
 
-  // If filtering by theme, get the parent theme + all child theme IDs
-  let themeIds: number[] = [];
-  if (themeId !== undefined) {
+  // If filtering by themes, get the selected themes + all their child theme IDs
+  let allThemeIds: number[] = [];
+  if (inputThemeIds && inputThemeIds.length > 0) {
     const { data: childThemes } = await supabase
       .from("themes")
       .select("id")
-      .eq("parent_id", themeId);
+      .in("parent_id", inputThemeIds);
 
-    themeIds = [themeId, ...(childThemes?.map((t) => t.id) ?? [])];
+    allThemeIds = [...inputThemeIds, ...(childThemes?.map((t) => t.id) ?? [])];
   }
-
-  // Conditional query based on orderBy for performance optimization
-  let query;
 
   if (orderBy === "most-popular") {
-    // For popularity sort: include user_sets for owner count
-    query = supabase
-      .from("lego_sets")
-      .select("set_num, name, year, num_parts, img_url, themes(name), user_sets(user_id)");
-  } else {
-    // For date-based sorts: simpler query without user_sets
-    query = supabase
-      .from("lego_sets")
-      .select("set_num, name, year, num_parts, img_url, themes(name)");
-  }
-
-  if (search) {
-    query = query.or(`name.ilike.%${search}%,set_num.ilike.%${search}%`);
-  }
-
-  if (themeIds.length > 0) {
-    query = query.in("theme_id", themeIds);
-  }
-
-  // Conditional ordering based on sort option
-  if (orderBy === "most-popular") {
-    // Use RPC to call a Postgres function for efficient aggregation
+    // Use RPC for popularity sort with accent-insensitive search
     const { data, error } = await supabase.rpc("get_popular_sets", {
       p_offset: offset,
       p_limit: PAGE_SIZE,
       p_search: search || null,
-      p_theme_ids: themeIds.length > 0 ? themeIds : null,
+      p_theme_ids: allThemeIds.length > 0 ? allThemeIds : null,
     });
 
     if (error) {
       console.error("Most popular query error:", error);
-      // Fallback to empty array if function doesn't exist yet
       return [];
     }
 
@@ -80,22 +55,30 @@ export async function getDiscoverySets({
       ownerCount: row.owner_count ?? 0,
     }));
   } else {
-    // Standard date-based sorting
+    // Use RPC for date-based sorts with accent-insensitive search
     const ascending = orderBy === "oldest";
-    const { data, error } = await query
-      .order("year", { ascending, nullsFirst: !ascending })
-      .order("set_num", { ascending: true })
-      .range(offset, offset + PAGE_SIZE - 1);
+    const { data, error } = await supabase.rpc("search_sets", {
+      p_offset: offset,
+      p_limit: PAGE_SIZE,
+      p_search: search || null,
+      p_theme_ids: allThemeIds.length > 0 ? allThemeIds : null,
+      p_order_ascending: ascending,
+    });
 
-    if (error || !data) return [];
+    if (error) {
+      console.error("Search sets query error:", error);
+      return [];
+    }
 
-    return data.map((row) => ({
+    if (!data) return [];
+
+    return data.map((row: any) => ({
       setNum: row.set_num,
       name: row.name,
       year: row.year,
       numParts: row.num_parts ?? 0,
       setImgUrl: row.img_url ?? "",
-      theme: (row.themes as unknown as { name: string } | null)?.name ?? "",
+      theme: row.theme_name ?? "",
     }));
   }
 }
