@@ -127,9 +127,20 @@ const FEATURED_THEMES = [
   "City",
 ];
 
-export async function getFeaturedThemes(): Promise<ThemeCategory[]> {
+export async function getFeaturedThemes(userId?: string): Promise<ThemeCategory[]> {
   const supabase = await createClient();
 
+  // If user provided, try to get their themes first
+  if (userId) {
+    const { getUserThemes } = await import("./user-themes");
+    const userThemes = await getUserThemes(userId);
+
+    if (userThemes.length > 0) {
+      return userThemes;
+    }
+  }
+
+  // Fallback to hardcoded featured themes
   const { data, error } = await supabase
     .from("themes")
     .select("id, name")

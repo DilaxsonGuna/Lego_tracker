@@ -15,6 +15,8 @@ interface SettingsToggleItemProps {
   title: string;
   description: string;
   checked?: boolean;
+  onCheckedChange?: (checked: boolean) => void;
+  disabled?: boolean;
   isLast?: boolean;
 }
 
@@ -23,6 +25,8 @@ export function SettingsToggleItem({
   title,
   description,
   checked = false,
+  onCheckedChange,
+  disabled = false,
   isLast = false,
 }: SettingsToggleItemProps) {
   const Icon = iconMap[icon] || Eye;
@@ -42,7 +46,11 @@ export function SettingsToggleItem({
           <p className="text-sm text-muted-foreground">{description}</p>
         </div>
       </div>
-      <Switch defaultChecked={checked} />
+      <Switch
+        checked={checked}
+        onCheckedChange={onCheckedChange}
+        disabled={disabled}
+      />
     </div>
   );
 }

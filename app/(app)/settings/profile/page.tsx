@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { EditProfileForm } from "@/components/settings/edit-profile-form";
+import { getUserThemeIds, getPopularThemes } from "@/lib/queries/user-themes";
+import { getParentThemes } from "@/lib/queries/explore";
 
 async function getProfileData() {
   const supabase = await createClient();
@@ -13,17 +15,27 @@ async function getProfileData() {
     redirect("/auth/login");
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("username, bio, avatar_url, location")
-    .eq("id", user.id)
-    .single();
+  const [profileResult, userThemeIds, availableThemes, popularThemes] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("username, bio, avatar_url, location")
+      .eq("id", user.id)
+      .single(),
+    getUserThemeIds(user.id),
+    getParentThemes(),
+    getPopularThemes(10),
+  ]);
+
+  const profile = profileResult.data;
 
   return {
     username: profile?.username ?? "",
     bio: profile?.bio ?? "",
     avatarColor: profile?.avatar_url ?? "blue",
     location: profile?.location ?? "",
+    selectedThemeIds: userThemeIds,
+    availableThemes,
+    popularThemes,
   };
 }
 

@@ -45,6 +45,7 @@ export async function updateProfile(data: {
   avatarUrl?: string;
   bio?: string;
   location?: string;
+  themeIds?: number[];
 }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -64,6 +65,13 @@ export async function updateProfile(data: {
     .eq("id", user.id);
 
   if (error) return { error: error.message };
+
+  // Update themes if provided
+  if (data.themeIds !== undefined) {
+    const { setUserThemes } = await import("@/lib/commands/user-themes");
+    const themeResult = await setUserThemes(data.themeIds);
+    if (themeResult.error) return { error: themeResult.error };
+  }
 
   return { success: true };
 }

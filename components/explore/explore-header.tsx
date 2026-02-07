@@ -1,7 +1,9 @@
 "use client";
 
-import { Search, ArrowDownWideNarrow } from "lucide-react";
+import Link from "next/link";
+import { Search, ArrowDownWideNarrow, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -20,6 +22,7 @@ interface ExploreHeaderProps {
   onSearch: (query: string) => void;
   orderBy: OrderByOption;
   onOrderByChange: (orderBy: OrderByOption) => void;
+  hasUserThemes: boolean;
 }
 
 const ORDER_BY_OPTIONS: { value: OrderByOption; label: string }[] = [
@@ -36,6 +39,7 @@ export function ExploreHeader({
   onSearch,
   orderBy,
   onOrderByChange,
+  hasUserThemes,
 }: ExploreHeaderProps) {
   const activeThemeLabel = categories.find((c) => c.id === activeCategory)?.label ?? "All Themes";
 
@@ -83,12 +87,24 @@ export function ExploreHeader({
           {/* Divider */}
           <div className="h-6 w-px bg-border mx-1 flex-shrink-0" />
 
-          {/* Top Theme Quick Chips */}
-          <ThemeChips
-            categories={topThemes}
-            activeId={activeCategory}
-            onSelect={onCategoryChange}
-          />
+          {/* Top Theme Quick Chips or Add Themes Button */}
+          {hasUserThemes ? (
+            <ThemeChips
+              categories={topThemes}
+              activeId={activeCategory}
+              onSelect={onCategoryChange}
+            />
+          ) : (
+            <Link href="/settings/profile">
+              <Button
+                variant="outline"
+                className="rounded-xl gap-2 h-10 px-4 border-primary/30 bg-primary/5 text-primary hover:bg-primary/10"
+              >
+                <Plus className="size-4" />
+                Add Favorite Themes
+              </Button>
+            </Link>
+          )}
         </div>
 
         {/* Right: Order By & Filters */}

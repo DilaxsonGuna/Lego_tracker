@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { isUsernameAvailable } from "@/lib/queries/profile";
+import type { ThemeCategory } from "@/types/explore";
 
 export interface OnboardingResult {
   success?: boolean;
@@ -18,6 +19,7 @@ export async function createProfile(data: {
   bio?: string;
   location?: string;
   dateOfBirth?: string;
+  themeIds?: number[];
 }): Promise<OnboardingResult> {
   const supabase = await createClient();
   const {
@@ -75,6 +77,16 @@ export async function createProfile(data: {
     return { error: error.message };
   }
 
+  // Save theme preferences if provided
+  if (data.themeIds && data.themeIds.length > 0) {
+    const { setUserThemes } = await import("@/lib/commands/user-themes");
+    const themeResult = await setUserThemes(data.themeIds);
+    if (themeResult.error) {
+      // Theme save failed but profile was created - don't block onboarding
+      console.error("Failed to save themes:", themeResult.error);
+    }
+  }
+
   return { success: true };
 }
 
@@ -95,4 +107,26 @@ export async function checkUsernameAvailability(
 
   const available = await isUsernameAvailable(trimmed, user?.id);
   return { available };
+}
+
+export async function getAvailableThemes(): Promise<ThemeCategory[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("themes")
+    .select("id, name")
+    .is("parent_id", null)
+    .order("name", { ascending: true });
+
+  if (error || !data) return [];
+
+  return data.map((theme) => ({
+    id: theme.id,
+    label: theme.name,
+  }));
+}
+
+export async function getPopularThemesAction(): Promise<ThemeCategory[]> {
+  const { getPopularThemes } = await import("@/lib/queries/user-themes");
+  return getPopularThemes(10);
 }

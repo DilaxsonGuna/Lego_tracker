@@ -33,7 +33,7 @@ npm start        # Start production server
     - `vault-client.tsx` - Client component for interactivity and state management
     - `actions.ts` - Server actions (fetchVaultSets, fetchVaultStats, fetchVaultThemes, addSetToVault, removeSetFromVault, toggleFavorite, moveToWishlist, moveToCollection)
   - `settings/` - User settings page (`/settings`)
-    - `page.tsx` - Settings page with account, collection, appearance, integrations, system sections
+    - `page.tsx` - Settings page with account, collection, appearance, system sections
 - `/auth/*` - Authentication pages (login, sign-up, forgot-password, onboarding, etc.) — no sidebar
   - `onboarding/` - New user onboarding flow (`/auth/onboarding`)
     - `page.tsx` - Onboarding page
@@ -61,10 +61,12 @@ page.tsx → actions.ts → lib/queries/*.ts → Supabase
 - `profile.ts` - Profile queries (getUserProfile, getUserStats, getFavoriteSets, getFollowCounts)
 - `vault.ts` - Vault queries (getVaultSets, getVaultStats, getVaultThemes, getUserFavoriteSetNums)
 - `social.ts` - Social feature queries (getSuggestedUsersWithFollowStatus, getFollowCounts, isFollowing)
+- `user-themes.ts` - User theme preferences queries (getUserThemes, getUserThemeIds, getPopularThemes)
 
 **Commands Layer (`/lib/commands`)**
 - `user-sets.ts` - CRUD operations for user_sets table (addUserSet, deleteUserSet, getUserSetNums, updateUserSetCollection)
 - `user-favorites.ts` - CRUD operations for user_favorites table (addFavorite, removeFavorite, getUserFavoriteSetNums) with max 4 favorites limit
+- `user-themes.ts` - CRUD operations for user_themes table (setUserThemes, getUserThemesCount) with max 10 themes limit
 - `follows.ts` - Social follow operations (followUser, unfollowUser, isFollowing, getFollowCounts)
 - `index.ts` - Barrel export
 
@@ -80,7 +82,7 @@ page.tsx → actions.ts → lib/queries/*.ts → Supabase
 - `/explore` - Explore/Discovery page components
 - `/profile` - Profile page-specific components
 - `/vault` - Vault page-specific components
-- `/settings` - Settings page components (sections, link items, toggle items, integrations)
+- `/settings` - Settings page components (sections, link items, toggle items)
 
 **Authentication Flow**
 - Cookie-based auth via `@supabase/ssr`
@@ -92,10 +94,11 @@ page.tsx → actions.ts → lib/queries/*.ts → Supabase
 
 **Tables:**
 - `profiles` - Extends Supabase auth.users (id, username, full_name, avatar_url, avatar_color, bio, updated_at)
-- `lego_sets` - Cached set data from Rebrickable API (set_num PK, name, year, theme_id, num_parts, img_url)
+- `lego_sets` - Cached Lego set data (set_num PK, name, year, theme_id, num_parts, img_url)
 - `themes` - Lego theme hierarchy (id PK, name, parent_id → self-referential for sub-themes)
 - `user_sets` - Join table tracking user collections (id, user_id → profiles, set_num → lego_sets, quantity, notes, collection_type, created_at)
 - `user_favorites` - User's favorite sets, max 4 (id, user_id → profiles, set_num → lego_sets, created_at)
+- `user_themes` - User's favorite theme preferences, max 10 (id, user_id → profiles, theme_id → themes, display_order, created_at)
 - `follows` - Social follow relationships (id, follower_id → profiles, following_id → profiles, created_at)
 
 **Key Relationships:**
@@ -103,12 +106,15 @@ page.tsx → actions.ts → lib/queries/*.ts → Supabase
 - `user_sets.set_num` → `lego_sets.set_num` (cascade delete)
 - `user_favorites.user_id` → `profiles.id` (cascade delete)
 - `user_favorites.set_num` → `lego_sets.set_num` (cascade delete)
+- `user_themes.user_id` → `profiles.id` (cascade delete)
+- `user_themes.theme_id` → `themes.id` (cascade delete)
 - `follows.follower_id` → `profiles.id` (cascade delete)
 - `follows.following_id` → `profiles.id` (cascade delete)
 - `lego_sets.theme_id` → `themes.id`
 - `themes.parent_id` → `themes.id` (self-referential for theme hierarchy)
 - Unique constraint on (user_id, set_num) in user_sets prevents duplicate entries
 - Unique constraint on (user_id, set_num) in user_favorites prevents duplicate favorites
+- Unique constraint on (user_id, theme_id) in user_themes prevents duplicate theme preferences
 - Unique constraint on (follower_id, following_id) in follows prevents duplicate follows
 
 **Row Level Security (RLS):**
@@ -116,6 +122,7 @@ page.tsx → actions.ts → lib/queries/*.ts → Supabase
 - Lego sets: Public read (cached data)
 - User sets: Full CRUD only for own records (`auth.uid() = user_id`)
 - User favorites: Full CRUD only for own records (`auth.uid() = user_id`)
+- User themes: Full CRUD only for own records (`auth.uid() = user_id`)
 - Follows: Select all, insert/delete only for own follower_id
 
 **Migrations (`/supabase/migrations`):**
@@ -123,6 +130,7 @@ page.tsx → actions.ts → lib/queries/*.ts → Supabase
 - `002_create_follows.sql` - Creates follows table with RLS policies
 - `003_profiles_insert_policy.sql` - Adds insert policy for profiles table
 - `004_add_profile_fields.sql` - Adds avatar_color and bio fields to profiles
+- `005_create_user_themes.sql` - Creates user_themes table with RLS policies for theme preferences (max 10)
 - `get_popular_sets.sql` - PostgreSQL function for sorting sets by popularity (owner count)
 
 ## Environment Variables
@@ -213,7 +221,8 @@ Development mock data exports:
 | `sidebar-wrapper.tsx` | Server component wrapper that fetches current user and passes to Sidebar |
 | `mobile-header.tsx` | Mobile-only sticky header with logo and hamburger menu |
 | `footer.tsx` | Brand footer with LegoFlex logo, copyright, and Privacy/Terms/Help links |
-| `index.ts` | Barrel export for all shared components |
+| `theme-selector.tsx` | Reusable theme multi-select component with popular themes, "View More" modal with search, max 10 selection |
+| `index.ts` | Barrel export for all shared components (except ThemeSelector - import directly to avoid SSR issues) |
 
 ## Home Components (`/components/home`)
 
@@ -277,7 +286,6 @@ Page-specific components for the settings page:
 | `settings-section.tsx` | Section wrapper with title label |
 | `settings-link-item.tsx` | Navigation link item with icon, title, description, and chevron |
 | `settings-toggle-item.tsx` | Toggle switch item with icon, title, and description |
-| `settings-integration-card.tsx` | Integration card for external services (e.g., Rebrickable API) |
 | `settings-sign-out.tsx` | Sign out button with confirmation |
 | `index.ts` | Barrel export for all settings components |
 
@@ -291,7 +299,7 @@ Authentication form components:
 | `sign-up-form.tsx` | Registration form with password confirmation |
 | `forgot-password-form.tsx` | Password reset request form |
 | `update-password-form.tsx` | New password form for reset flow |
-| `onboarding-form.tsx` | New user profile setup form (username, bio, avatar color) |
+| `onboarding-form.tsx` | New user profile setup form (username, bio, avatar color, optional theme preferences) |
 | `avatar-selector.tsx` | Color picker for avatar background (8 preset colors), includes `getAvatarColor` helper |
 | `auth-button.tsx` | Server component showing login/logout based on session |
 | `logout-button.tsx` | Client logout button with redirect |
@@ -300,12 +308,12 @@ Authentication form components:
 ## Routes
 
 - `/` - Homepage social feed with stories carousel, posts, trending sets, suggested collectors with follow buttons
-- `/explore` - Discovery catalog with real Lego sets, search, theme filtering, sort options (newest/oldest/most-popular), add-to-collection/wishlist functionality
+- `/explore` - Discovery catalog with real Lego sets, search, theme filtering (user's themes or "Add themes" button), sort options (newest/oldest/most-popular), add-to-collection/wishlist functionality
 - `/profile` - User Digital ID page with real data: avatar, follow counts, favorites grid (from user_favorites), bio, vault stats, milestones
 - `/vault` - User's Lego collection with Collection/Wishlist tabs, search, grid/list view modes, bulk selection, move between tabs, favorites (max 4), and remove operations
-- `/settings` - User settings page with account, collection, appearance, integrations, and system sections
+- `/settings` - User settings page with account, collection, appearance, and system sections
 - `/auth/*` - Authentication pages (no sidebar)
-- `/auth/onboarding` - New user profile setup (username, bio, avatar color) after email confirmation
+- `/auth/onboarding` - New user profile setup (username, bio, avatar color, optional theme preferences) after email confirmation
 
 ## Adding New Features
 
@@ -324,20 +332,30 @@ Authentication form components:
 
 ## Recent Features
 
-**Onboarding Flow (Latest):**
+**User Theme Preferences (Latest):**
+- `user_themes` table storing user's favorite Lego themes (0-10 per user)
+- Theme selection during onboarding (optional)
+- Theme editing in `/settings/profile` with ThemeSelector component
+- ThemeSelector shows 10 popular themes by default with "View More" modal
+- Modal includes search bar to filter through all themes
+- Explore page filter chips show user's selected themes instead of hardcoded ones
+- "Add Favorite Themes" button shown when user has 0 themes, links to profile settings
+- Popular themes determined by user selection count with fallback to curated list
+
+**Onboarding Flow:**
 - New user onboarding at `/auth/onboarding` after email confirmation
-- Profile setup form: username, bio, avatar color selection
+- Profile setup form: username, bio, avatar color selection, optional theme preferences
 - 8 preset avatar colors with visual picker
 - Server-side profile validation and creation
 - Automatic redirect to home after completion
 
 **Settings Page:**
-- Account settings (edit profile, password & security)
+- Account settings (edit profile with theme preferences, password & security)
 - Collection settings (profile visibility, default view)
 - Appearance settings (theme selection)
-- Integrations section (Rebrickable API connection placeholder)
 - System settings (email notifications)
 - Sign out and delete account options
+- Edit profile page (`/settings/profile`) includes ThemeSelector for favorite Lego themes
 
 **Wishlist System:**
 - Collection tabs to switch between "Collection" and "Wishlist" views
@@ -373,6 +391,7 @@ Authentication form components:
 **Explore Page:**
 - Real Lego sets fetched from Supabase `lego_sets` table
 - Theme filtering with `themes` table relationship
+- Filter chips show user's selected themes or "Add Favorite Themes" button
 - Sort by newest/oldest release year or most popular (by owner count)
 - Add sets directly to collection or wishlist from explore page
 - User collection context to show which sets are already owned

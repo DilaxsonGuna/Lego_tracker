@@ -15,6 +15,7 @@ interface ExplorePageClientProps {
   categories: ThemeCategory[];
   topThemes: ThemeCategory[];
   initialUserSets: { setNum: string; collectionType: CollectionTab }[];
+  hasUserThemes: boolean;
 }
 
 export function ExplorePageClient({
@@ -22,6 +23,7 @@ export function ExplorePageClient({
   categories,
   topThemes,
   initialUserSets,
+  hasUserThemes,
 }: ExplorePageClientProps) {
   const [activeCategory, setActiveCategory] = useState<number | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -194,6 +196,7 @@ export function ExplorePageClient({
         onSearch={setSearchQuery}
         orderBy={orderBy}
         onOrderByChange={setOrderBy}
+        hasUserThemes={hasUserThemes}
       />
 
       <div className="flex-1 overflow-y-auto p-6 md:px-10 pb-20">

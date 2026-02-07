@@ -54,7 +54,7 @@ export function VaultStatsHero({ stats, activeTab }: VaultStatsHeroProps) {
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-black tracking-tighter text-foreground uppercase italic">
             Vault <span className="text-primary/50">/</span>{" "}
-            {isCollection ? "My Shelf" : "Wishlist"}
+            {isCollection ? "Shelf" : "Wishlist"}
           </h1>
           <p className="text-sm text-muted-foreground font-medium mt-1">
             {isCollection

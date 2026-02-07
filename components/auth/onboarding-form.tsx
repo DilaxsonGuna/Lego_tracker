@@ -14,10 +14,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { AvatarSelector, getAvatarColor } from "./avatar-selector";
+import { ThemeSelector } from "@/components/shared/theme-selector";
 import {
   createProfile,
   checkUsernameAvailability,
+  getAvailableThemes,
+  getPopularThemesAction,
 } from "@/app/auth/onboarding/actions";
+import type { ThemeCategory } from "@/types/explore";
 
 interface OnboardingFormProps extends React.ComponentPropsWithoutRef<"div"> {}
 
@@ -35,6 +39,19 @@ export function OnboardingForm({ className, ...props }: OnboardingFormProps) {
   );
   const [isLoading, setIsLoading] = useState(false);
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
+  const [selectedThemes, setSelectedThemes] = useState<number[]>([]);
+  const [availableThemes, setAvailableThemes] = useState<ThemeCategory[]>([]);
+  const [popularThemes, setPopularThemes] = useState<ThemeCategory[]>([]);
+
+  // Fetch available and popular themes on mount
+  useEffect(() => {
+    Promise.all([getAvailableThemes(), getPopularThemesAction()]).then(
+      ([available, popular]) => {
+        setAvailableThemes(available);
+        setPopularThemes(popular);
+      }
+    );
+  }, []);
 
   // Debounced username availability check
   useEffect(() => {
@@ -75,6 +92,7 @@ export function OnboardingForm({ className, ...props }: OnboardingFormProps) {
       bio: bio || undefined,
       location: location || undefined,
       dateOfBirth: dateOfBirth || undefined,
+      themeIds: selectedThemes.length > 0 ? selectedThemes : undefined,
     });
 
     if (result.error) {
@@ -206,6 +224,24 @@ export function OnboardingForm({ className, ...props }: OnboardingFormProps) {
                   onChange={(e) => setDateOfBirth(e.target.value)}
                 />
               </div>
+
+              {/* Favorite Themes - Optional */}
+              {availableThemes.length > 0 && (
+                <div className="grid gap-3">
+                  <Label>Favorite Themes</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Select up to 10 themes to personalize your explore page
+                    (optional)
+                  </p>
+                  <ThemeSelector
+                    availableThemes={availableThemes}
+                    popularThemes={popularThemes}
+                    selectedThemeIds={selectedThemes}
+                    onChange={setSelectedThemes}
+                    maxThemes={10}
+                  />
+                </div>
+              )}
 
               {error && <p className="text-sm text-destructive">{error}</p>}
 

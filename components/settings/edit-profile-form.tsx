@@ -2,24 +2,16 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, AtSign, MapPin, Plus } from "lucide-react";
+import { ArrowLeft, AtSign, MapPin } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import { AvatarSelector, getAvatarColor } from "@/components/auth/avatar-selector";
+import { ThemeSelector } from "@/components/shared/theme-selector";
 import { updateProfile } from "@/app/(app)/profile/actions";
 import { toast } from "sonner";
-
-const MOCK_TAGS = [
-  { id: "starwars", label: "#StarWars", active: true },
-  { id: "technic", label: "#Technic", active: true },
-  { id: "icons", label: "#Icons", active: false },
-  { id: "creator", label: "#CreatorExpert", active: false },
-  { id: "ninjago", label: "#Ninjago", active: false },
-  { id: "architecture", label: "#Architecture", active: false },
-];
+import type { ThemeCategory } from "@/types/explore";
 
 interface EditProfileFormProps {
   initialData: {
@@ -27,6 +19,9 @@ interface EditProfileFormProps {
     bio: string;
     avatarColor: string;
     location: string;
+    selectedThemeIds: number[];
+    availableThemes: ThemeCategory[];
+    popularThemes: ThemeCategory[];
   };
 }
 
@@ -38,17 +33,11 @@ export function EditProfileForm({ initialData }: EditProfileFormProps) {
   const [bio, setBio] = useState(initialData.bio ?? "");
   const [location, setLocation] = useState(initialData.location ?? "");
   const [avatarColor, setAvatarColor] = useState(initialData.avatarColor || "blue");
-  const [tags, setTags] = useState(MOCK_TAGS);
+  const [selectedThemes, setSelectedThemes] = useState<number[]>(
+    initialData.selectedThemeIds ?? []
+  );
 
   const maxBioLength = 200;
-
-  const toggleTag = (tagId: string) => {
-    setTags((prev) =>
-      prev.map((tag) =>
-        tag.id === tagId ? { ...tag, active: !tag.active } : tag
-      )
-    );
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,6 +48,7 @@ export function EditProfileForm({ initialData }: EditProfileFormProps) {
         bio: bio.trim(),
         location: location.trim(),
         avatarUrl: avatarColor, // Using avatarUrl field to store color
+        themeIds: selectedThemes,
       });
 
       if (result.error) {
@@ -163,39 +153,18 @@ export function EditProfileForm({ initialData }: EditProfileFormProps) {
             </div>
           </div>
 
-          {/* Theme Tags - Mocked */}
+          {/* Favorite Themes */}
           <div className="space-y-4">
             <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">
-              Theme Tags
+              Favorite Themes
             </label>
-            <div className="flex flex-wrap gap-2">
-              {tags.map((tag) => (
-                <Badge
-                  key={tag.id}
-                  variant={tag.active ? "default" : "outline"}
-                  className={`px-4 py-2 rounded-full text-sm font-medium cursor-pointer transition-colors ${
-                    tag.active
-                      ? "border-primary bg-primary/5 text-primary hover:bg-primary/10"
-                      : "border-border text-muted-foreground hover:border-muted-foreground hover:bg-transparent"
-                  }`}
-                  onClick={() => toggleTag(tag.id)}
-                >
-                  {tag.label}
-                </Badge>
-              ))}
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="px-4 py-2 h-auto rounded-full border-primary/20 bg-primary/5 text-primary hover:bg-primary/10"
-              >
-                <Plus className="size-4" />
-                Add Tag
-              </Button>
-            </div>
-            <p className="text-[10px] text-muted-foreground ml-1">
-              Theme tags are mocked for now
-            </p>
+            <ThemeSelector
+              availableThemes={initialData.availableThemes}
+              popularThemes={initialData.popularThemes}
+              selectedThemeIds={selectedThemes}
+              onChange={setSelectedThemes}
+              maxThemes={10}
+            />
           </div>
         </div>
 

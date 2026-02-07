@@ -2,15 +2,23 @@ import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
 import { getDiscoverySets, getParentThemes, getFeaturedThemes } from "@/lib/queries/explore";
 import { getUserSetsWithType } from "@/lib/commands";
+import { getUserThemeIds } from "@/lib/queries/user-themes";
+import { createClient } from "@/lib/supabase/server";
 import { ExplorePageClient } from "./explore-client";
 
 async function ExploreContent() {
-  const [sets, categories, topThemes, userSetsInfo] = await Promise.all([
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const [sets, categories, topThemes, userSetsInfo, userThemeIds] = await Promise.all([
     getDiscoverySets(),
     getParentThemes(),
-    getFeaturedThemes(),
+    getFeaturedThemes(user?.id),
     getUserSetsWithType(),
+    user ? getUserThemeIds(user.id) : Promise.resolve([]),
   ]);
+
+  const hasUserThemes = userThemeIds.length > 0;
 
   return (
     <ExplorePageClient
@@ -18,6 +26,7 @@ async function ExploreContent() {
       categories={categories}
       topThemes={topThemes}
       initialUserSets={userSetsInfo}
+      hasUserThemes={hasUserThemes}
     />
   );
 }
