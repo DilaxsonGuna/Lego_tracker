@@ -6,9 +6,10 @@ interface VaultGridProps {
   selectedSets: Set<string>;
   onToggleSelect: (setNum: string) => void;
   onToggleFavorite: (setNum: string) => void;
+  showFavorite?: boolean;
 }
 
-export function VaultGrid({ sets, selectedSets, onToggleSelect, onToggleFavorite }: VaultGridProps) {
+export function VaultGrid({ sets, selectedSets, onToggleSelect, onToggleFavorite, showFavorite = true }: VaultGridProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {sets.map((set) => (
@@ -19,6 +20,7 @@ export function VaultGrid({ sets, selectedSets, onToggleSelect, onToggleFavorite
           onToggleSelect={onToggleSelect}
           isFavorite={set.isFavorite}
           onToggleFavorite={onToggleFavorite}
+          showFavorite={showFavorite}
         />
       ))}
     </div>

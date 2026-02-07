@@ -12,6 +12,7 @@ interface VaultCardProps {
   onToggleSelect: (setNum: string) => void;
   isFavorite: boolean;
   onToggleFavorite: (setNum: string) => void;
+  showFavorite?: boolean;
 }
 
 const STATUS_VARIANTS: Record<VaultSetStatus, string> = {
@@ -28,7 +29,7 @@ const STATUS_LABELS: Record<VaultSetStatus, string> = {
   "for-sale": "For Sale",
 };
 
-export function VaultCard({ set, isSelected, onToggleSelect, isFavorite, onToggleFavorite }: VaultCardProps) {
+export function VaultCard({ set, isSelected, onToggleSelect, isFavorite, onToggleFavorite, showFavorite = true }: VaultCardProps) {
   return (
     <div className="group relative flex flex-col rounded-xl bg-card border border-border transition-all hover:border-primary/50 overflow-hidden">
       {/* Checkbox */}
@@ -40,28 +41,30 @@ export function VaultCard({ set, isSelected, onToggleSelect, isFavorite, onToggl
         />
       </div>
 
-      {/* Favorite Heart */}
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={(e) => {
-          e.stopPropagation();
-          onToggleFavorite(set.setNum);
-        }}
-        className="absolute top-3 right-3 z-10 size-9 rounded-full bg-black/20 hover:bg-black/50 backdrop-blur-sm transition-all hover:scale-110"
-        aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
-      >
-        <Heart
-          className={`size-5 transition-colors ${
-            isFavorite ? "fill-primary text-primary" : "text-white"
-          }`}
-        />
-      </Button>
+      {/* Favorite Heart - Only shown for collection items */}
+      {showFavorite && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleFavorite(set.setNum);
+          }}
+          className="absolute top-3 right-3 z-10 size-9 rounded-full bg-black/20 hover:bg-black/50 backdrop-blur-sm transition-all hover:scale-110"
+          aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+        >
+          <Heart
+            className={`size-5 transition-colors ${
+              isFavorite ? "fill-primary text-primary" : "text-white"
+            }`}
+          />
+        </Button>
+      )}
 
       {/* Image */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-black/50">
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted flex items-center justify-center p-6">
         <div
-          className="h-full w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100"
+          className="size-full bg-contain bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-105"
           style={{ backgroundImage: `url("${set.setImgUrl}")` }}
         />
         <div className="absolute bottom-2 right-2 flex gap-1">

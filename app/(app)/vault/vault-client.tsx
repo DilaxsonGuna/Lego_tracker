@@ -14,6 +14,10 @@ import { moveToCollection, removeSetFromVault, toggleFavorite } from "./actions"
 import type { VaultSet, CollectionStats, WishlistStats, VaultViewMode } from "@/types/vault";
 import type { CollectionTab } from "@/types/lego-set";
 
+// Normalize string for accent-insensitive search
+const normalize = (str: string) =>
+  str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
 interface VaultTheme {
   id: number;
   name: string;
@@ -84,20 +88,29 @@ export function VaultPageClient({
   }, [router]);
 
   const filteredSets = useMemo(() => {
-    return initialSets.filter((set) => {
-      // Filter by active tab
-      const matchesTab = set.collectionType === activeTab;
+    return initialSets
+      .filter((set) => {
+        // Filter by active tab
+        const matchesTab = set.collectionType === activeTab;
 
-      const matchesSearch =
-        !searchQuery ||
-        set.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        set.setNum.includes(searchQuery);
+        const normalizedQuery = normalize(searchQuery);
+        const matchesSearch =
+          !searchQuery ||
+          normalize(set.name).includes(normalizedQuery) ||
+          set.setNum.includes(searchQuery) ||
+          normalize(set.themeName).includes(normalizedQuery);
 
-      const matchesTheme =
-        themeFilter === "all" || set.themeName === themeFilter;
+        const matchesTheme =
+          themeFilter === "all" || set.themeName === themeFilter;
 
-      return matchesTab && matchesSearch && matchesTheme;
-    });
+        return matchesTab && matchesSearch && matchesTheme;
+      })
+      .sort((a, b) => {
+        // Favorites first, then maintain original order (year descending)
+        if (a.isFavorite && !b.isFavorite) return -1;
+        if (!a.isFavorite && b.isFavorite) return 1;
+        return 0;
+      });
   }, [initialSets, activeTab, searchQuery, themeFilter]);
 
   const handleMoveToCollection = useCallback(async () => {
@@ -172,14 +185,13 @@ export function VaultPageClient({
 
         {/* Grid */}
         <div className="px-6 md:px-8 pb-24">
-          <div className="mx-auto max-w-7xl">
-            <VaultGrid
-              sets={filteredSets}
-              selectedSets={selectedSets}
-              onToggleSelect={toggleSelect}
-              onToggleFavorite={handleToggleFavorite}
-            />
-          </div>
+          <VaultGrid
+            sets={filteredSets}
+            selectedSets={selectedSets}
+            onToggleSelect={toggleSelect}
+            onToggleFavorite={handleToggleFavorite}
+            showFavorite={activeTab === "collection"}
+          />
         </div>
       </div>
 
