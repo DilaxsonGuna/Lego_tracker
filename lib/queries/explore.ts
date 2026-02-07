@@ -1,4 +1,5 @@
-import { createClient } from "@/lib/supabase/server";
+import { unstable_cache } from "next/cache";
+import { createClient, createAnonClient } from "@/lib/supabase/server";
 import type { DiscoverySet, ThemeCategory, OrderByOption } from "@/types/explore";
 import { PAGE_SIZE } from "@/lib/constants";
 
@@ -119,6 +120,32 @@ export async function getParentThemes(): Promise<ThemeCategory[]> {
   ];
 }
 
+// Cached version of parent themes - 24h TTL
+// Uses anon client to avoid cookies() inside cache
+export const getCachedParentThemes = unstable_cache(
+  async () => {
+    const supabase = createAnonClient();
+
+    const { data, error } = await supabase
+      .from("themes")
+      .select("id, name")
+      .is("parent_id", null)
+      .order("name", { ascending: true });
+
+    if (error || !data) return [{ id: "all", label: "All" }];
+
+    return [
+      { id: "all", label: "All" },
+      ...data.map((theme) => ({
+        id: theme.id,
+        label: theme.name,
+      })),
+    ];
+  },
+  ["themes", "parent"],
+  { revalidate: 86400, tags: ["themes"] }
+);
+
 const FEATURED_THEMES = [
   "Star Wars",
   "Technic",
@@ -127,10 +154,34 @@ const FEATURED_THEMES = [
   "City",
 ];
 
-export async function getFeaturedThemes(userId?: string): Promise<ThemeCategory[]> {
-  const supabase = await createClient();
+// Cached fallback for featured themes (guests) - 24h TTL
+// Uses anon client to avoid cookies() inside cache
+const getCachedFeaturedThemesFallback = unstable_cache(
+  async () => {
+    const supabase = createAnonClient();
+    const { data, error } = await supabase
+      .from("themes")
+      .select("id, name")
+      .in("name", FEATURED_THEMES)
+      .is("parent_id", null);
 
-  // If user provided, try to get their themes first
+    if (error || !data) return [];
+
+    const sorted = FEATURED_THEMES
+      .map((name) => data.find((t) => t.name === name))
+      .filter((t): t is { id: number; name: string } => t !== undefined);
+
+    return sorted.map((theme) => ({
+      id: theme.id,
+      label: theme.name,
+    }));
+  },
+  ["themes", "featured", "default"],
+  { revalidate: 86400, tags: ["themes"] }
+);
+
+export async function getFeaturedThemes(userId?: string): Promise<ThemeCategory[]> {
+  // If user provided, try to get their themes first (NOT cached - user-specific)
   if (userId) {
     const { getUserThemes } = await import("./user-themes");
     const userThemes = await getUserThemes(userId);
@@ -140,22 +191,7 @@ export async function getFeaturedThemes(userId?: string): Promise<ThemeCategory[
     }
   }
 
-  // Fallback to hardcoded featured themes
-  const { data, error } = await supabase
-    .from("themes")
-    .select("id, name")
-    .in("name", FEATURED_THEMES)
-    .is("parent_id", null);
-
-  if (error || !data) return [];
-
-  // Sort by the order defined in FEATURED_THEMES
-  const sorted = FEATURED_THEMES
-    .map((name) => data.find((t) => t.name === name))
-    .filter((t): t is { id: number; name: string } => t !== undefined);
-
-  return sorted.map((theme) => ({
-    id: theme.id,
-    label: theme.name,
-  }));
+  // Fallback to cached featured themes
+  return getCachedFeaturedThemesFallback();
 }
+

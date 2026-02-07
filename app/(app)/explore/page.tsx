@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
-import { getDiscoverySets, getParentThemes, getFeaturedThemes } from "@/lib/queries/explore";
+import { getDiscoverySets, getCachedParentThemes, getFeaturedThemes } from "@/lib/queries/explore";
 import { getUserSetsWithType } from "@/lib/commands";
 import { getUserThemeIds } from "@/lib/queries/user-themes";
 import { createClient } from "@/lib/supabase/server";
@@ -12,7 +12,7 @@ async function ExploreContent() {
 
   const [sets, categories, topThemes, userSetsInfo, userThemeIds] = await Promise.all([
     getDiscoverySets(),
-    getParentThemes(),
+    getCachedParentThemes(),
     getFeaturedThemes(user?.id),
     getUserSetsWithType(),
     user ? getUserThemeIds(user.id) : Promise.resolve([]),

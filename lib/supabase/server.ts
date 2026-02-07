@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
 /**
@@ -30,5 +31,17 @@ export async function createClient() {
         },
       },
     },
+  );
+}
+
+/**
+ * Anonymous Supabase client for public data only.
+ * Does not use cookies - safe for use inside unstable_cache.
+ * Only use for read-only queries on public tables (themes, lego_sets).
+ */
+export function createAnonClient() {
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
   );
 }

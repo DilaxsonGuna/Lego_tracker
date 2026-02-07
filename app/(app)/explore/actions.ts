@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidateTag } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getDiscoverySets } from "@/lib/queries/explore";
 import type { OrderByOption } from "@/types/explore";
@@ -35,6 +36,10 @@ export async function addSetToCollection(
     });
 
   if (error) return { error: error.message };
+
+  // Invalidate popular sort cache since owner counts changed
+  revalidateTag("popularity", "default");
+
   return { success: true };
 }
 
@@ -51,5 +56,9 @@ export async function removeSetFromCollection(setNum: string) {
     .eq("set_num", setNum);
 
   if (error) return { error: error.message };
+
+  // Invalidate popular sort cache since owner counts changed
+  revalidateTag("popularity", "default");
+
   return { success: true };
 }
