@@ -1,11 +1,12 @@
 "use client";
 
-import { Award, BadgeCheck } from "lucide-react";
+import { BadgeCheck } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { UserProfile } from "@/types/profile";
+import { UserProfile, UserStats } from "@/types/profile";
 
 interface ProfileHeroProps {
   user: UserProfile;
+  stats?: UserStats | null;
 }
 
 function formatCount(n: number): string {
@@ -13,7 +14,10 @@ function formatCount(n: number): string {
   return n.toString();
 }
 
-export function ProfileHero({ user }: ProfileHeroProps) {
+export function ProfileHero({ user, stats }: ProfileHeroProps) {
+  const rank = stats?.rank;
+  const displayRole = rank ? `${rank.icon} ${rank.name}` : "Collector";
+
   return (
     <header className="flex flex-col items-center mb-16">
       {/* Avatar */}
@@ -42,9 +46,8 @@ export function ProfileHero({ user }: ProfileHeroProps) {
         </div>
 
         <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/30 px-5 py-1.5 mb-6">
-          <Award className="size-5 text-primary fill-primary" />
           <span className="text-xs font-black uppercase tracking-[0.2em] text-primary">
-            {user.role}
+            {displayRole}
           </span>
         </div>
 

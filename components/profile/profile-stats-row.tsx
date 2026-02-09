@@ -34,7 +34,7 @@ export function ProfileStatsRow({ stats }: ProfileStatsRowProps) {
             Global Rank
           </div>
           <div className="text-xl font-bold text-primary">
-            #{stats.rankNumber}
+            {stats.rankNumber > 0 ? `#${stats.rankNumber}` : "—"}
           </div>
         </CardContent>
       </Card>

@@ -1,6 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import type { UserProfile, UserStats, FavoriteSet, Milestone } from "@/types/profile";
 import { getFollowCounts, getMutualFollowsCount } from "./social";
+import {
+  calculateBrickScore,
+  getCurrentRank,
+  calculateRankProgress,
+} from "@/lib/brick-score";
 
 export async function getUserProfile(userId: string): Promise<UserProfile | null> {
   const supabase = await createClient();
@@ -57,23 +62,31 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
     totalParts += (set.num_parts ?? 0) * qty;
   }
 
-  // Calculate global rank by total parts
-  const rankData = await calculateUserRank(userId, supabase);
+  // Calculate brick score and rank using the new system
+  const brickScore = calculateBrickScore(totalParts, setsCount);
+  const rank = getCurrentRank(totalParts, setsCount);
+  const rankProgress = calculateRankProgress(totalParts, setsCount);
+
+  // Calculate global position by brick score
+  const globalPosition = await calculateGlobalPosition(userId, brickScore, supabase);
 
   return {
     setsCount,
     piecesCount: totalParts,
-    rank: rankData.title,
-    rankNumber: rankData.position,
+    brickScore,
+    rank,
+    rankProgress,
+    rankNumber: globalPosition,
     vaultValue: "Coming Soon",
   };
 }
 
-async function calculateUserRank(
+async function calculateGlobalPosition(
   userId: string,
+  userBrickScore: number,
   supabase: Awaited<ReturnType<typeof createClient>>
-): Promise<{ title: string; position: number }> {
-  // Get all users' total parts for ranking
+): Promise<number> {
+  // Get all users' stats for ranking by brick score
   const { data, error } = await supabase
     .from("user_sets")
     .select(`
@@ -84,34 +97,31 @@ async function calculateUserRank(
     .eq("collection_type", "collection");
 
   if (error || !data) {
-    return { title: "Newcomer", position: 0 };
+    return 0;
   }
 
-  // Aggregate parts per user
-  const userTotals = new Map<string, number>();
+  // Aggregate stats per user: pieces and set count
+  const userStats = new Map<string, { pieces: number; sets: number }>();
   for (const row of data) {
     const set = row.lego_sets as unknown as { num_parts: number };
     const parts = (set.num_parts ?? 0) * (row.quantity ?? 1);
-    userTotals.set(row.user_id, (userTotals.get(row.user_id) ?? 0) + parts);
+    const existing = userStats.get(row.user_id) ?? { pieces: 0, sets: 0 };
+    userStats.set(row.user_id, {
+      pieces: existing.pieces + parts,
+      sets: existing.sets + 1,
+    });
   }
 
-  // Sort users by total parts descending
-  const sorted = [...userTotals.entries()].sort((a, b) => b[1] - a[1]);
-  const position = sorted.findIndex(([id]) => id === userId) + 1;
+  // Calculate brick scores and sort
+  const scores = [...userStats.entries()]
+    .map(([id, stats]) => ({
+      id,
+      score: calculateBrickScore(stats.pieces, stats.sets),
+    }))
+    .sort((a, b) => b.score - a.score);
 
-  return {
-    title: getRankTitle(position),
-    position: position || 0,
-  };
-}
-
-function getRankTitle(position: number): string {
-  if (position === 0) return "Newcomer";
-  if (position <= 10) return "Master Builder";
-  if (position <= 50) return "Expert Builder";
-  if (position <= 100) return "Advanced Builder";
-  if (position <= 500) return "Builder";
-  return "Collector";
+  const position = scores.findIndex((s) => s.id === userId) + 1;
+  return position || 0;
 }
 
 export async function getFavoriteSets(userId: string): Promise<FavoriteSet[]> {

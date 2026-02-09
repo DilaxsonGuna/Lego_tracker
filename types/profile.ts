@@ -13,10 +13,14 @@ export interface UserProfile {
   interests: string[];
 }
 
+import type { RankTier, RankProgress } from "./brick-score";
+
 export interface UserStats {
   setsCount: number;
   piecesCount: number;
-  rank: string;
+  brickScore: number;
+  rank: RankTier | null;
+  rankProgress: RankProgress;
   rankNumber: number;
   vaultValue: string;
 }

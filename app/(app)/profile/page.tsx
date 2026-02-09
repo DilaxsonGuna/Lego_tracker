@@ -4,12 +4,14 @@ import {
   FavoritesGrid,
   ProfileBio,
   ProfileStatsRow,
+  RankProgressCard,
   MilestoneVault,
   ProfileFooter,
   StudPatternBg,
 } from "@/components/profile";
 import { mockMilestones } from "@/lib/mockdata";
 import { fetchProfile, fetchFavoriteSets, fetchUserStats } from "./actions";
+import { calculateRankProgress } from "@/lib/brick-score";
 
 async function ProfileContent() {
   const [profile, favoriteSets, userStats] = await Promise.all([
@@ -38,20 +40,26 @@ async function ProfileContent() {
   const stats = userStats ?? {
     setsCount: 0,
     piecesCount: 0,
-    rank: "Newcomer",
+    brickScore: 0,
+    rank: null,
+    rankProgress: calculateRankProgress(0, 0),
     rankNumber: 0,
     vaultValue: "Coming Soon",
   };
 
   return (
     <>
-      <ProfileHero user={user} />
+      <ProfileHero user={user} stats={stats} />
 
       <FavoritesGrid favorites={favoriteSets} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2 space-y-8">
           <ProfileBio user={user} />
+          <RankProgressCard
+            progress={stats.rankProgress}
+            brickScore={stats.brickScore}
+          />
           <ProfileStatsRow stats={stats} />
         </div>
         <MilestoneVault milestones={mockMilestones} />

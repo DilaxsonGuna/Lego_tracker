@@ -4,6 +4,7 @@ import { NavItem } from "@/types/navigation";
 import { FeedPost, Story, TrendingSet, SuggestedUser } from "@/types/feed";
 import { ThemeCategory, DiscoverySet } from "@/types/explore";
 import { VaultSet, VaultStats } from "@/types/vault";
+import { RANK_TIERS, calculateBrickScore, calculateRankProgress } from "@/lib/brick-score";
 
 export const mockUser: UserProfile = {
   id: "1",
@@ -24,7 +25,9 @@ export const mockUser: UserProfile = {
 export const mockUserStats: UserStats = {
   setsCount: 412,
   piecesCount: 845210,
-  rank: "Master Builder",
+  brickScore: calculateBrickScore(845210, 412),
+  rank: RANK_TIERS[0], // Living Legend (meets 500k+ pieces, 500+ sets)
+  rankProgress: calculateRankProgress(845210, 412),
   rankNumber: 42,
   vaultValue: "$42,910",
 };
