@@ -8,6 +8,7 @@ import {
   VaultStatsHero,
   CollectionTabs,
   VaultGrid,
+  VaultList,
   VaultBulkActions,
 } from "@/components/vault";
 import { moveToCollection, removeSetFromVault, toggleFavorite } from "./actions";
@@ -183,15 +184,25 @@ export function VaultPageClient({
           wishlistCount={wishlistCount}
         />
 
-        {/* Grid */}
+        {/* Grid or List */}
         <div className="px-6 md:px-8 pb-24">
-          <VaultGrid
-            sets={filteredSets}
-            selectedSets={selectedSets}
-            onToggleSelect={toggleSelect}
-            onToggleFavorite={handleToggleFavorite}
-            showFavorite={activeTab === "collection"}
-          />
+          {viewMode === "grid" ? (
+            <VaultGrid
+              sets={filteredSets}
+              selectedSets={selectedSets}
+              onToggleSelect={toggleSelect}
+              onToggleFavorite={handleToggleFavorite}
+              showFavorite={activeTab === "collection"}
+            />
+          ) : (
+            <VaultList
+              sets={filteredSets}
+              selectedSets={selectedSets}
+              onToggleSelect={toggleSelect}
+              onToggleFavorite={handleToggleFavorite}
+              showFavorite={activeTab === "collection"}
+            />
+          )}
         </div>
       </div>
 

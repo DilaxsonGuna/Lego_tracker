@@ -24,10 +24,10 @@ function FollowButton({ userId, isFollowing, onToggle }: FollowButtonProps) {
   const [isPending, startTransition] = useTransition();
 
   const handleClick = () => {
-    // Optimistically update the UI
-    onToggle(userId, !isFollowing);
-
     startTransition(async () => {
+      // Optimistically update the UI inside the transition
+      onToggle(userId, !isFollowing);
+
       const result = await toggleFollow(userId, isFollowing);
 
       // If there was an error, revert the optimistic update
