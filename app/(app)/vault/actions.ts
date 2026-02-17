@@ -15,6 +15,7 @@ import {
   getUserFavoritesCount,
   addUserFavorite,
   removeUserFavorite,
+  recalculateUserStats,
 } from "@/lib/commands";
 import type { CollectionTab } from "@/types/lego-set";
 import type { VaultSetStatus } from "@/types/vault";
@@ -110,6 +111,11 @@ export async function addSetToVault(
 
   if (error) return { error: error.message };
 
+  // Recalculate stats if added to collection
+  if (collectionType === "collection") {
+    await recalculateUserStats(user.id);
+  }
+
   return { success: true };
 }
 
@@ -129,6 +135,9 @@ export async function moveToCollection(setNum: string) {
 
   if (error) return { error: error.message };
 
+  // Recalculate stats (set moved to collection)
+  await recalculateUserStats(user.id);
+
   return { success: true };
 }
 
@@ -146,6 +155,9 @@ export async function removeSetFromVault(setNum: string) {
 
   if (error) return { error: error.message };
 
+  // Recalculate stats after removal
+  await recalculateUserStats(user.id);
+
   return { success: true };
 }
 
@@ -162,6 +174,9 @@ export async function updateSetQuantity(setNum: string, quantity: number) {
     .eq("set_num", setNum);
 
   if (error) return { error: error.message };
+
+  // Recalculate stats (quantity affects pieces count)
+  await recalculateUserStats(user.id);
 
   return { success: true };
 }

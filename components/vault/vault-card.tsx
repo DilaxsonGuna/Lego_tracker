@@ -8,11 +8,12 @@ import type { VaultSet, VaultSetStatus } from "@/types/vault";
 
 interface VaultCardProps {
   set: VaultSet;
-  isSelected: boolean;
-  onToggleSelect: (setNum: string) => void;
-  isFavorite: boolean;
-  onToggleFavorite: (setNum: string) => void;
+  isSelected?: boolean;
+  onToggleSelect?: (setNum: string) => void;
+  isFavorite?: boolean;
+  onToggleFavorite?: (setNum: string) => void;
   showFavorite?: boolean;
+  readonly?: boolean;
 }
 
 const STATUS_VARIANTS: Record<VaultSetStatus, string> = {
@@ -29,20 +30,22 @@ const STATUS_LABELS: Record<VaultSetStatus, string> = {
   "for-sale": "For Sale",
 };
 
-export function VaultCard({ set, isSelected, onToggleSelect, isFavorite, onToggleFavorite, showFavorite = true }: VaultCardProps) {
+export function VaultCard({ set, isSelected, onToggleSelect, isFavorite, onToggleFavorite, showFavorite = true, readonly = false }: VaultCardProps) {
   return (
     <div className="group relative flex flex-col rounded-xl bg-card border border-border transition-all hover:border-primary/50 overflow-hidden">
-      {/* Checkbox */}
-      <div className="absolute top-3 left-3 z-10">
-        <Checkbox
-          checked={isSelected}
-          onCheckedChange={() => onToggleSelect(set.setNum)}
-          className="bg-background/80 backdrop-blur-sm"
-        />
-      </div>
+      {/* Checkbox - hidden in readonly mode */}
+      {!readonly && onToggleSelect && (
+        <div className="absolute top-3 left-3 z-10">
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={() => onToggleSelect(set.setNum)}
+            className="bg-background/80 backdrop-blur-sm"
+          />
+        </div>
+      )}
 
-      {/* Favorite Heart - Only shown for collection items */}
-      {showFavorite && (
+      {/* Favorite Heart - Only shown for collection items and not readonly */}
+      {showFavorite && !readonly && onToggleFavorite && (
         <Button
           variant="ghost"
           size="icon"

@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import type { CollectionTab } from "@/types/lego-set";
+import { recalculateUserStats } from "./user-stats";
 
 // CREATE - Add set to user's collection or wishlist
 export async function addUserSet(
@@ -27,6 +28,12 @@ export async function addUserSet(
   );
 
   if (error) return { error: error.message };
+
+  // Recalculate stats if added to collection (not wishlist)
+  if (collectionType === "collection") {
+    await recalculateUserStats(user.id);
+  }
+
   return { success: true };
 }
 
@@ -46,6 +53,10 @@ export async function deleteUserSet(setNum: string) {
     .eq("set_num", setNum);
 
   if (error) return { error: error.message };
+
+  // Recalculate stats after deletion
+  await recalculateUserStats(user.id);
+
   return { success: true };
 }
 

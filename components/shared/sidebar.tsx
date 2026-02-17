@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Compass, Store, User, Plus, Lock, Settings } from "lucide-react";
+import { Home, Compass, Store, User, Plus, Lock, Settings, Trophy } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 const iconMap: Record<string, LucideIcon> = {
   home: Home,
   compass: Compass,
+  trophy: Trophy,
   vault: Lock,
   store: Store,
   user: User,
