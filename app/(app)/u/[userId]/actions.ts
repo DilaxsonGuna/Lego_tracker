@@ -5,6 +5,7 @@ import {
   getUserProfile,
   getUserStats,
   getFavoriteSets,
+  getMilestones,
 } from "@/lib/queries/profile";
 import { isFollowing } from "@/lib/queries/social";
 import { toggleFollow } from "@/lib/commands/follows";
@@ -19,6 +20,10 @@ export async function fetchPublicStats(userId: string) {
 
 export async function fetchPublicFavorites(userId: string) {
   return getFavoriteSets(userId);
+}
+
+export async function fetchPublicMilestones(userId: string) {
+  return getMilestones(userId);
 }
 
 export async function fetchIsFollowing(targetUserId: string) {

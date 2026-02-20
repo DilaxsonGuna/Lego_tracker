@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import {
   VaultToolbar,
   VaultStatsHero,
@@ -11,7 +13,8 @@ import {
   VaultList,
   VaultBulkActions,
 } from "@/components/vault";
-import { moveToCollection, removeSetFromVault, toggleFavorite } from "./actions";
+import { fetchVaultSets, moveToCollection, removeSetFromVault, toggleFavorite } from "./actions";
+import { PAGE_SIZE } from "@/lib/constants";
 import type { VaultSet, CollectionStats, WishlistStats, VaultViewMode } from "@/types/vault";
 import type { CollectionTab } from "@/types/lego-set";
 
@@ -54,12 +57,25 @@ export function VaultPageClient({
   const [selectedSets, setSelectedSets] = useState<Set<string>>(new Set());
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // Local optimistic state for sets
+  const [sets, setSets] = useState(initialSets);
+
+  // Pagination state per tab
+  const [hasMoreCollection, setHasMoreCollection] = useState(
+    initialSets.filter((s) => s.collectionType === "collection").length >= PAGE_SIZE
+  );
+  const [hasMoreWishlist, setHasMoreWishlist] = useState(
+    initialSets.filter((s) => s.collectionType === "wishlist").length >= PAGE_SIZE
+  );
+  const [isLoadingMore, startLoadMore] = useTransition();
+
+  const hasMore = activeTab === "collection" ? hasMoreCollection : hasMoreWishlist;
+
   const handleTabChange = useCallback(
     (tab: CollectionTab) => {
       setActiveTab(tab);
-      setSelectedSets(new Set()); // Clear selection when switching tabs
+      setSelectedSets(new Set());
 
-      // Update URL
       const params = new URLSearchParams(searchParams);
       params.set("tab", tab);
       router.push(`${pathname}?${params.toString()}`, { scroll: false });
@@ -80,18 +96,28 @@ export function VaultPageClient({
   }, []);
 
   const handleToggleFavorite = useCallback(async (setNum: string) => {
+    // Optimistic update
+    setSets((prev) =>
+      prev.map((s) =>
+        s.setNum === setNum ? { ...s, isFavorite: !s.isFavorite } : s
+      )
+    );
+
     const result = await toggleFavorite(setNum);
     if (result.error) {
+      // Revert on error
+      setSets((prev) =>
+        prev.map((s) =>
+          s.setNum === setNum ? { ...s, isFavorite: !s.isFavorite } : s
+        )
+      );
       toast.error(result.error);
-    } else {
-      router.refresh();
     }
-  }, [router]);
+  }, []);
 
   const filteredSets = useMemo(() => {
-    return initialSets
+    return sets
       .filter((set) => {
-        // Filter by active tab
         const matchesTab = set.collectionType === activeTab;
 
         const normalizedQuery = normalize(searchQuery);
@@ -107,54 +133,98 @@ export function VaultPageClient({
         return matchesTab && matchesSearch && matchesTheme;
       })
       .sort((a, b) => {
-        // Favorites first, then maintain original order (year descending)
         if (a.isFavorite && !b.isFavorite) return -1;
         if (!a.isFavorite && b.isFavorite) return 1;
         return 0;
       });
-  }, [initialSets, activeTab, searchQuery, themeFilter]);
+  }, [sets, activeTab, searchQuery, themeFilter]);
+
+  const handleLoadMore = useCallback(() => {
+    const currentTabSets = sets.filter((s) => s.collectionType === activeTab);
+    startLoadMore(async () => {
+      const nextSets = await fetchVaultSets({
+        collectionType: activeTab,
+        offset: currentTabSets.length,
+      });
+
+      if (nextSets.length < PAGE_SIZE) {
+        if (activeTab === "collection") setHasMoreCollection(false);
+        else setHasMoreWishlist(false);
+      }
+
+      setSets((prev) => [...prev, ...nextSets]);
+    });
+  }, [sets, activeTab]);
 
   const handleMoveToCollection = useCallback(async () => {
     setIsProcessing(true);
+    const toMove = Array.from(selectedSets);
+
+    // Optimistic: move sets from wishlist to collection
+    setSets((prev) =>
+      prev.map((s) =>
+        toMove.includes(s.setNum) ? { ...s, collectionType: "collection" as CollectionTab } : s
+      )
+    );
+    setSelectedSets(new Set());
+
     try {
       const results = await Promise.all(
-        Array.from(selectedSets).map((setNum) => moveToCollection(setNum))
+        toMove.map((setNum) => moveToCollection(setNum))
       );
 
       const errors = results.filter((r) => r.error);
       if (errors.length > 0) {
+        // Revert failed ones
+        const failedNums = new Set(
+          toMove.filter((_, i) => results[i].error)
+        );
+        setSets((prev) =>
+          prev.map((s) =>
+            failedNums.has(s.setNum) ? { ...s, collectionType: "wishlist" as CollectionTab } : s
+          )
+        );
         toast.error(`Failed to move ${errors.length} set(s)`);
       } else {
         toast.success("Sets moved to collection");
       }
-
-      setSelectedSets(new Set());
-      router.refresh();
     } finally {
       setIsProcessing(false);
     }
-  }, [selectedSets, router]);
+  }, [selectedSets]);
 
   const handleBulkRemove = useCallback(async () => {
     setIsProcessing(true);
+    const toRemove = Array.from(selectedSets);
+
+    // Snapshot for revert
+    const removedSets = sets.filter((s) => toRemove.includes(s.setNum));
+
+    // Optimistic: remove sets
+    setSets((prev) => prev.filter((s) => !toRemove.includes(s.setNum)));
+    setSelectedSets(new Set());
+
     try {
       const results = await Promise.all(
-        Array.from(selectedSets).map((setNum) => removeSetFromVault(setNum))
+        toRemove.map((setNum) => removeSetFromVault(setNum))
       );
 
       const errors = results.filter((r) => r.error);
       if (errors.length > 0) {
+        // Re-add failed sets
+        const failedNums = new Set(
+          toRemove.filter((_, i) => results[i].error)
+        );
+        const failedSets = removedSets.filter((s) => failedNums.has(s.setNum));
+        setSets((prev) => [...prev, ...failedSets]);
         toast.error(`Failed to remove ${errors.length} set(s)`);
       } else {
         toast.success("Sets removed from vault");
       }
-
-      setSelectedSets(new Set());
-      router.refresh();
     } finally {
       setIsProcessing(false);
     }
-  }, [selectedSets, router]);
+  }, [selectedSets, sets]);
 
   return (
     <main className="flex-1 flex flex-col min-h-0 stud-bg bg-fixed">
@@ -206,6 +276,24 @@ export function VaultPageClient({
               showFavorite={activeTab === "collection"}
             />
           </div>
+
+          {/* Load More */}
+          {hasMore && (
+            <div className="flex justify-center py-10">
+              <Button
+                variant="outline"
+                onClick={handleLoadMore}
+                disabled={isLoadingMore}
+                className="min-w-[140px]"
+              >
+                {isLoadingMore ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  "Load More"
+                )}
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 

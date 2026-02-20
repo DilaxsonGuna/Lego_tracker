@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { MobileHeader } from "./mobile-header";
-import { mockNavItems } from "@/lib/mockdata";
+import { NAV_ITEMS } from "@/lib/constants";
 
 async function getUser() {
   const supabase = await createClient();
@@ -26,5 +26,5 @@ async function getUser() {
 
 export async function MobileHeaderWrapper() {
   const user = await getUser();
-  return <MobileHeader navItems={mockNavItems} user={user} />;
+  return <MobileHeader navItems={NAV_ITEMS} user={user} />;
 }

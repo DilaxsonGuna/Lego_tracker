@@ -16,9 +16,9 @@ import {
   addUserFavorite,
   removeUserFavorite,
   recalculateUserStats,
+  deleteUserSet,
 } from "@/lib/commands";
 import type { CollectionTab } from "@/types/lego-set";
-import type { VaultSetStatus } from "@/types/vault";
 
 export async function fetchVaultSets(params: {
   collectionType: CollectionTab;
@@ -142,43 +142,7 @@ export async function moveToCollection(setNum: string) {
 }
 
 export async function removeSetFromVault(setNum: string) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) return { error: "Not authenticated" };
-
-  const { error } = await supabase
-    .from("user_sets")
-    .delete()
-    .eq("user_id", user.id)
-    .eq("set_num", setNum);
-
-  if (error) return { error: error.message };
-
-  // Recalculate stats after removal
-  await recalculateUserStats(user.id);
-
-  return { success: true };
-}
-
-export async function updateSetQuantity(setNum: string, quantity: number) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) return { error: "Not authenticated" };
-
-  const { error } = await supabase
-    .from("user_sets")
-    .update({ quantity })
-    .eq("user_id", user.id)
-    .eq("set_num", setNum);
-
-  if (error) return { error: error.message };
-
-  // Recalculate stats (quantity affects pieces count)
-  await recalculateUserStats(user.id);
-
-  return { success: true };
+  return deleteUserSet(setNum);
 }
 
 export async function toggleFavorite(setNum: string) {

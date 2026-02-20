@@ -1,4 +1,6 @@
+import { Compass } from "lucide-react";
 import { DiscoveryCard } from "./discovery-card";
+import { EmptyState } from "@/components/shared/empty-state";
 import type { DiscoverySet } from "@/types/explore";
 import type { CollectionTab } from "@/types/lego-set";
 
@@ -19,6 +21,16 @@ export function DiscoveryGrid({
   onAddToCollection,
   onRemove,
 }: DiscoveryGridProps) {
+  if (sets.length === 0) {
+    return (
+      <EmptyState
+        icon={Compass}
+        title="No sets found"
+        description="Try adjusting your filters or search to discover more sets."
+      />
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {sets.map((set) => (

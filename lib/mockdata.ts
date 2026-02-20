@@ -1,6 +1,5 @@
 import { UserProfile, UserStats, FavoriteSet, Milestone } from "@/types/profile";
 import { LegoSet } from "@/types/lego-set";
-import { NavItem } from "@/types/navigation";
 import { FeedPost, Story, TrendingSet, SuggestedUser } from "@/types/feed";
 import { ThemeCategory, DiscoverySet } from "@/types/explore";
 import { VaultSet, VaultStats } from "@/types/vault";
@@ -65,15 +64,6 @@ export const mockMilestones: Milestone[] = [
   { id: "m3", icon: "architecture", label: "Designer" },
   { id: "m4", icon: "social_leaderboard", label: "Top 100" },
   { id: "m5", icon: "verified_user", label: "Verified" },
-];
-
-export const mockNavItems: NavItem[] = [
-  { label: "Home", href: "/", icon: "home" },
-  { label: "Explore", href: "/explore", icon: "compass" },
-  { label: "Leaderboard", href: "/leaderboard", icon: "trophy" },
-  { label: "Vault", href: "/vault", icon: "vault" },
-  { label: "Profile", href: "/profile", icon: "user" },
-  { label: "Settings", href: "/settings", icon: "settings" },
 ];
 
 export const mockLegoSets: LegoSet[] = [

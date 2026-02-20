@@ -2,6 +2,7 @@
 
 import { useOptimistic, useTransition } from "react";
 import { Search } from "lucide-react";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -33,6 +34,7 @@ function FollowButton({ userId, isFollowing, onToggle }: FollowButtonProps) {
       // If there was an error, revert the optimistic update
       if (result.error) {
         onToggle(userId, isFollowing);
+        toast.error("Failed to update follow status");
       }
     });
   };
@@ -171,7 +173,7 @@ export function RightSidebar({
         <a className="hover:text-foreground transition-colors" href="#">
           Terms
         </a>
-        <span>&copy; 2024 LegoFlex</span>
+        <span>&copy; {new Date().getFullYear()} LegoFlex</span>
       </div>
     </aside>
   );

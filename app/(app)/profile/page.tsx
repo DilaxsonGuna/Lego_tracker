@@ -9,15 +9,15 @@ import {
   ProfileFooter,
   StudPatternBg,
 } from "@/components/profile";
-import { mockMilestones } from "@/lib/mockdata";
-import { fetchProfile, fetchFavoriteSets, fetchUserStats } from "./actions";
+import { fetchProfile, fetchFavoriteSets, fetchUserStats, fetchMilestones } from "./actions";
 import { calculateRankProgress } from "@/lib/brick-score";
 
 async function ProfileContent() {
-  const [profile, favoriteSets, userStats] = await Promise.all([
+  const [profile, favoriteSets, userStats, milestones] = await Promise.all([
     fetchProfile(),
     fetchFavoriteSets(),
     fetchUserStats(),
+    fetchMilestones(),
   ]);
 
   // Fallback for users with no profile
@@ -62,7 +62,7 @@ async function ProfileContent() {
           />
           <ProfileStatsRow stats={stats} />
         </div>
-        <MilestoneVault milestones={mockMilestones} />
+        <MilestoneVault milestones={milestones} />
       </div>
 
       <ProfileFooter />

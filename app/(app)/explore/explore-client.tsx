@@ -113,6 +113,8 @@ export function ExplorePageClient({
         return next;
       });
       toast.error("Failed to add to wishlist");
+    } else {
+      toast.success("Added to wishlist");
     }
   }, []);
 
@@ -145,6 +147,8 @@ export function ExplorePageClient({
         return next;
       });
       toast.error("Failed to add to collection");
+    } else {
+      toast.success("Added to collection");
     }
   }, []);
 

@@ -1,4 +1,3 @@
-import { Loader2 } from "lucide-react";
 import { FeedPost } from "./feed-post";
 import type { FeedPost as FeedPostType } from "@/types/feed";
 
@@ -12,9 +11,6 @@ export function Feed({ posts }: FeedProps) {
       {posts.map((post) => (
         <FeedPost key={post.id} post={post} />
       ))}
-      <div className="flex justify-center py-8">
-        <Loader2 className="size-6 text-muted-foreground animate-spin" />
-      </div>
     </div>
   );
 }

@@ -1,13 +1,13 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { StudPatternBg } from "@/components/profile";
-import { mockMilestones } from "@/lib/mockdata";
 import { calculateRankProgress } from "@/lib/brick-score";
 import { PublicProfileClient } from "./profile-client";
 import {
   fetchPublicProfile,
   fetchPublicStats,
   fetchPublicFavorites,
+  fetchPublicMilestones,
   fetchIsFollowing,
   getCurrentUserId,
 } from "./actions";
@@ -23,10 +23,11 @@ async function PublicProfileContent({
 }) {
   const { userId } = await paramsPromise;
 
-  const [profile, userStats, favoriteSets, currentUserId] = await Promise.all([
+  const [profile, userStats, favoriteSets, milestones, currentUserId] = await Promise.all([
     fetchPublicProfile(userId),
     fetchPublicStats(userId),
     fetchPublicFavorites(userId),
+    fetchPublicMilestones(userId),
     getCurrentUserId(),
   ]);
 
@@ -58,7 +59,7 @@ async function PublicProfileContent({
       user={profile}
       stats={stats}
       favorites={favoriteSets}
-      milestones={mockMilestones}
+      milestones={milestones}
       isOwner={isOwner}
       isFollowing={isFollowing}
       isLoggedIn={isLoggedIn}

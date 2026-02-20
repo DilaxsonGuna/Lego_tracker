@@ -2,9 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Plus } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { LegoFlexLogo } from "./legoflex-logo";
 import { navIconMap } from "./nav-icon-map";
 import { NavItem } from "@/types/navigation";
@@ -56,13 +54,6 @@ export function Sidebar({ navItems, user }: SidebarProps) {
           );
         })}
       </nav>
-
-      <div className="mt-8">
-        <Button className="w-full gap-2 rounded-xl py-6 text-sm font-bold shadow-lg shadow-primary/20">
-          <Plus className="size-5" />
-          Post Build
-        </Button>
-      </div>
 
       {user && (
         <div className="mt-auto flex items-center gap-3 border-t border-border pt-6">

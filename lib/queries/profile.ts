@@ -157,13 +157,52 @@ export async function getFavoriteSets(userId: string): Promise<FavoriteSet[]> {
   });
 }
 
-// TODO: Implement when milestones feature is added
+/**
+ * Derive milestones from a user's actual collection stats.
+ * Each milestone is unlocked when the user crosses a threshold.
+ */
 export async function getMilestones(userId: string): Promise<Milestone[]> {
   const supabase = await createClient();
-  // Placeholder - will query user's earned milestones
-  void supabase;
-  void userId;
-  return [];
+
+  const { data, error } = await supabase
+    .from("user_sets")
+    .select(`
+      quantity,
+      lego_sets!inner(num_parts, year)
+    `)
+    .eq("user_id", userId)
+    .eq("collection_type", "collection");
+
+  if (error || !data || data.length === 0) return [];
+
+  let totalParts = 0;
+  const years = new Set<number>();
+
+  for (const row of data) {
+    const set = row.lego_sets as unknown as { num_parts: number; year: number };
+    totalParts += (set.num_parts ?? 0) * (row.quantity ?? 1);
+    if (set.year) years.add(set.year);
+  }
+
+  const setsCount = data.length;
+  const yearSpan = years.size > 0 ? Math.max(...years) - Math.min(...years) : 0;
+
+  const milestones: Milestone[] = [];
+
+  if (totalParts >= 1000)
+    milestones.push({ id: "m-1k", icon: "diamond", label: "1k Bricks" });
+  if (totalParts >= 10000)
+    milestones.push({ id: "m-10k", icon: "diamond", label: "10k Bricks" });
+  if (totalParts >= 100000)
+    milestones.push({ id: "m-100k", icon: "diamond", label: "100k Bricks" });
+  if (setsCount >= 10)
+    milestones.push({ id: "m-10s", icon: "architecture", label: "10 Sets" });
+  if (setsCount >= 50)
+    milestones.push({ id: "m-50s", icon: "architecture", label: "50 Sets" });
+  if (yearSpan >= 10)
+    milestones.push({ id: "m-decade", icon: "history_edu", label: "10 Years" });
+
+  return milestones;
 }
 
 /**
