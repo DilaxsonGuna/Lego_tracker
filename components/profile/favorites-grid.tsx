@@ -16,7 +16,7 @@ export function FavoritesGrid({ favorites }: FavoritesGridProps) {
           Edit Selection
         </Button>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 shadow-[0_0_40px_-10px_rgba(255,208,0,0.15)]">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 shadow-[0_0_40px_-10px_rgba(255,208,0,0.15)]">
         {favorites.map((fav) => (
           <div
             key={fav.setNum}

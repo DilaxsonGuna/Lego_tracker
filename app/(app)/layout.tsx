@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import { MobileHeader } from "@/components/shared";
 import { SidebarWrapper } from "@/components/shared/sidebar-wrapper";
+import { MobileHeaderWrapper } from "@/components/shared/mobile-header-wrapper";
 
 function SidebarSkeleton() {
   return (
@@ -28,8 +28,10 @@ export default function AppLayout({
       <Suspense fallback={<SidebarSkeleton />}>
         <SidebarWrapper />
       </Suspense>
-      <div className="flex flex-1 flex-col">
-        <MobileHeader />
+      <div className="flex flex-1 flex-col min-w-0">
+        <Suspense>
+          <MobileHeaderWrapper />
+        </Suspense>
         {children}
       </div>
     </div>

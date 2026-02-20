@@ -186,7 +186,8 @@ export function VaultPageClient({
 
         {/* Grid or List */}
         <div className="px-6 md:px-8 pb-24">
-          {viewMode === "grid" ? (
+          {/* Grid: always visible on mobile, toggled on desktop */}
+          <div className={viewMode === "grid" ? "block" : "sm:hidden"}>
             <VaultGrid
               sets={filteredSets}
               selectedSets={selectedSets}
@@ -194,7 +195,9 @@ export function VaultPageClient({
               onToggleFavorite={handleToggleFavorite}
               showFavorite={activeTab === "collection"}
             />
-          ) : (
+          </div>
+          {/* List: desktop only */}
+          <div className={viewMode === "list" ? "hidden sm:block" : "hidden"}>
             <VaultList
               sets={filteredSets}
               selectedSets={selectedSets}
@@ -202,7 +205,7 @@ export function VaultPageClient({
               onToggleFavorite={handleToggleFavorite}
               showFavorite={activeTab === "collection"}
             />
-          )}
+          </div>
         </div>
       </div>
 

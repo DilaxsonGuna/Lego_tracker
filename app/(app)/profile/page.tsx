@@ -53,7 +53,7 @@ async function ProfileContent() {
 
       <FavoritesGrid favorites={favoriteSets} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
         <div className="lg:col-span-2 space-y-8">
           <ProfileBio user={user} />
           <RankProgressCard
@@ -83,7 +83,7 @@ export default function ProfilePage() {
     <main className="flex-1 relative">
       <StudPatternBg />
 
-      <div className="relative z-10 mx-auto max-w-[1100px] px-8 py-12">
+      <div className="relative z-10 mx-auto max-w-[1100px] px-4 sm:px-8 py-8 sm:py-12">
         <Suspense fallback={<ProfileSkeleton />}>
           <ProfileContent />
         </Suspense>

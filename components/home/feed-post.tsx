@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { Toggle } from "@/components/ui/toggle";
 import type { FeedPost as FeedPostType } from "@/types/feed";
 
 function formatCount(n: number): string {
@@ -78,26 +79,26 @@ export function FeedPost({ post }: FeedPostProps) {
 
       {/* Actions */}
       <div className="p-4">
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" className="group text-muted-foreground hover:text-foreground h-auto px-2 py-1">
-            <Grid2X2 className="size-5 group-hover:text-primary transition-colors mr-1.5" />
-            <span className="text-sm font-medium">
-              {formatCount(post.likes)} Likes
+        <div className="flex items-center gap-1 sm:gap-2">
+          <Toggle variant="outline" size="sm" className="group text-muted-foreground hover:text-foreground h-auto px-2 py-1 border-none bg-transparent data-[state=on]:bg-transparent" aria-label="Like post">
+            <Grid2X2 className="size-4 sm:size-5 group-hover:text-primary transition-colors" />
+            <span className="text-xs sm:text-sm font-medium">
+              {formatCount(post.likes)}<span className="hidden sm:inline"> Likes</span>
             </span>
-          </Button>
-          <Button variant="ghost" size="sm" className="group text-muted-foreground hover:text-foreground h-auto px-2 py-1">
-            <MessageCircle className="size-5 group-hover:text-blue-400 transition-colors mr-1.5" />
-            <span className="text-sm font-medium">
-              {formatCount(post.comments)} Comments
+          </Toggle>
+          <Toggle variant="outline" size="sm" className="group text-muted-foreground hover:text-foreground h-auto px-2 py-1 border-none bg-transparent data-[state=on]:bg-transparent" aria-label="Comment on post">
+            <MessageCircle className="size-4 sm:size-5 group-hover:text-blue-400 transition-colors" />
+            <span className="text-xs sm:text-sm font-medium">
+              {formatCount(post.comments)}<span className="hidden sm:inline"> Comments</span>
             </span>
-          </Button>
+          </Toggle>
           <Button
             variant="ghost"
             size="icon"
             className="group text-muted-foreground hover:text-foreground ml-auto size-8"
             aria-label="Share post"
           >
-            <Share2 className="size-5 group-hover:text-green-400 transition-colors" />
+            <Share2 className="size-4 sm:size-5 group-hover:text-green-400 transition-colors" />
           </Button>
           <Button
             variant="ghost"
@@ -105,7 +106,7 @@ export function FeedPost({ post }: FeedPostProps) {
             className="group text-muted-foreground hover:text-foreground size-8"
             aria-label="Bookmark post"
           >
-            <Bookmark className="size-5 group-hover:text-yellow-400 transition-colors" />
+            <Bookmark className="size-4 sm:size-5 group-hover:text-yellow-400 transition-colors" />
           </Button>
         </div>
 

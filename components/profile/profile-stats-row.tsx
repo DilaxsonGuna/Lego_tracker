@@ -7,9 +7,9 @@ interface ProfileStatsRowProps {
 
 export function ProfileStatsRow({ stats }: ProfileStatsRowProps) {
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
       <Card className="bg-card/50 border-border">
-        <CardContent className="p-5">
+        <CardContent className="p-4 sm:p-5">
           <div className="text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-1">
             Vault Value
           </div>
@@ -19,7 +19,7 @@ export function ProfileStatsRow({ stats }: ProfileStatsRowProps) {
         </CardContent>
       </Card>
       <Card className="bg-card/50 border-border">
-        <CardContent className="p-5">
+        <CardContent className="p-4 sm:p-5">
           <div className="text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-1">
             Total Parts
           </div>
@@ -29,7 +29,7 @@ export function ProfileStatsRow({ stats }: ProfileStatsRowProps) {
         </CardContent>
       </Card>
       <Card className="bg-card/50 border-border">
-        <CardContent className="p-5">
+        <CardContent className="p-4 sm:p-5">
           <div className="text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-1">
             Global Rank
           </div>

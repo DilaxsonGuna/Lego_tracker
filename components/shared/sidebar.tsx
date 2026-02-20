@@ -2,23 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Compass, Store, User, Plus, Lock, Settings, Trophy } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { LegoFlexLogo } from "./legoflex-logo";
+import { navIconMap } from "./nav-icon-map";
 import { NavItem } from "@/types/navigation";
 import { cn } from "@/lib/utils";
-
-const iconMap: Record<string, LucideIcon> = {
-  home: Home,
-  compass: Compass,
-  trophy: Trophy,
-  vault: Lock,
-  store: Store,
-  user: User,
-  settings: Settings,
-};
 
 interface SidebarUser {
   username: string;
@@ -44,7 +34,7 @@ export function Sidebar({ navItems, user }: SidebarProps) {
 
       <nav className="flex flex-1 flex-col gap-2">
         {navItems.map((item) => {
-          const Icon = iconMap[item.icon] || Home;
+          const Icon = navIconMap[item.icon] || navIconMap.home;
           const isActive =
             item.href === "/"
               ? pathname === "/"

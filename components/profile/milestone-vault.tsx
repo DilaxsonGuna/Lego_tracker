@@ -21,13 +21,13 @@ export function MilestoneVault({ milestones }: MilestoneVaultProps) {
       <h3 className="text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
         Milestone Vault
       </h3>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
         {milestones.map((milestone) => (
           <Card
             key={milestone.id}
             className="bg-card/40 border-border hover:border-primary/40 transition-colors group"
           >
-            <CardContent className="flex flex-col items-center gap-2 p-4">
+            <CardContent className="flex flex-col items-center gap-2 p-3 sm:p-4">
               <span className="text-3xl text-muted-foreground group-hover:text-primary transition-colors">
                 {iconMap[milestone.icon] ?? "\u{2B50}"}
               </span>

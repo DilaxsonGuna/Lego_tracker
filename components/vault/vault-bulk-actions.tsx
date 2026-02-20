@@ -25,8 +25,8 @@ export function VaultBulkActions({
   if (selectedCount === 0) return null;
 
   return (
-    <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 md:ml-32">
-      <div className="flex items-center gap-2 bg-black/80 backdrop-blur-xl border border-white/10 px-6 py-3 rounded-full shadow-2xl">
+    <div className="fixed bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 z-50 md:ml-32">
+      <div className="flex items-center gap-2 bg-black/80 backdrop-blur-xl border border-white/10 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full shadow-2xl">
         <span className="text-xs font-bold text-white mr-4">
           {selectedCount} Item{selectedCount !== 1 ? "s" : ""} Selected
         </span>

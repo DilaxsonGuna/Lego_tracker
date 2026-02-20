@@ -38,12 +38,12 @@ export function VaultToolbar({
     <div className="sticky top-0 z-40 h-14 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="mx-auto h-full max-w-7xl flex items-center gap-4 px-6 md:px-8">
         {/* Search input */}
-        <label className="relative flex items-center flex-1 max-w-sm group">
+        <label className="relative flex items-center flex-1 max-w-none sm:max-w-sm group">
           <Search className="absolute left-3 size-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
             type="text"
             placeholder="Search sets..."
-            className="h-9 w-full pl-9 pr-4 rounded-lg bg-card/50 border-none text-xs focus-visible:ring-1 focus-visible:ring-primary/50"
+            className="h-9 w-full pl-9 pr-4 rounded-lg bg-card/50 border-none text-base sm:text-xs focus-visible:ring-1 focus-visible:ring-primary/50"
             onChange={(e) => onSearch(e.target.value)}
           />
         </label>
@@ -69,7 +69,7 @@ export function VaultToolbar({
         </div>
 
         {/* View mode toggle */}
-        <div className="ml-auto flex items-center bg-card/50 rounded-lg p-1">
+        <div className="ml-auto hidden sm:flex items-center bg-card/50 rounded-lg p-1">
           <Button
             variant="ghost"
             size="icon"

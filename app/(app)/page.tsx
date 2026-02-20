@@ -34,8 +34,8 @@ function RightSidebarSkeleton() {
 export default function HomePage() {
   return (
     <main className="flex-1">
-      <div className="flex gap-8 w-full px-4 md:px-6">
-        <div className="flex-1 max-w-[700px] mx-auto flex flex-col gap-8 pt-6 pb-20">
+      <div className="flex gap-6 sm:gap-8 w-full px-6">
+        <div className="flex-1 min-w-0 max-w-[700px] mx-auto flex flex-col gap-6 sm:gap-8 pt-4 sm:pt-6 pb-20">
           <StoriesCarousel stories={mockStories} />
           <Feed posts={mockFeedPosts} />
         </div>

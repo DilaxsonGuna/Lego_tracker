@@ -65,7 +65,7 @@ export function ExploreHeader({
   };
 
   return (
-    <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-md pt-6 pb-4 px-6 md:px-10 border-b border-border/50 flex flex-col gap-6">
+    <div className="sm:sticky sm:top-0 z-10 bg-background sm:backdrop-blur-md pt-6 pb-4 px-4 sm:px-6 md:px-10 border-b border-border/50 flex flex-col gap-6">
       {/* Row 1: Search & Title */}
       <div className="flex items-center justify-between gap-6">
         <div className="flex-1">
@@ -132,14 +132,14 @@ export function ExploreHeader({
         </div>
 
         {/* Right: Order By & Filters */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 sm:gap-4">
           {/* Order By */}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground whitespace-nowrap">
+            <span className="hidden sm:inline text-xs font-bold uppercase tracking-wider text-muted-foreground whitespace-nowrap">
               Order By:
             </span>
             <Select value={orderBy} onValueChange={(val) => onOrderByChange(val as OrderByOption)}>
-              <SelectTrigger className="h-10 px-4 rounded-xl bg-card border border-border text-primary text-sm font-bold">
+              <SelectTrigger className="h-10 px-4 rounded-xl bg-card border border-border text-primary text-base sm:text-sm font-bold">
                 <ArrowDownWideNarrow className="size-4 text-muted-foreground" />
                 <SelectValue />
               </SelectTrigger>

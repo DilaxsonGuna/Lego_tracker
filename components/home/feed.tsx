@@ -8,7 +8,7 @@ interface FeedProps {
 
 export function Feed({ posts }: FeedProps) {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 min-w-0">
       {posts.map((post) => (
         <FeedPost key={post.id} post={post} />
       ))}

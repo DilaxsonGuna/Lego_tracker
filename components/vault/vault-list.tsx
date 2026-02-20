@@ -23,7 +23,7 @@ const STATUS_LABELS: Partial<Record<VaultSetStatus, string>> = {
 
 export function VaultList({ sets, selectedSets, onToggleSelect }: VaultListProps) {
   return (
-    <div className="bg-card/30 rounded-xl border border-border overflow-hidden">
+    <div className="hidden sm:block bg-card/30 rounded-xl border border-border overflow-hidden">
       <table className="w-full text-left border-collapse">
         <thead>
           <tr className="text-[10px] uppercase tracking-wider text-muted-foreground border-b border-border bg-background">
