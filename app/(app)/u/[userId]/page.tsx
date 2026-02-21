@@ -10,6 +10,7 @@ import {
   fetchPublicMilestones,
   fetchIsFollowing,
   getCurrentUserId,
+  checkProfileAccess,
 } from "./actions";
 
 interface PageProps {
@@ -22,6 +23,20 @@ async function PublicProfileContent({
   paramsPromise: Promise<{ userId: string }>;
 }) {
   const { userId } = await paramsPromise;
+
+  // Check profile access (visibility + ownership)
+  const access = await checkProfileAccess(userId);
+
+  if (access.isPrivate) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+        <p className="text-lg font-semibold text-foreground">This profile is private</p>
+        <p className="text-sm text-muted-foreground">
+          This user has chosen to keep their profile hidden.
+        </p>
+      </div>
+    );
+  }
 
   const [profile, userStats, favoriteSets, milestones, currentUserId] = await Promise.all([
     fetchPublicProfile(userId),
@@ -36,7 +51,7 @@ async function PublicProfileContent({
     notFound();
   }
 
-  const isOwner = currentUserId === userId;
+  const isOwner = access.isOwner;
   const isLoggedIn = currentUserId !== null;
 
   // Check if current user follows this profile (only if logged in and not owner)

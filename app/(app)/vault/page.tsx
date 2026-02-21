@@ -32,8 +32,8 @@ async function VaultContent() {
   return (
     <VaultPageClient
       initialSets={[...collectionSets, ...wishlistSets]}
-      collectionStats={collectionStats ?? { totalValue: "$0", totalPieces: "0", setsOwned: 0 }}
-      wishlistStats={wishlistStats ?? { estimatedCost: "$0", targetBricks: "0", savedSets: 0 }}
+      collectionStats={collectionStats ?? { totalPieces: "0", setsOwned: 0 }}
+      wishlistStats={wishlistStats ?? { targetPieces: "0", savedSets: 0 }}
       themes={themes}
       collectionCount={collectionCount}
       wishlistCount={wishlistCount}

@@ -15,7 +15,7 @@ import {
 } from "@/components/vault";
 import { fetchVaultSets, moveToCollection, removeSetFromVault, toggleFavorite } from "./actions";
 import { PAGE_SIZE } from "@/lib/constants";
-import type { VaultSet, CollectionStats, WishlistStats, VaultViewMode } from "@/types/vault";
+import type { VaultSet, CollectionStats, WishlistStats, VaultViewMode, VaultSortOption } from "@/types/vault";
 import type { CollectionTab } from "@/types/lego-set";
 
 // Normalize string for accent-insensitive search
@@ -36,6 +36,40 @@ interface VaultPageClientProps {
   wishlistCount: number;
 }
 
+function applySortOption(sets: VaultSet[], sortOption: VaultSortOption): VaultSet[] {
+  const sorted = [...sets];
+  switch (sortOption) {
+    case "name-asc":
+      sorted.sort((a, b) => a.name.localeCompare(b.name));
+      break;
+    case "name-desc":
+      sorted.sort((a, b) => b.name.localeCompare(a.name));
+      break;
+    case "year-newest":
+      sorted.sort((a, b) => b.year - a.year);
+      break;
+    case "year-oldest":
+      sorted.sort((a, b) => a.year - b.year);
+      break;
+    case "pieces-most":
+      sorted.sort((a, b) => b.numParts - a.numParts);
+      break;
+    case "pieces-least":
+      sorted.sort((a, b) => a.numParts - b.numParts);
+      break;
+    case "recently-added":
+    default:
+      // Keep server order (created_at desc), but favorites first
+      sorted.sort((a, b) => {
+        if (a.isFavorite && !b.isFavorite) return -1;
+        if (!a.isFavorite && b.isFavorite) return 1;
+        return 0;
+      });
+      break;
+  }
+  return sorted;
+}
+
 export function VaultPageClient({
   initialSets,
   collectionStats,
@@ -54,6 +88,7 @@ export function VaultPageClient({
   const [searchQuery, setSearchQuery] = useState("");
   const [themeFilter, setThemeFilter] = useState("all");
   const [viewMode, setViewMode] = useState<VaultViewMode>("grid");
+  const [sortOption, setSortOption] = useState<VaultSortOption>("recently-added");
   const [selectedSets, setSelectedSets] = useState<Set<string>>(new Set());
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -116,28 +151,24 @@ export function VaultPageClient({
   }, []);
 
   const filteredSets = useMemo(() => {
-    return sets
-      .filter((set) => {
-        const matchesTab = set.collectionType === activeTab;
+    const filtered = sets.filter((set) => {
+      const matchesTab = set.collectionType === activeTab;
 
-        const normalizedQuery = normalize(searchQuery);
-        const matchesSearch =
-          !searchQuery ||
-          normalize(set.name).includes(normalizedQuery) ||
-          set.setNum.includes(searchQuery) ||
-          normalize(set.themeName).includes(normalizedQuery);
+      const normalizedQuery = normalize(searchQuery);
+      const matchesSearch =
+        !searchQuery ||
+        normalize(set.name).includes(normalizedQuery) ||
+        set.setNum.includes(searchQuery) ||
+        normalize(set.themeName).includes(normalizedQuery);
 
-        const matchesTheme =
-          themeFilter === "all" || set.themeName === themeFilter;
+      const matchesTheme =
+        themeFilter === "all" || set.themeName === themeFilter;
 
-        return matchesTab && matchesSearch && matchesTheme;
-      })
-      .sort((a, b) => {
-        if (a.isFavorite && !b.isFavorite) return -1;
-        if (!a.isFavorite && b.isFavorite) return 1;
-        return 0;
-      });
-  }, [sets, activeTab, searchQuery, themeFilter]);
+      return matchesTab && matchesSearch && matchesTheme;
+    });
+
+    return applySortOption(filtered, sortOption);
+  }, [sets, activeTab, searchQuery, themeFilter, sortOption]);
 
   const handleLoadMore = useCallback(() => {
     const currentTabSets = sets.filter((s) => s.collectionType === activeTab);
@@ -234,8 +265,10 @@ export function VaultPageClient({
         themes={themes}
         themeFilter={themeFilter}
         viewMode={viewMode}
+        sortOption={sortOption}
         onThemeChange={setThemeFilter}
         onViewModeChange={setViewMode}
+        onSortChange={setSortOption}
       />
 
       {/* Scrollable content area */}

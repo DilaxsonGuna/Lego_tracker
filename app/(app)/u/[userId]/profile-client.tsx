@@ -155,15 +155,6 @@ export function PublicProfileClient({
           <h3 className="text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
             Top {favorites.length} Favorites
           </h3>
-          {isOwner && (
-            <Button
-              variant="link"
-              size="sm"
-              className="text-[11px] font-bold text-primary h-auto p-0"
-            >
-              Edit Selection
-            </Button>
-          )}
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 shadow-[0_0_40px_-10px_rgba(255,208,0,0.15)]">
           {favorites.map((fav) => (

@@ -8,7 +8,6 @@ export interface VaultSet {
   year: number;
   numParts: number;
   setImgUrl: string;
-  price: string;
   themeName: string;
   collectionType: CollectionTab;
   isFavorite: boolean;
@@ -16,21 +15,27 @@ export interface VaultSet {
 }
 
 export interface VaultStats {
-  totalValue: string;
   totalPieces: string;
   uniqueThemes: number;
 }
 
 export type VaultViewMode = "grid" | "list";
 
+export type VaultSortOption =
+  | "recently-added"
+  | "name-asc"
+  | "name-desc"
+  | "year-newest"
+  | "year-oldest"
+  | "pieces-most"
+  | "pieces-least";
+
 export interface CollectionStats {
-  totalValue: string;
   totalPieces: string;
   setsOwned: number;
 }
 
 export interface WishlistStats {
-  estimatedCost: string;
-  targetBricks: string;
+  targetPieces: string;
   savedSets: number;
 }

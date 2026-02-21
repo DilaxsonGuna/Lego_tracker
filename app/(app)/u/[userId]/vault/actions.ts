@@ -1,5 +1,6 @@
 "use server";
 
+import { createClient } from "@/lib/supabase/server";
 import {
   getVaultSets,
   getCollectionStats,
@@ -9,6 +10,25 @@ import {
   getWishlistCount,
 } from "@/lib/queries/vault";
 import type { CollectionTab } from "@/types/lego-set";
+
+export async function checkVaultAccess(userId: string): Promise<{
+  isPrivate: boolean;
+}> {
+  const supabase = await createClient();
+
+  // Check if viewer is the profile owner
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user?.id === userId) return { isPrivate: false };
+
+  // Check profile_visible flag
+  const { data } = await supabase
+    .from("profiles")
+    .select("profile_visible")
+    .eq("id", userId)
+    .single();
+
+  return { isPrivate: data?.profile_visible === false };
+}
 
 export async function fetchPublicVaultSets(
   userId: string,

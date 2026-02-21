@@ -11,7 +11,7 @@ import {
   CollectionTabs,
   VaultGrid,
 } from "@/components/vault";
-import type { VaultSet, CollectionStats, WishlistStats, VaultViewMode } from "@/types/vault";
+import type { VaultSet, CollectionStats, WishlistStats, VaultViewMode, VaultSortOption } from "@/types/vault";
 import type { CollectionTab } from "@/types/lego-set";
 
 // Normalize string for accent-insensitive search
@@ -54,6 +54,7 @@ export function PublicVaultClient({
   const [searchQuery, setSearchQuery] = useState("");
   const [themeFilter, setThemeFilter] = useState("all");
   const [viewMode, setViewMode] = useState<VaultViewMode>("grid");
+  const [sortOption, setSortOption] = useState<VaultSortOption>("recently-added");
 
   const handleTabChange = useCallback(
     (tab: CollectionTab) => {
@@ -111,8 +112,10 @@ export function PublicVaultClient({
         themes={themes}
         themeFilter={themeFilter}
         viewMode={viewMode}
+        sortOption={sortOption}
         onThemeChange={setThemeFilter}
         onViewModeChange={setViewMode}
+        onSortChange={setSortOption}
       />
 
       {/* Scrollable content area */}

@@ -89,13 +89,11 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
         <SettingsSection title="System">
           <SettingsToggleItem
             icon="bell"
-            title="Email Notifications"
-            description="Get notified about new sets and updates"
-            checked={settings.email_notifications}
-            onCheckedChange={(checked) =>
-              handleToggle("email_notifications", checked)
-            }
-            disabled={isPending}
+            title="Email Notifications (Coming soon)"
+            description="Email notifications are not yet available. This feature is under development."
+            checked={false}
+            onCheckedChange={() => {}}
+            disabled
             isLast
           />
         </SettingsSection>

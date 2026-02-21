@@ -1,5 +1,4 @@
 import { Star } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/shared/empty-state";
 import type { FavoriteSet } from "@/types/profile";
 
@@ -16,11 +15,6 @@ export function FavoritesGrid({ favorites }: FavoritesGridProps) {
             ? `Top ${favorites.length} Favorites`
             : "Favorites"}
         </h3>
-        {favorites.length > 0 && (
-          <Button variant="link" size="sm" className="text-[11px] font-bold text-primary h-auto p-0">
-            Edit Selection
-          </Button>
-        )}
       </div>
       {favorites.length === 0 ? (
         <EmptyState

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Heart } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
@@ -50,6 +51,7 @@ export function VaultCard({ set, isSelected, onToggleSelect, isFavorite, onToggl
           variant="ghost"
           size="icon"
           onClick={(e) => {
+            e.preventDefault();
             e.stopPropagation();
             onToggleFavorite(set.setNum);
           }}
@@ -64,36 +66,37 @@ export function VaultCard({ set, isSelected, onToggleSelect, isFavorite, onToggl
         </Button>
       )}
 
-      {/* Image */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted flex items-center justify-center p-6">
-        <div
-          className="size-full bg-contain bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-105"
-          style={{ backgroundImage: `url("${set.setImgUrl}")` }}
-        />
-        <div className="absolute bottom-2 right-2 flex gap-1">
-          <Badge variant="outline" className="bg-black/60 backdrop-blur-md text-[10px] font-bold px-2 py-0.5 text-white border-white/10">
-            {set.setNum}
-          </Badge>
-          {set.status && (
-            <Badge className={`backdrop-blur-md text-[10px] font-bold px-2 py-0.5 uppercase ${STATUS_VARIANTS[set.status]}`}>
-              {STATUS_LABELS[set.status]}
+      {/* Image + Info - wrapped in Link */}
+      <Link href={`/set/${set.setNum}`}>
+        <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted flex items-center justify-center p-6">
+          <div
+            className="size-full bg-contain bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-105"
+            style={{ backgroundImage: `url("${set.setImgUrl}")` }}
+          />
+          <div className="absolute bottom-2 right-2 flex gap-1">
+            <Badge variant="outline" className="bg-black/60 backdrop-blur-md text-[10px] font-bold px-2 py-0.5 text-white border-white/10">
+              {set.setNum}
             </Badge>
-          )}
+            {set.status && (
+              <Badge className={`backdrop-blur-md text-[10px] font-bold px-2 py-0.5 uppercase ${STATUS_VARIANTS[set.status]}`}>
+                {STATUS_LABELS[set.status]}
+              </Badge>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Info */}
-      <div className="p-4 flex flex-col gap-1">
-        <h3 className="text-sm font-bold text-foreground truncate group-hover:text-primary transition-colors uppercase tracking-tight">
-          {set.name}
-        </h3>
-        <div className="flex items-center justify-between mt-2">
-          <span className="text-[11px] text-muted-foreground">
-            {set.year} &bull; {set.numParts.toLocaleString()} pcs
-          </span>
-          <span className="text-sm font-black text-foreground">{set.price}</span>
+        {/* Info */}
+        <div className="p-4 flex flex-col gap-1">
+          <h3 className="text-sm font-bold text-foreground truncate group-hover:text-primary transition-colors uppercase tracking-tight">
+            {set.name}
+          </h3>
+          <div className="flex items-center mt-2">
+            <span className="text-[11px] text-muted-foreground">
+              {set.year} &bull; {set.numParts.toLocaleString()} pcs
+            </span>
+          </div>
         </div>
-      </div>
+      </Link>
     </div>
   );
 }

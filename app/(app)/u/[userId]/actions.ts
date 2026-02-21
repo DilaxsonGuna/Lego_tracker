@@ -10,6 +10,31 @@ import {
 import { isFollowing } from "@/lib/queries/social";
 import { toggleFollow } from "@/lib/commands/follows";
 
+async function isProfileVisible(userId: string): Promise<boolean> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("profiles")
+    .select("profile_visible")
+    .eq("id", userId)
+    .single();
+
+  return data?.profile_visible !== false;
+}
+
+export async function checkProfileAccess(userId: string): Promise<{
+  isPrivate: boolean;
+  isOwner: boolean;
+}> {
+  const currentUserId = await getCurrentUserId();
+  const isOwner = currentUserId === userId;
+
+  // Owners can always see their own profile
+  if (isOwner) return { isPrivate: false, isOwner: true };
+
+  const visible = await isProfileVisible(userId);
+  return { isPrivate: !visible, isOwner: false };
+}
+
 export async function fetchPublicProfile(userId: string) {
   return getUserProfile(userId);
 }

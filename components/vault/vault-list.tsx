@@ -26,7 +26,7 @@ export function VaultList({ sets, selectedSets, onToggleSelect }: VaultListProps
     <div className="hidden sm:block bg-card/30 rounded-xl border border-border overflow-hidden">
       <table className="w-full text-left border-collapse">
         <thead>
-          <tr className="text-[10px] uppercase tracking-wider text-muted-foreground border-b border-border bg-background">
+          <tr className="text-[11px] uppercase tracking-wider text-muted-foreground border-b border-border bg-background">
             <th className="px-4 py-3 font-bold w-12">
               <span className="sr-only">Select</span>
             </th>
@@ -36,7 +36,6 @@ export function VaultList({ sets, selectedSets, onToggleSelect }: VaultListProps
             <th className="px-4 py-3 font-bold">Theme</th>
             <th className="px-4 py-3 font-bold text-right">Pieces</th>
             <th className="px-4 py-3 font-bold text-center">Year</th>
-            <th className="px-4 py-3 font-bold text-right">Value</th>
             <th className="px-4 py-3 font-bold">Status</th>
           </tr>
         </thead>
@@ -73,9 +72,6 @@ export function VaultList({ sets, selectedSets, onToggleSelect }: VaultListProps
               </td>
               <td className="px-4 py-2 text-xs text-center text-muted-foreground font-medium">
                 {set.year}
-              </td>
-              <td className="px-4 py-2 text-sm font-bold text-right text-primary">
-                {set.price}
               </td>
               <td className="px-4 py-2">
                 {set.status && STATUS_VARIANTS[set.status] && (

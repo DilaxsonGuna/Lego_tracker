@@ -34,12 +34,14 @@
 |-------|--------|--------|--------|--------|
 | profiles | public | own | own | — |
 | lego_sets | public | — | — | — |
-| user_sets | own | own | own | own |
-| user_favorites | own | own | own | own |
+| user_sets | own + followed + public | own | own | own |
+| user_favorites | own + followed + public | own | own | own |
 | user_themes | own | own | own | own |
 | follows | all | own follower_id | — | own follower_id |
 
 "own" = `auth.uid() = user_id` (or `follower_id` for follows)
+"followed" = user_id belongs to someone the current user follows (via `follows` table)
+"public" = user_id belongs to a user whose `profiles.profile_visible = true`
 
 ## Migrations (`supabase/migrations/`)
 
@@ -49,3 +51,5 @@
 4. `004_add_profile_fields.sql` — avatar_color + bio columns
 5. `005_create_user_themes.sql` — user_themes table + RLS
 6. `get_popular_sets.sql` — PostgreSQL function for sorting by popularity (owner count)
+7. `006_enable_unaccent.sql` — unaccent extension + search_sets RPC
+8. `007_update_rls_public_select.sql` — open user_sets + user_favorites SELECT for followed users and public profiles

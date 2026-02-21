@@ -10,6 +10,7 @@ import {
   fetchPublicVaultThemes,
   fetchPublicCollectionCount,
   fetchPublicWishlistCount,
+  checkVaultAccess,
 } from "./actions";
 
 interface PageProps {
@@ -22,6 +23,19 @@ async function PublicVaultContent({
   paramsPromise: Promise<{ userId: string }>;
 }) {
   const { userId } = await paramsPromise;
+
+  // Check profile visibility
+  const access = await checkVaultAccess(userId);
+  if (access.isPrivate) {
+    return (
+      <main className="flex-1 flex flex-col items-center justify-center min-h-[400px] gap-4">
+        <p className="text-lg font-semibold text-foreground">This vault is private</p>
+        <p className="text-sm text-muted-foreground">
+          This user has chosen to keep their profile hidden.
+        </p>
+      </main>
+    );
+  }
 
   // Check if user exists
   const profile = await getUserProfile(userId);
@@ -53,14 +67,12 @@ async function PublicVaultContent({
 
   // Fallback stats
   const defaultCollectionStats = collectionStats ?? {
-    totalValue: "$0",
     totalPieces: "0",
     setsOwned: 0,
   };
 
   const defaultWishlistStats = wishlistStats ?? {
-    estimatedCost: "$0",
-    targetBricks: "0",
+    targetPieces: "0",
     savedSets: 0,
   };
 

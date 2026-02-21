@@ -42,8 +42,6 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
   const isPublicRoute =
-    pathname === "/" ||
-    pathname.startsWith("/login") ||
     pathname.startsWith("/auth");
 
   // No user and trying to access protected route → redirect to login

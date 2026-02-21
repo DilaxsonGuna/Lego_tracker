@@ -14,36 +14,22 @@ export function VaultStatsHero({ stats, activeTab }: VaultStatsHeroProps) {
   const statItems = isCollection
     ? [
         {
-          label: "Total Market Value",
-          value: (stats as CollectionStats).totalValue,
-          isPrimary: true,
-        },
-        {
           label: "Total Pieces",
           value: (stats as CollectionStats).totalPieces,
-          isPrimary: false,
         },
         {
           label: "Unique Sets",
           value: (stats as CollectionStats).setsOwned,
-          isPrimary: false,
         },
       ]
     : [
         {
-          label: "Estimated Cost",
-          value: (stats as WishlistStats).estimatedCost,
-          isPrimary: true,
-        },
-        {
-          label: "Target Bricks",
-          value: (stats as WishlistStats).targetBricks,
-          isPrimary: false,
+          label: "Total Pieces",
+          value: (stats as WishlistStats).targetPieces,
         },
         {
           label: "Saved Sets",
           value: (stats as WishlistStats).savedSets,
-          isPrimary: false,
         },
       ];
 
@@ -54,11 +40,11 @@ export function VaultStatsHero({ stats, activeTab }: VaultStatsHeroProps) {
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-black tracking-tighter text-foreground uppercase italic">
             Vault <span className="text-primary/50">/</span>{" "}
-            {isCollection ? "Shelf" : "Wishlist"}
+            {isCollection ? "Collection" : "Wishlist"}
           </h1>
           <p className="text-sm text-muted-foreground font-medium mt-1">
             {isCollection
-              ? "Real-time valuation and inventory analytics for your private collection."
+              ? "Your private collection inventory."
               : "Track sets you want to add to your collection."}
           </p>
         </div>
@@ -68,14 +54,10 @@ export function VaultStatsHero({ stats, activeTab }: VaultStatsHeroProps) {
           {statItems.map((item, index) => (
             <div key={item.label} className="flex items-center gap-8 md:gap-12">
               <div className="flex flex-col">
-                <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-bold mb-2">
+                <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold mb-2">
                   {item.label}
                 </span>
-                <span
-                  className={`text-3xl md:text-4xl font-black tracking-tighter ${
-                    item.isPrimary ? "text-primary" : "text-foreground"
-                  }`}
-                >
+                <span className="text-3xl md:text-4xl font-black tracking-tighter text-foreground">
                   {item.value}
                 </span>
               </div>

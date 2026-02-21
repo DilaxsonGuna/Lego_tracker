@@ -15,8 +15,8 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "LegoFlex — Social Lego Collection Tracker",
+  description: "Track your Lego collection, discover new sets, follow other collectors, and climb the leaderboard. The social platform for Lego enthusiasts.",
 };
 
 const geistSans = Geist({

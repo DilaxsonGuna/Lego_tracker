@@ -47,9 +47,14 @@ export async function getVaultSets({
     .eq("collection_type", collectionType);
 
   if (search) {
-    query = query.or(
-      `lego_sets.name.ilike.%${search}%,lego_sets.set_num.ilike.%${search}%`
-    );
+    // Sanitize search input by removing PostgREST special characters
+    const sanitized = search.replace(/[%_(),.]/g, "");
+    if (sanitized) {
+      query = query.or(
+        `name.ilike.%${sanitized}%,set_num.ilike.%${sanitized}%`,
+        { referencedTable: "lego_sets" }
+      );
+    }
   }
 
   if (theme && theme !== "all") {
@@ -78,7 +83,6 @@ export async function getVaultSets({
       year: set.year,
       numParts: set.num_parts ?? 0,
       setImgUrl: set.img_url ?? "",
-      price: "$0", // TODO: Add price when available
       themeName: set.themes?.name ?? "",
       collectionType: row.collection_type as CollectionTab,
       isFavorite: favoriteSetNums.has(set.set_num),
@@ -112,7 +116,6 @@ export async function getVaultStats(userId: string): Promise<VaultStats | null> 
   }
 
   return {
-    totalValue: "$0", // TODO: Calculate when prices are added
     totalPieces: totalParts.toLocaleString(),
     uniqueThemes: themeIds.size,
   };
@@ -143,7 +146,6 @@ export async function getCollectionStats(userId: string): Promise<CollectionStat
   }, 0);
 
   return {
-    totalValue: "$0", // TODO: Calculate when prices are added
     totalPieces: totalParts.toLocaleString(),
     setsOwned: data.length,
   };
@@ -169,15 +171,14 @@ export async function getWishlistStats(userId: string): Promise<WishlistStats | 
   }, 0);
 
   return {
-    estimatedCost: "$0", // TODO: Calculate when prices are added
-    targetBricks: totalParts.toLocaleString(),
+    targetPieces: totalParts.toLocaleString(),
     savedSets: data.length,
   };
 }
 
 export async function getCollectionCount(userId: string): Promise<number> {
   const supabase = await createClient();
-  const { count, error } = await supabase
+  const { count } = await supabase
     .from("user_sets")
     .select("*", { count: "exact", head: true })
     .eq("user_id", userId)
@@ -188,7 +189,7 @@ export async function getCollectionCount(userId: string): Promise<number> {
 
 export async function getWishlistCount(userId: string): Promise<number> {
   const supabase = await createClient();
-  const { count, error } = await supabase
+  const { count } = await supabase
     .from("user_sets")
     .select("*", { count: "exact", head: true })
     .eq("user_id", userId)

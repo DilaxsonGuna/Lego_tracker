@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Heart, Plus, Check, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,8 +30,8 @@ export function DiscoveryCard({
 
   return (
     <div className="group relative flex flex-col bg-card rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20 hover:ring-1 hover:ring-primary/50 transition-all duration-300 h-full">
-      {/* Image */}
-      <div className="relative w-full aspect-[4/3] bg-muted flex items-center justify-center p-6">
+      {/* Image - wrapped in Link */}
+      <Link href={`/set/${set.setNum}`} className="relative w-full aspect-[4/3] bg-muted flex items-center justify-center p-6">
         <div
           className="size-full bg-center bg-contain bg-no-repeat transition-transform duration-500 group-hover:scale-105"
           style={{ backgroundImage: `url("${set.setImgUrl}")` }}
@@ -51,6 +52,7 @@ export function DiscoveryCard({
             variant="ghost"
             size="icon"
             onClick={(e) => {
+              e.preventDefault();
               e.stopPropagation();
               if (isInWishlist) {
                 onRemove();
@@ -84,7 +86,7 @@ export function DiscoveryCard({
             </Badge>
           </div>
         )}
-      </div>
+      </Link>
 
       {/* Info */}
       <div className="p-4 flex flex-col gap-2 flex-grow">

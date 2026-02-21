@@ -10,16 +10,27 @@ import {
 export async function getUserProfile(userId: string): Promise<UserProfile | null> {
   const supabase = await createClient();
 
-  // Fetch profile data and follow counts in parallel
-  const [profileResult, followCounts, mutualCount] = await Promise.all([
+  // Fetch profile data, follow counts, and user theme interests in parallel
+  const [profileResult, followCounts, mutualCount, themesResult] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", userId).single(),
     getFollowCounts(userId),
     getMutualFollowsCount(userId),
+    supabase
+      .from("user_themes")
+      .select("themes!inner(name)")
+      .eq("user_id", userId)
+      .order("display_order", { ascending: true }),
   ]);
 
   if (profileResult.error || !profileResult.data) return null;
 
   const data = profileResult.data;
+
+  // Extract theme names as interests
+  const interests = (themesResult.data ?? []).map((row) => {
+    const theme = row.themes as unknown as { name: string };
+    return theme.name;
+  });
 
   return {
     id: data.id,
@@ -33,7 +44,7 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
     followers: followCounts.followers,
     following: followCounts.following,
     friends: mutualCount,
-    interests: [],
+    interests,
   };
 }
 

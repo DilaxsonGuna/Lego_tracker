@@ -1,6 +1,4 @@
-import { Plus } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import type { Milestone } from "@/types/profile";
 
 interface MilestoneVaultProps {
@@ -37,13 +35,6 @@ export function MilestoneVault({ milestones }: MilestoneVaultProps) {
             </CardContent>
           </Card>
         ))}
-        <Button
-          variant="outline"
-          className="flex flex-col items-center justify-center h-auto p-4 rounded-xl border-dashed hover:border-muted-foreground group"
-          aria-label="Add milestone"
-        >
-          <Plus className="size-5 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
-        </Button>
       </div>
     </div>
   );
