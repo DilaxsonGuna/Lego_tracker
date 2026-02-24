@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { SidebarWrapper } from "@/components/shared/sidebar-wrapper";
 import { MobileHeaderWrapper } from "@/components/shared/mobile-header-wrapper";
+import { MobileBottomNav } from "@/components/shared/mobile-bottom-nav";
 
 function SidebarSkeleton() {
   return (
@@ -32,7 +33,12 @@ export default function AppLayout({
         <Suspense>
           <MobileHeaderWrapper />
         </Suspense>
-        {children}
+        <div className="pb-20 md:pb-0">
+          {children}
+        </div>
+        <Suspense>
+          <MobileBottomNav />
+        </Suspense>
       </div>
     </div>
   );

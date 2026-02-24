@@ -13,6 +13,7 @@ import {
   RankProgressCard,
   MilestoneVault,
   ProfileFooter,
+  ShareProfileButton,
 } from "@/components/profile";
 import { handleToggleFollow } from "./actions";
 import type { UserProfile, UserStats, FavoriteSet, Milestone } from "@/types/profile";
@@ -90,14 +91,14 @@ export function PublicProfileClient({
           </div>
 
           <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/30 px-5 py-1.5 mb-6">
-            <span className="text-xs font-black uppercase tracking-[0.2em] text-primary">
+            <span className="text-xs font-black uppercase tracking-wider text-primary">
               {displayRole}
             </span>
           </div>
 
-          {/* Follow Button (only if not owner and logged in) */}
-          {!isOwner && isLoggedIn && (
-            <div className="mb-6">
+          {/* Follow / Share Buttons */}
+          <div className="mb-6 flex items-center gap-3">
+            {!isOwner && isLoggedIn && (
               <Button
                 onClick={onFollowToggle}
                 disabled={isPending}
@@ -116,32 +117,33 @@ export function PublicProfileClient({
                   </>
                 )}
               </Button>
-            </div>
-          )}
+            )}
+            <ShareProfileButton userId={targetUserId} username={user.username} />
+          </div>
 
           {/* Social Stats */}
-          <div className="flex items-center justify-center gap-10 py-6 border-y border-border/50">
-            <div className="text-center">
+          <div className="flex items-center justify-center gap-10 py-6 border-y border-border">
+            <Link href={`/u/${targetUserId}/followers`} className="text-center hover:opacity-80 transition-opacity">
               <div className="text-2xl font-bold text-foreground leading-none">
                 {formatCount(user.followers)}
               </div>
-              <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mt-1">
+              <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">
                 Followers
               </div>
-            </div>
-            <div className="text-center">
+            </Link>
+            <Link href={`/u/${targetUserId}/following`} className="text-center hover:opacity-80 transition-opacity">
               <div className="text-2xl font-bold text-foreground leading-none">
                 {formatCount(user.following)}
               </div>
-              <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mt-1">
+              <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">
                 Following
               </div>
-            </div>
+            </Link>
             <div className="text-center">
               <div className="text-2xl font-bold text-foreground leading-none">
                 {formatCount(user.friends)}
               </div>
-              <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mt-1">
+              <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">
                 Friends
               </div>
             </div>
@@ -152,7 +154,7 @@ export function PublicProfileClient({
       {/* Favorites Grid (read-only for non-owners) */}
       <section className="mb-16">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
+          <h3 className="text-xs font-black uppercase tracking-wider text-muted-foreground">
             Top {favorites.length} Favorites
           </h3>
         </div>
@@ -160,7 +162,7 @@ export function PublicProfileClient({
           {favorites.map((fav) => (
             <div
               key={fav.setNum}
-              className="group relative aspect-[3/4] overflow-hidden rounded-lg border border-border/50 transition-all hover:scale-[1.03] hover:border-primary/50 cursor-pointer"
+              className="group relative aspect-[3/4] overflow-hidden rounded-lg border border-border transition-all hover:scale-[1.03] hover:border-primary/50 cursor-pointer"
             >
               <div
                 className="size-full bg-cover bg-center grayscale-[0.3] group-hover:grayscale-0 transition-all"

@@ -42,6 +42,18 @@ export default {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+        },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -56,7 +68,7 @@ export default {
         },
       },
       fontFamily: {
-        display: ["Inter", "sans-serif"],
+        display: ["var(--font-geist-sans)", "sans-serif"],
       },
       borderRadius: {
         xl: "calc(var(--radius) + 0.25rem)",

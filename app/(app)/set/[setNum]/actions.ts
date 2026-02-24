@@ -10,8 +10,14 @@ import {
   deleteUserSet,
   recalculateUserStats,
 } from "@/lib/commands";
+import { setNumSchema } from "@/lib/schemas";
 
 export async function addToCollection(setNum: string) {
+  const parsed = setNumSchema.safeParse({ setNum });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
+  }
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -22,7 +28,7 @@ export async function addToCollection(setNum: string) {
     .upsert(
       {
         user_id: user.id,
-        set_num: setNum,
+        set_num: parsed.data.setNum,
         quantity: 1,
         collection_type: "collection",
       },
@@ -32,12 +38,17 @@ export async function addToCollection(setNum: string) {
   if (error) return { error: error.message };
 
   await recalculateUserStats(user.id);
-  revalidatePath(`/set/${setNum}`);
+  revalidatePath(`/set/${parsed.data.setNum}`);
 
   return { success: true };
 }
 
 export async function addToWishlist(setNum: string) {
+  const parsed = setNumSchema.safeParse({ setNum });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
+  }
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -48,7 +59,7 @@ export async function addToWishlist(setNum: string) {
     .upsert(
       {
         user_id: user.id,
-        set_num: setNum,
+        set_num: parsed.data.setNum,
         quantity: 1,
         collection_type: "wishlist",
       },
@@ -56,30 +67,40 @@ export async function addToWishlist(setNum: string) {
     );
 
   if (error) return { error: error.message };
-  revalidatePath(`/set/${setNum}`);
+  revalidatePath(`/set/${parsed.data.setNum}`);
 
   return { success: true };
 }
 
 export async function removeFromVault(setNum: string) {
-  const result = await deleteUserSet(setNum);
+  const parsed = setNumSchema.safeParse({ setNum });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
+  }
+
+  const result = await deleteUserSet(parsed.data.setNum);
   if (result.error) return { error: result.error };
 
-  revalidatePath(`/set/${setNum}`);
+  revalidatePath(`/set/${parsed.data.setNum}`);
   return { success: true };
 }
 
 export async function toggleFavorite(setNum: string) {
+  const parsed = setNumSchema.safeParse({ setNum });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
+  }
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) return { error: "Not authenticated" };
 
   const favoriteSetNums = await getUserFavoriteSetNums(user.id);
-  const isFavorited = favoriteSetNums.has(setNum);
+  const isFavorited = favoriteSetNums.has(parsed.data.setNum);
 
   if (isFavorited) {
-    const result = await removeUserFavorite(setNum);
+    const result = await removeUserFavorite(parsed.data.setNum);
     if (result.error) return { error: result.error };
   } else {
     const count = await getUserFavoritesCount(user.id);
@@ -87,10 +108,10 @@ export async function toggleFavorite(setNum: string) {
       return { error: "Maximum 4 favorites allowed" };
     }
 
-    const result = await addUserFavorite(setNum);
+    const result = await addUserFavorite(parsed.data.setNum);
     if (result.error) return { error: result.error };
   }
 
-  revalidatePath(`/set/${setNum}`);
+  revalidatePath(`/set/${parsed.data.setNum}`);
   return { success: true };
 }

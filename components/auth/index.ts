@@ -6,3 +6,4 @@ export { AuthButton } from "./auth-button";
 export { LogoutButton } from "./logout-button";
 export { OnboardingForm } from "./onboarding-form";
 export { AvatarSelector, getAvatarColor } from "./avatar-selector";
+export { PasswordStrength } from "./password-strength";

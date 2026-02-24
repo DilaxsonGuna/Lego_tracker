@@ -31,7 +31,7 @@ export function RelatedSets({ sets, themeName }: RelatedSetsProps) {
                 <div className="absolute top-2 left-2">
                   <Badge
                     variant="outline"
-                    className="bg-black/60 backdrop-blur-md text-[10px] font-bold px-1.5 py-0.5 rounded text-primary border-primary/20"
+                    className="bg-black/80 backdrop-blur-md text-xs font-bold px-1.5 py-0.5 rounded text-primary border-primary/20"
                   >
                     {set.year}
                   </Badge>
@@ -42,7 +42,7 @@ export function RelatedSets({ sets, themeName }: RelatedSetsProps) {
               <h3 className="text-xs font-bold text-foreground line-clamp-2 group-hover:text-primary transition-colors uppercase tracking-tight">
                 {set.name}
               </h3>
-              <span className="text-[10px] text-muted-foreground">
+              <span className="text-xs text-muted-foreground">
                 {set.numParts.toLocaleString()} pcs
               </span>
             </div>

@@ -65,7 +65,7 @@ export function ExploreHeader({
   };
 
   return (
-    <div className="sm:sticky sm:top-0 z-10 bg-background sm:backdrop-blur-md pt-6 pb-4 px-4 sm:px-6 md:px-10 border-b border-border/50 flex flex-col gap-6">
+    <div className="sm:sticky sm:top-0 z-10 bg-background sm:backdrop-blur-md pt-6 pb-4 px-4 sm:px-6 md:px-10 border-b border-border flex flex-col gap-6">
       {/* Row 1: Search & Title */}
       <div className="flex items-center justify-between gap-6">
         <div className="flex-1">

@@ -48,7 +48,7 @@ export function RecentlyAdded({ sets }: RecentlyAddedProps) {
               <p className="text-xs font-medium text-foreground truncate">
                 {set.name}
               </p>
-              <p className="text-[10px] text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 {set.year} &middot; {set.numParts.toLocaleString()} pcs
               </p>
             </div>

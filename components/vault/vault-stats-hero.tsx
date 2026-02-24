@@ -54,7 +54,7 @@ export function VaultStatsHero({ stats, activeTab }: VaultStatsHeroProps) {
           {statItems.map((item, index) => (
             <div key={item.label} className="flex items-center gap-8 md:gap-12">
               <div className="flex flex-col">
-                <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-bold mb-2">
+                <span className="text-xs uppercase tracking-wider text-muted-foreground font-bold mb-2">
                   {item.label}
                 </span>
                 <span className="text-3xl md:text-4xl font-black tracking-tighter text-foreground">

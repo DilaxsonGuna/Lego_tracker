@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { PasswordStrength } from "./password-strength";
 
 export function SignUpForm({
   className,
@@ -88,6 +89,7 @@ export function SignUpForm({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
+                <PasswordStrength password={password} />
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">

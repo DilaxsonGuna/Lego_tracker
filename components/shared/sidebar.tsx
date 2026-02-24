@@ -16,9 +16,10 @@ interface SidebarUser {
 interface SidebarProps {
   navItems: NavItem[];
   user: SidebarUser | null;
+  notificationSlot?: React.ReactNode;
 }
 
-export function Sidebar({ navItems, user }: SidebarProps) {
+export function Sidebar({ navItems, user, notificationSlot }: SidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -26,7 +27,7 @@ export function Sidebar({ navItems, user }: SidebarProps) {
       <div className="mb-10 flex items-center gap-3 px-2">
         <LegoFlexLogo />
         <h2 className="text-lg font-bold tracking-tight text-foreground">
-          LegoFlex
+          BrickMaster
         </h2>
       </div>
 
@@ -68,12 +69,13 @@ export function Sidebar({ navItems, user }: SidebarProps) {
               {user.username.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <div className="flex flex-col">
+          <div className="flex flex-1 flex-col">
             <span className="text-sm font-bold text-foreground">
               @{user.username}
             </span>
             <span className="text-xs text-muted-foreground">Collector</span>
           </div>
+          {notificationSlot}
         </div>
       )}
     </aside>

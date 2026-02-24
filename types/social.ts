@@ -16,3 +16,11 @@ export interface FollowCounts {
   followers: number;
   following: number;
 }
+
+export interface FollowListUser {
+  id: string;
+  username: string;
+  displayName: string | null;
+  avatarUrl: string | null;
+  isFollowedByCurrentUser: boolean;
+}

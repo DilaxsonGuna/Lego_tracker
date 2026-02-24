@@ -18,6 +18,12 @@ import {
   recalculateUserStats,
   deleteUserSet,
 } from "@/lib/commands";
+import {
+  fetchVaultSetsSchema,
+  addSetToVaultSchema,
+  setNumSchema,
+} from "@/lib/schemas";
+import { getMilestones } from "@/lib/queries/profile";
 import type { CollectionTab } from "@/types/lego-set";
 
 export async function fetchVaultSets(params: {
@@ -26,12 +32,15 @@ export async function fetchVaultSets(params: {
   search?: string;
   theme?: string;
 }) {
+  const parsed = fetchVaultSetsSchema.safeParse(params);
+  if (!parsed.success) return [];
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) return [];
 
-  return getVaultSets({ userId: user.id, ...params });
+  return getVaultSets({ userId: user.id, ...parsed.data });
 }
 
 export async function fetchVaultStats() {
@@ -93,6 +102,11 @@ export async function addSetToVault(
   quantity: number = 1,
   collectionType: CollectionTab = "collection"
 ) {
+  const parsed = addSetToVaultSchema.safeParse({ setNum, quantity, collectionType });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
+  }
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -102,9 +116,9 @@ export async function addSetToVault(
     .from("user_sets")
     .upsert({
       user_id: user.id,
-      set_num: setNum,
-      quantity,
-      collection_type: collectionType,
+      set_num: parsed.data.setNum,
+      quantity: parsed.data.quantity,
+      collection_type: parsed.data.collectionType,
     }, {
       onConflict: "user_id,set_num",
     });
@@ -112,7 +126,7 @@ export async function addSetToVault(
   if (error) return { error: error.message };
 
   // Recalculate stats if added to collection
-  if (collectionType === "collection") {
+  if (parsed.data.collectionType === "collection") {
     await recalculateUserStats(user.id);
   }
 
@@ -120,6 +134,11 @@ export async function addSetToVault(
 }
 
 export async function moveToCollection(setNum: string) {
+  const parsed = setNumSchema.safeParse({ setNum });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
+  }
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -131,7 +150,7 @@ export async function moveToCollection(setNum: string) {
       collection_type: "collection",
     })
     .eq("user_id", user.id)
-    .eq("set_num", setNum);
+    .eq("set_num", parsed.data.setNum);
 
   if (error) return { error: error.message };
 
@@ -142,10 +161,20 @@ export async function moveToCollection(setNum: string) {
 }
 
 export async function removeSetFromVault(setNum: string) {
-  return deleteUserSet(setNum);
+  const parsed = setNumSchema.safeParse({ setNum });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
+  }
+
+  return deleteUserSet(parsed.data.setNum);
 }
 
 export async function toggleFavorite(setNum: string) {
+  const parsed = setNumSchema.safeParse({ setNum });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
+  }
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -153,11 +182,11 @@ export async function toggleFavorite(setNum: string) {
 
   // Check if already favorited
   const favoriteSetNums = await getUserFavoriteSetNums(user.id);
-  const isFavorited = favoriteSetNums.has(setNum);
+  const isFavorited = favoriteSetNums.has(parsed.data.setNum);
 
   if (isFavorited) {
     // Remove from favorites
-    const result = await removeUserFavorite(setNum);
+    const result = await removeUserFavorite(parsed.data.setNum);
     if (result.error) return { error: result.error };
     return { success: true };
   } else {
@@ -168,8 +197,17 @@ export async function toggleFavorite(setNum: string) {
     }
 
     // Add to favorites
-    const result = await addUserFavorite(setNum);
+    const result = await addUserFavorite(parsed.data.setNum);
     if (result.error) return { error: result.error };
     return { success: true };
   }
+}
+
+export async function checkMilestones() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) return [];
+
+  return getMilestones(user.id);
 }

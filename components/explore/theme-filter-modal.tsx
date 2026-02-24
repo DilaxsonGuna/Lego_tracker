@@ -88,7 +88,7 @@ export function ThemeFilterModal({
           isSelected
             ? "border-primary bg-primary/5 text-primary hover:bg-primary/10"
             : isDisabled
-              ? "border-border text-muted-foreground/50 cursor-not-allowed"
+              ? "border-border text-muted-foreground cursor-not-allowed"
               : "border-border text-muted-foreground hover:border-muted-foreground hover:bg-transparent"
         }`}
         onClick={() => !isDisabled && handleToggle(themeId)}

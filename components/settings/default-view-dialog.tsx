@@ -47,7 +47,7 @@ export function DefaultViewDialog({
         <button
           className={cn(
             "flex items-center justify-between gap-4 p-4 sm:px-6 hover:bg-surface-accent transition-colors group/item w-full text-left",
-            !isLast && "border-b border-border/50"
+            !isLast && "border-b border-border"
           )}
         >
           <div className="flex items-center gap-4">

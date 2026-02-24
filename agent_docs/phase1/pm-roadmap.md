@@ -153,101 +153,84 @@
 
 ### P0 -- Must-Have for Launch (Deployment Blockers)
 
-1. **Fix root layout metadata**
-   - `app/layout.tsx:17-18` still says "Next.js and Supabase Starter Kit" for title and description
-   - Must be "LegoFlex" with proper SEO description
+1. **Fix root layout metadata** -- ✅ DONE
+   - Updated to "LegoFlex — Social Lego Collection Tracker" with proper SEO description
    - File: `app/layout.tsx`
 
-2. **Replace all mock data on Home feed with real data OR redesign Home**
-   - `app/(app)/page.tsx` imports `mockStories`, `mockFeedPosts`, `mockTrendingSets` from `lib/mockdata.ts`
-   - `lib/queries/home.ts` is 100% TODO stubs -- zero real queries
-   - Feed posts show fake users (BrickMaster99, StudsAndSnot) with fake images
-   - **Recommendation**: Kill the Instagram-style feed for v1. Replace Home with a dashboard: "Your vault at a glance" (recent adds, stats, rank progress) + suggested users + trending sets from real data. The feed model requires content creation (posting builds/reviews) which is a huge feature scope.
-   - If keeping stories/feed: need `feed_posts`, `stories`, `post_likes`, `post_comments`, `bookmarks` tables + full CRUD + image upload infrastructure
+2. **Replace all mock data on Home feed with real data OR redesign Home** -- ✅ DONE
+   - Home page replaced with a real dashboard using `getDashboardStats`, `getRecentlyAddedSets`, `getFollowingActivity`, `fetchSuggestedUsers`
+   - Components: `DashboardStatsCard`, `RecentlyAdded`, `FollowingActivity`, `SuggestedCollectors`, `DashboardWelcome`, `QuickActions`
+   - No more mock data imports
 
-3. **Remove or hide non-functional UI elements**
-   - Like/Comment/Share/Bookmark buttons on feed posts do nothing (`components/home/feed-post.tsx`)
-   - Home search bar does nothing (`components/home/right-sidebar.tsx`)
-   - Footer links (About, Help, Press, API, Jobs, Privacy, Terms) all point to `#` (`components/home/right-sidebar.tsx:155-176`)
-   - "View All" trending sets link points to `#` (`components/home/right-sidebar.tsx:96`)
-   - These create a broken first impression
+3. **Remove or hide non-functional UI elements** -- ✅ DONE
+   - Old feed components (feed-post, stories-carousel, right-sidebar) replaced with functional dashboard components
+   - No dead buttons or placeholder links remain on Home
 
-4. **Add middleware for auth protection**
-   - No `middleware.ts` file found in project root
-   - CLAUDE.md says "middleware manages sessions, unauthenticated users -> /auth/login" but middleware doesn't exist
-   - Unauthenticated users can potentially access all app routes
-   - Need to protect `/(app)/*` routes and redirect to `/auth/login`
+4. **Add middleware for auth protection** -- ✅ DONE
+   - Implemented via `proxy.ts` in project root, which calls `updateSession` from `@/lib/supabase/proxy`
+   - Protects all routes except static files and images
 
-5. **Privacy: `profile_visible` setting is not enforced**
-   - `profiles.profile_visible` exists in DB and settings UI toggles it
-   - But `/u/[userId]` public profile and vault pages do NOT check this flag
-   - Any user's profile is always publicly accessible
-   - Files: `app/(app)/u/[userId]/page.tsx`, `app/(app)/u/[userId]/vault/page.tsx`
+5. **Privacy: `profile_visible` setting is not enforced** -- ✅ DONE
+   - Both `/u/[userId]/page.tsx` and `/u/[userId]/vault/page.tsx` call `checkProfileAccess`/`checkVaultAccess`
+   - Returns private profile message if `access.isPrivate` is true
 
-6. **`email_notifications` toggle has no backend**
-   - Settings UI lets users toggle email notifications
-   - No email service is configured (no SendGrid, Resend, etc. in `package.json`)
-   - Either remove the toggle or add "coming soon" label
+6. **`email_notifications` toggle has no backend** -- ✅ DONE
+   - Toggle now shows "Email Notifications (Coming soon)" with disabled state and explanatory description
 
 ### P1 -- High Impact (User Acquisition & Retention)
 
-7. **Set detail page**
-   - No route for viewing a single set's details
-   - Clicking a set card in Explore or Vault has no destination
-   - Need: `/set/[setNum]` with set image, details, part count, theme, year, owner count, and "Add to vault" CTA
-   - This is the core content page that everything links to
+7. **Set detail page** -- ✅ DONE
+   - Route implemented at `app/(app)/set/[setNum]/page.tsx`
+   - Includes hero section, stats, action buttons (add to collection/wishlist/favorite), and related sets
 
 8. **Price data integration**
-   - `lego_sets` table has no price column; vault shows "$0" everywhere
-   - `lib/queries/vault.ts:89` -- `totalValue: "$0"` hardcoded
-   - `lib/queries/vault.ts:146` -- `estimatedCost: "$0"` hardcoded
-   - `components/vault/vault-card.tsx:94` -- shows `set.price` which defaults to "$0"
+   - `lego_sets` table has no price column
    - Options: Rebrickable API, BrickLink API, or manual curation
    - This is the #1 feature users will expect: "What is my collection worth?"
 
 9. **Image upload for avatars**
-   - Currently avatar is a solid color circle picked from 8 presets (`components/auth/avatar-selector.tsx`)
+   - Currently avatar is a solid color circle picked from 6 presets (`components/auth/avatar-selector.tsx`)
    - No Supabase Storage bucket configured for user uploads
    - Users need real profile photos for a social app
 
-10. **Notifications system**
-    - No notifications infrastructure
-    - Needed for: new followers, collection milestones, set price changes
-    - Start with in-app notifications, add push/email later
+10. **Notifications system** -- ✅ DONE
+    - Database table `notifications` exists with query functions (`getNotifications`, `getUnreadCount`)
+    - Notification bell component integrated in sidebar via `NotificationBellWrapper`
+    - Supports multiple notification types with actor profiles
 
-11. **Improve search with set detail results**
-    - Home page search bar is dead (`components/home/right-sidebar.tsx`)
-    - Should be a global search accessible from sidebar/header that searches sets, users, and themes
+11. **Improve search with set detail results** -- ✅ DONE
+    - Global search route at `app/(app)/search/page.tsx`
+    - Accessible from sidebar nav items
+    - Supports searching sets, users, and themes with tab switching
 
-12. **Activity feed from REAL data**
-    - Instead of mock Instagram-style posts, show real activity: "X added Y to their vault", "X hit 10k bricks milestone", "X started following Y"
-    - Derive from existing tables (`user_sets`, `follows`) with timestamps
-    - No new tables needed for v1 -- just a derived activity query
+12. **Activity feed from REAL data** -- ✅ DONE
+    - Home dashboard shows real activity via `getFollowingActivity()` from `lib/queries/home.ts`
+    - Displays "X added Y to vault" with actual user data from followed users
 
-13. **Share profile / collection link**
-    - Public profiles exist at `/u/[userId]` but there's no share button or easy copy-link
-    - No Open Graph / social meta tags for link previews
-    - This is the viral loop: share your profile on social media
+13. **Share profile / collection link** -- ✅ DONE
+    - Share button: `components/profile/share-profile-button.tsx`
+    - Share collection card: `components/profile/share-collection-card.tsx`
+    - OG image generation route: `app/api/og/collection/route.tsx`
+    - Uses Web Share API with fallback to clipboard
 
 ### P2 -- Nice-to-Have (Polish)
 
-14. **Interests/tags on profile**
-    - `UserProfile.interests` always returns `[]` (`lib/queries/profile.ts:36`)
-    - User's theme preferences could populate this automatically
-    - File: `lib/queries/profile.ts`
+14. **Interests/tags on profile** -- ✅ DONE
+    - `getUserProfile()` now maps user themes as interests, returning `interests: string[]`
+    - Pulls from user's theme preferences via `user_themes` table
 
-15. **Dark/light theme toggle in sidebar**
-    - `ThemeProvider` supports `enableSystem` but no user-facing toggle
-    - `components/shared/theme-selector.tsx` exists but is not wired into sidebar or settings
+15. **Dark/light theme toggle in sidebar** -- ✅ DONE
+    - `ThemeProvider` from next-themes set up in `app/layout.tsx`
+    - Theme selector wired into settings and onboarding
 
 16. **Set status tracking**
     - `VaultSetStatus` type defines `built`, `in-box`, `missing-parts`, `for-sale`
     - Cards display status badges BUT no UI to set/change status
     - `user_sets` table has no `status` column -- status is currently unused
 
-17. **Pagination on leaderboard**
-    - `lib/queries/leaderboard.ts` supports offset/limit but client likely loads all at once
-    - Need infinite scroll or page buttons for scale
+17. **Pagination on leaderboard** -- ✅ DONE
+    - `leaderboard-client.tsx` implements "Load More" button pattern with offset-based pagination
+    - Shows current user position card if not in visible list
 
 18. **Collection analytics dashboard**
     - Theme distribution chart
@@ -271,15 +254,15 @@
 
 ### CUT from v1 entirely:
 
-1. **Instagram-style feed with stories** -- The entire Home page feed (`components/home/feed.tsx`, `feed-post.tsx`, `stories-carousel.tsx`) should be replaced. Building a full social feed requires: image upload, content moderation, comment system, like system, bookmarks, stories with 24h expiry. This is 3-6 months of work on its own. Replace with a simpler dashboard.
+1. **Instagram-style feed with stories** -- ✅ DONE (CUT). Home page replaced with real dashboard. Old feed/stories components removed.
 
-2. **Post creation ("Post Build" CTA in sidebar)** -- Referenced nowhere in code but implied by feed design. Defer until feed infrastructure exists.
+2. **Post creation ("Post Build" CTA in sidebar)** -- Deferred until feed infrastructure exists.
 
-3. **Stories system** -- Instagram stories for a Lego tracker is feature creep. Kill it.
+3. **Stories system** -- ✅ DONE (CUT). Removed with the Home page redesign.
 
-4. **Review system with ratings** -- Mock data shows reviews with 9.8/10 ratings. No tables, no UI, no infrastructure. Defer.
+4. **Review system with ratings** -- Deferred. No tables, no UI, no infrastructure.
 
-5. **Email notifications** -- Toggle exists but no backend. Remove the toggle from Settings until email is implemented.
+5. **Email notifications** -- ✅ DONE (labeled "Coming soon" and disabled in settings).
 
 ### DEFER to v2:
 
@@ -295,25 +278,12 @@
 
 **The single feature that will make someone share this app:**
 
-### "My Lego Collection Card" -- a shareable profile card image
+### "My Lego Collection Card" -- a shareable profile card image -- ✅ DONE
 
-**Concept**: A beautiful, auto-generated card image (like Spotify Wrapped or GitHub contribution graph) that shows:
-- Username and avatar
-- Rank tier with icon
-- Brick score
-- Total sets / total pieces
-- Top 4 favorite sets as thumbnails
-- Top 3 themes
-- QR code linking to their public profile
-
-**Why this works:**
-1. **Zero friction to share** -- one tap generates the card, share to Instagram/Twitter/Reddit
-2. **FOMO-driven virality** -- seeing someone's collection card makes collectors want their own
-3. **Unique to LegoFlex** -- no competitor offers gamified collection cards
-4. **Leverages existing data** -- everything needed is already in the database
-5. **Targets the AFOL community** -- adult Lego fans are proud of their collections and active on social media
-
-**Implementation**: Server-side image generation using `@vercel/og` or `satori`. Route at `/api/card/[userId]` returns a PNG. Add "Share My Card" button to profile page.
+Implemented with:
+- OG image generation route at `app/api/og/collection/route.tsx`
+- Share Collection Card component with preview and share button (`components/profile/share-collection-card.tsx`)
+- Web Share API with fallback to clipboard
 
 **Secondary hook**: The **leaderboard + rank system** is already built and unique. Promote it as "What's your Lego rank?" -- competitive collectors will compare and share.
 
@@ -327,4 +297,4 @@ The biggest risk is the Home page -- it's 90% mock data creating a broken first 
 
 The app differentiates on three axes competitors ignore: **social features**, **gamification**, and **modern UI**. The roadmap should double down on these rather than chasing database completeness (prices, parts, instructions) where Brickset and Rebrickable have decade-long head starts.
 
-**Critical path to launch: P0 items (1-6) -> Set detail page (#7) -> Share card (#acquisition hook) -> Ship.**
+**Critical path to launch: ~~P0 items (1-6)~~ ✅ -> ~~Set detail page (#7)~~ ✅ -> ~~Share card (#acquisition hook)~~ ✅ -> Remaining items (#8, #9, #16, #18, #19, #20) -> Ship.**

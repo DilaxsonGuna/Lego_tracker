@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createNotification } from "@/lib/commands/notifications";
 
 /**
  * Follow a user
@@ -28,6 +29,13 @@ export async function followUser(followingId: string) {
     }
     return { error: error.message };
   }
+
+  // Send a follow notification to the target user
+  await createNotification({
+    userId: followingId,
+    type: "follow",
+    actorId: user.id,
+  });
 
   return { success: true };
 }

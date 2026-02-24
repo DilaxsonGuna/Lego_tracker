@@ -12,6 +12,9 @@ Lego yellow primary, warm dark palette. All tokens defined as CSS variables in `
 | Card/Surface | `#ffffff` | `#231f0f` | Card backgrounds |
 | Surface Accent | — | subtle accent | Hover states |
 | Border | — | `#36301a` | Borders (warm) |
+| Success | green | green | Positive states |
+| Warning | amber | amber | Caution states |
+| Info | blue | blue | Informational states |
 
 ## Spacing & Radius
 
@@ -19,7 +22,7 @@ Lego yellow primary, warm dark palette. All tokens defined as CSS variables in `
 
 ## Typography
 
-- Font: Inter (via `font-display` utility)
+- Font: Geist Sans (via `font-display` utility, loaded with `next/font`)
 - Weights: 400–800
 
 ## Custom CSS Utilities

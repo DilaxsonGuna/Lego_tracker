@@ -18,10 +18,10 @@ interface VaultCardProps {
 }
 
 const STATUS_VARIANTS: Record<VaultSetStatus, string> = {
-  built: "bg-green-500/80 text-white border-transparent hover:bg-green-500/70",
-  "in-box": "bg-blue-500/80 text-white border-transparent hover:bg-blue-500/70",
-  "missing-parts": "bg-amber-500/80 text-white border-transparent hover:bg-amber-500/70",
-  "for-sale": "bg-red-500/80 text-white border-transparent hover:bg-red-500/70",
+  built: "bg-green-700 text-white border-transparent hover:bg-green-700/90",
+  "in-box": "bg-blue-700 text-white border-transparent hover:bg-blue-700/90",
+  "missing-parts": "bg-amber-700 text-white border-transparent hover:bg-amber-700/90",
+  "for-sale": "bg-red-700 text-white border-transparent hover:bg-red-700/90",
 };
 
 const STATUS_LABELS: Record<VaultSetStatus, string> = {
@@ -74,11 +74,11 @@ export function VaultCard({ set, isSelected, onToggleSelect, isFavorite, onToggl
             style={{ backgroundImage: `url("${set.setImgUrl}")` }}
           />
           <div className="absolute bottom-2 right-2 flex gap-1">
-            <Badge variant="outline" className="bg-black/60 backdrop-blur-md text-[10px] font-bold px-2 py-0.5 text-white border-white/10">
+            <Badge variant="outline" className="bg-black/80 backdrop-blur-md text-xs font-bold px-2 py-0.5 text-white border-white/10">
               {set.setNum}
             </Badge>
             {set.status && (
-              <Badge className={`backdrop-blur-md text-[10px] font-bold px-2 py-0.5 uppercase ${STATUS_VARIANTS[set.status]}`}>
+              <Badge className={`backdrop-blur-md text-xs font-bold px-2 py-0.5 uppercase ${STATUS_VARIANTS[set.status]}`}>
                 {STATUS_LABELS[set.status]}
               </Badge>
             )}
@@ -91,7 +91,7 @@ export function VaultCard({ set, isSelected, onToggleSelect, isFavorite, onToggl
             {set.name}
           </h3>
           <div className="flex items-center mt-2">
-            <span className="text-[11px] text-muted-foreground">
+            <span className="text-xs text-muted-foreground">
               {set.year} &bull; {set.numParts.toLocaleString()} pcs
             </span>
           </div>

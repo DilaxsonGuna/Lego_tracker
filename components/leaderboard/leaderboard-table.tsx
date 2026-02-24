@@ -64,7 +64,7 @@ function LeaderboardRow({
           {entry.rank && (
             <Badge
               variant="outline"
-              className="w-fit text-[10px] font-bold px-2 py-0 mt-0.5"
+              className="w-fit text-xs font-bold px-2 py-0 mt-0.5"
             >
               {entry.rank.icon} {entry.rank.name}
             </Badge>
@@ -76,7 +76,7 @@ function LeaderboardRow({
       <div className="hidden sm:flex items-center gap-6 text-sm shrink-0">
         <div className="text-center">
           <div className="font-bold text-foreground">{entry.setsCount}</div>
-          <div className="text-[10px] text-muted-foreground uppercase">
+          <div className="text-xs text-muted-foreground uppercase">
             Sets
           </div>
         </div>
@@ -84,7 +84,7 @@ function LeaderboardRow({
           <div className="font-bold text-foreground">
             {entry.piecesCount.toLocaleString()}
           </div>
-          <div className="text-[10px] text-muted-foreground uppercase">
+          <div className="text-xs text-muted-foreground uppercase">
             Pieces
           </div>
         </div>
@@ -95,7 +95,7 @@ function LeaderboardRow({
         <div className="text-lg font-black text-primary">
           {entry.brickScore.toLocaleString()}
         </div>
-        <div className="text-[10px] text-muted-foreground uppercase">
+        <div className="text-xs text-muted-foreground uppercase">
           Brick Score
         </div>
       </div>

@@ -55,7 +55,7 @@ export function FollowingActivity({ items }: FollowingActivityProps) {
                 {" added "}
                 <span className="font-medium">{item.setName}</span>
               </p>
-              <p className="text-[10px] text-muted-foreground mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 {formatTimeAgo(item.addedAt)}
               </p>
             </div>

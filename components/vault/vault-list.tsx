@@ -12,8 +12,8 @@ interface VaultListProps {
 }
 
 const STATUS_VARIANTS: Partial<Record<VaultSetStatus, string>> = {
-  built: "bg-green-500/10 text-green-500 border-green-500/20",
-  "in-box": "bg-blue-500/10 text-blue-500 border-blue-500/20",
+  built: "bg-green-700/10 text-green-700 dark:text-green-400 border-green-700/20",
+  "in-box": "bg-blue-700/10 text-blue-700 dark:text-blue-400 border-blue-700/20",
 };
 
 const STATUS_LABELS: Partial<Record<VaultSetStatus, string>> = {
@@ -26,7 +26,7 @@ export function VaultList({ sets, selectedSets, onToggleSelect }: VaultListProps
     <div className="hidden sm:block bg-card/30 rounded-xl border border-border overflow-hidden">
       <table className="w-full text-left border-collapse">
         <thead>
-          <tr className="text-[11px] uppercase tracking-wider text-muted-foreground border-b border-border bg-background">
+          <tr className="text-xs uppercase tracking-wider text-muted-foreground border-b border-border bg-background">
             <th className="px-4 py-3 font-bold w-12">
               <span className="sr-only">Select</span>
             </th>
@@ -39,7 +39,7 @@ export function VaultList({ sets, selectedSets, onToggleSelect }: VaultListProps
             <th className="px-4 py-3 font-bold">Status</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-border/50">
+        <tbody className="divide-y divide-border">
           {sets.map((set) => (
             <tr
               key={set.setNum}
@@ -76,7 +76,7 @@ export function VaultList({ sets, selectedSets, onToggleSelect }: VaultListProps
               <td className="px-4 py-2">
                 {set.status && STATUS_VARIANTS[set.status] && (
                   <span
-                    className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border uppercase ${STATUS_VARIANTS[set.status]}`}
+                    className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-bold border uppercase ${STATUS_VARIANTS[set.status]}`}
                   >
                     {STATUS_LABELS[set.status]}
                   </span>

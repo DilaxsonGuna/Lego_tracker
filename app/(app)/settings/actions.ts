@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { updateProfileSettingSchema } from "@/lib/schemas";
 
 export type ProfileSettings = {
   profile_visible: boolean;
@@ -40,6 +41,11 @@ export async function getSettings(): Promise<ProfileSettings | null> {
 export async function updateProfileSetting(
   data: Partial<ProfileSettings>
 ): Promise<{ error?: string; success?: boolean }> {
+  const parsed = updateProfileSettingSchema.safeParse(data);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
+  }
+
   const supabase = await createClient();
 
   const {
@@ -53,7 +59,7 @@ export async function updateProfileSetting(
   const { error } = await supabase
     .from("profiles")
     .update({
-      ...data,
+      ...parsed.data,
       updated_at: new Date().toISOString(),
     })
     .eq("id", user.id);

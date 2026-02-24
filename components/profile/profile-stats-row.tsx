@@ -10,7 +10,7 @@ export function ProfileStatsRow({ stats }: ProfileStatsRowProps) {
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
       <Card className="bg-card/50 border-border">
         <CardContent className="p-4 sm:p-5">
-          <div className="text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-1">
+          <div className="text-muted-foreground text-xs font-black uppercase tracking-widest mb-1">
             Vault Value
           </div>
           <div className="text-xl font-bold text-foreground">
@@ -20,7 +20,7 @@ export function ProfileStatsRow({ stats }: ProfileStatsRowProps) {
       </Card>
       <Card className="bg-card/50 border-border">
         <CardContent className="p-4 sm:p-5">
-          <div className="text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-1">
+          <div className="text-muted-foreground text-xs font-black uppercase tracking-widest mb-1">
             Total Parts
           </div>
           <div className="text-xl font-bold text-foreground">
@@ -30,7 +30,7 @@ export function ProfileStatsRow({ stats }: ProfileStatsRowProps) {
       </Card>
       <Card className="bg-card/50 border-border">
         <CardContent className="p-4 sm:p-5">
-          <div className="text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-1">
+          <div className="text-muted-foreground text-xs font-black uppercase tracking-widest mb-1">
             Global Rank
           </div>
           <div className="text-xl font-bold text-primary">

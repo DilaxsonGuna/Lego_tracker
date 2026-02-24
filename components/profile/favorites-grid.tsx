@@ -10,7 +10,7 @@ export function FavoritesGrid({ favorites }: FavoritesGridProps) {
   return (
     <section className="mb-16">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">
+        <h3 className="text-xs font-black uppercase tracking-wider text-muted-foreground">
           {favorites.length > 0
             ? `Top ${favorites.length} Favorites`
             : "Favorites"}
@@ -27,7 +27,7 @@ export function FavoritesGrid({ favorites }: FavoritesGridProps) {
           {favorites.map((fav) => (
             <div
               key={fav.setNum}
-              className="group relative aspect-[3/4] overflow-hidden rounded-lg border border-border/50 transition-all hover:scale-[1.03] hover:border-primary/50 cursor-pointer"
+              className="group relative aspect-[3/4] overflow-hidden rounded-lg border border-border transition-all hover:scale-[1.03] hover:border-primary/50 cursor-pointer"
             >
               <div
                 className="size-full bg-cover bg-center grayscale-[0.3] group-hover:grayscale-0 transition-all"

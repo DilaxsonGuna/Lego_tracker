@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useTransition } from "react";
+import { useState, useMemo, useCallback, useTransition, useEffect } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -13,7 +13,9 @@ import {
   VaultList,
   VaultBulkActions,
 } from "@/components/vault";
-import { fetchVaultSets, moveToCollection, removeSetFromVault, toggleFavorite } from "./actions";
+import { MilestoneCelebration } from "@/components/profile/milestone-celebration";
+import { fetchVaultSets, moveToCollection, removeSetFromVault, toggleFavorite, checkMilestones } from "./actions";
+import { useMilestoneCheck } from "@/lib/hooks/use-milestone-check";
 import { PAGE_SIZE } from "@/lib/constants";
 import type { VaultSet, CollectionStats, WishlistStats, VaultViewMode, VaultSortOption } from "@/types/vault";
 import type { CollectionTab } from "@/types/lego-set";
@@ -91,6 +93,19 @@ export function VaultPageClient({
   const [sortOption, setSortOption] = useState<VaultSortOption>("recently-added");
   const [selectedSets, setSelectedSets] = useState<Set<string>>(new Set());
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Milestone celebration
+  const {
+    newMilestone,
+    celebrationOpen,
+    setCelebrationOpen,
+    checkMilestones: checkMilestonesLocal,
+  } = useMilestoneCheck();
+
+  // Seed milestones on mount
+  useEffect(() => {
+    checkMilestones().then(checkMilestonesLocal);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Local optimistic state for sets
   const [sets, setSets] = useState(initialSets);
@@ -218,11 +233,13 @@ export function VaultPageClient({
         toast.error(`Failed to move ${errors.length} set(s)`);
       } else {
         toast.success("Sets moved to collection");
+        // Check for new milestones after successful move
+        checkMilestones().then(checkMilestonesLocal);
       }
     } finally {
       setIsProcessing(false);
     }
-  }, [selectedSets]);
+  }, [selectedSets, checkMilestonesLocal]);
 
   const handleBulkRemove = useCallback(async () => {
     setIsProcessing(true);
@@ -337,6 +354,12 @@ export function VaultPageClient({
         onRemove={handleBulkRemove}
         onMoveToCollection={handleMoveToCollection}
         isProcessing={isProcessing}
+      />
+
+      <MilestoneCelebration
+        milestone={newMilestone}
+        open={celebrationOpen}
+        onOpenChange={setCelebrationOpen}
       />
     </main>
   );

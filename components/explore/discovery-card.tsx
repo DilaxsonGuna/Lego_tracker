@@ -40,7 +40,7 @@ export function DiscoveryCard({
         {/* Year badge (top-left) */}
         {set.year && (
           <div className="absolute top-3 left-3">
-            <Badge variant="outline" className="bg-black/60 backdrop-blur-md text-xs font-bold px-2.5 py-1 rounded-md text-primary border-primary/20">
+            <Badge variant="outline" className="bg-black/80 backdrop-blur-md text-xs font-bold px-2.5 py-1 rounded-md text-primary border-primary/20">
               {set.year}
             </Badge>
           </div>
@@ -81,7 +81,7 @@ export function DiscoveryCard({
         {/* Theme badge (bottom-left) */}
         {set.theme && (
           <div className="absolute bottom-3 left-3">
-            <Badge className="bg-primary/90 backdrop-blur-sm text-[10px] font-bold px-2.5 py-1 rounded-md text-primary-foreground uppercase tracking-wide line-clamp-1 max-w-[220px] border-transparent hover:bg-primary/80">
+            <Badge className="bg-primary/90 backdrop-blur-sm text-xs font-bold px-2.5 py-1 rounded-md text-primary-foreground uppercase tracking-wide line-clamp-1 max-w-[220px] border-transparent hover:bg-primary/80">
               {set.theme}
             </Badge>
           </div>

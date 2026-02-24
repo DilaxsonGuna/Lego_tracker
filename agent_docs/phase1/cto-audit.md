@@ -861,45 +861,45 @@ No `robots.txt` or sitemap configuration exists. Public profiles at `/u/[userId]
 
 ### Tier 1: Critical Fixes (Blocks Deployment)
 
-| # | Issue | Effort | Files |
-|---|-------|--------|-------|
-| 1 | Create `middleware.ts` from existing `proxy.ts` (CRIT-1) | 1 hour | `/middleware.ts` |
-| 2 | Fix RLS policies for public profiles (CRIT-2) | 2 hours | Migration file |
-| 3 | Regenerate Supabase types (CRIT-3) | 30 min | `/types/supabase.ts` |
-| 4 | Create missing migration files (DB-1) | 3 hours | `/supabase/migrations/` |
-| 5 | Fix `revalidateTag` call (CQ-1) | 5 min | `/app/(app)/explore/actions.ts` |
-| 6 | Fix explore actions to use command layer (CQ-3, CQ-4) | 30 min | `/app/(app)/explore/actions.ts` |
-| 7 | Update root layout metadata (DEP-1) | 5 min | `/app/layout.tsx` |
-| 8 | Pin dependency versions (DEP-2) | 15 min | `/package.json` |
+| # | Issue | Effort | Files | Status |
+|---|-------|--------|-------|--------|
+| 1 | Create `middleware.ts` from existing `proxy.ts` (CRIT-1) | 1 hour | `/proxy.ts` | ✅ DONE (via `proxy.ts`) |
+| 2 | Fix RLS policies for public profiles (CRIT-2) | 2 hours | Migration file | ✅ DONE (migration 007) |
+| 3 | Regenerate Supabase types (CRIT-3) | 30 min | `/types/supabase.ts` | ❌ TODO -- `brick_score`, `sets_count`, `pieces_count`, `user_themes`, `search_sets` still missing |
+| 4 | Create missing migration files (DB-1) | 3 hours | `/supabase/migrations/` | ❌ TODO |
+| 5 | Fix `revalidateTag` call (CQ-1) | 5 min | `/app/(app)/explore/actions.ts` | ❌ TODO -- still passes 2 arguments |
+| 6 | Fix explore actions to use command layer (CQ-3, CQ-4) | 30 min | `/app/(app)/explore/actions.ts` | ✅ DONE |
+| 7 | Update root layout metadata (DEP-1) | 5 min | `/app/layout.tsx` | ✅ DONE |
+| 8 | Pin dependency versions (DEP-2) | 15 min | `/package.json` | ❌ TODO -- still `"latest"` |
 
 ### Tier 2: Security & Performance (Pre-Launch)
 
-| # | Issue | Effort | Files |
-|---|-------|--------|-------|
-| 9 | Add Zod validation to all server actions (SEC-2) | 4 hours | All `actions.ts` |
-| 10 | Enforce `profile_visible` on public routes (SEC-4) | 2 hours | `/app/(app)/u/[userId]/*` |
-| 11 | Replace `calculateGlobalPosition` N+1 query (PERF-1) | 30 min | `/lib/queries/profile.ts` |
-| 12 | Consolidate `getUser()` calls per page (PERF-2, PERF-3) | 3 hours | All page.tsx + actions.ts |
-| 13 | Add `error.tsx` boundaries (PERF-7) | 1 hour | `/app/error.tsx`, `/app/(app)/error.tsx` |
-| 14 | Add database CHECK constraint on collection_type (DB-2) | 15 min | Migration file |
-| 15 | Add missing indexes (DB-3) | 30 min | Migration file |
-| 16 | Document `NEXT_PUBLIC_SITE_URL` env var (DEP-3) | 10 min | CLAUDE.md, .env.local |
-| 17 | Add `collection_type` CHECK constraint (DB-2) | 15 min | Migration file |
+| # | Issue | Effort | Files | Status |
+|---|-------|--------|-------|--------|
+| 9 | Add Zod validation to all server actions (SEC-2) | 4 hours | All `actions.ts` | ✅ DONE (Zod installed, schemas in `lib/schemas/`) |
+| 10 | Enforce `profile_visible` on public routes (SEC-4) | 2 hours | `/app/(app)/u/[userId]/*` | ✅ DONE |
+| 11 | Replace `calculateGlobalPosition` N+1 query (PERF-1) | 30 min | `/lib/queries/profile.ts` | ❌ TODO -- profile.ts still loads ALL users' sets; home.ts uses efficient approach but profile.ts does not |
+| 12 | Consolidate `getUser()` calls per page (PERF-2, PERF-3) | 3 hours | All page.tsx + actions.ts | ❌ TODO |
+| 13 | Add `error.tsx` boundaries (PERF-7) | 1 hour | `/app/error.tsx`, `/app/(app)/error.tsx` | ✅ DONE (`app/(app)/error.tsx` exists) |
+| 14 | Add database CHECK constraint on collection_type (DB-2) | 15 min | Migration file | ❌ TODO |
+| 15 | Add missing indexes (DB-3) | 30 min | Migration file | ❌ TODO |
+| 16 | Document `NEXT_PUBLIC_SITE_URL` env var (DEP-3) | 10 min | CLAUDE.md, .env.local | ❌ TODO |
+| 17 | Add `collection_type` CHECK constraint (DB-2) | 15 min | Migration file | ❌ TODO (duplicate of #14) |
 
 ### Tier 3: Infrastructure Improvements (Post-Launch)
 
-| # | Issue | Effort | Files |
-|---|-------|--------|-------|
-| 18 | Add database trigger for max-4-favorites (DB-5) | 30 min | Migration file |
-| 19 | Optimize `getVaultThemes` with DISTINCT query (PERF-5) | 30 min | `/lib/queries/vault.ts` |
-| 20 | Optimize `getPopularThemes` with SQL aggregation (PERF-6) | 1 hour | `/lib/queries/user-themes.ts` |
-| 21 | Create `getAuthenticatedUser()` helper (CQ-2) | 2 hours | `/lib/supabase/auth.ts` + refactor |
-| 22 | Replace `as unknown as` casts with proper types (CQ-5) | 3 hours | `/lib/queries/*.ts` |
-| 23 | Add error logging to all query functions (CQ-7) | 2 hours | `/lib/queries/*.ts` |
-| 24 | Add `robots.txt` and sitemap (DEP-6) | 1 hour | `/app/robots.ts`, `/app/sitemap.ts` |
-| 25 | Set up monitoring (Sentry or Vercel Analytics) | 2 hours | Config + package |
-| 26 | Add rate limiting on auth endpoints | 3 hours | Middleware or Supabase config |
-| 27 | Parallelize sequential queries in `getVaultSets` (PERF-4) | 30 min | `/lib/queries/vault.ts` |
+| # | Issue | Effort | Files | Status |
+|---|-------|--------|-------|--------|
+| 18 | Add database trigger for max-4-favorites (DB-5) | 30 min | Migration file | ❌ TODO |
+| 19 | Optimize `getVaultThemes` with DISTINCT query (PERF-5) | 30 min | `/lib/queries/vault.ts` | ❌ TODO |
+| 20 | Optimize `getPopularThemes` with SQL aggregation (PERF-6) | 1 hour | `/lib/queries/user-themes.ts` | ❌ TODO |
+| 21 | Create `getAuthenticatedUser()` helper (CQ-2) | 2 hours | `/lib/supabase/auth.ts` + refactor | ❌ TODO |
+| 22 | Replace `as unknown as` casts with proper types (CQ-5) | 3 hours | `/lib/queries/*.ts` | ❌ TODO |
+| 23 | Add error logging to all query functions (CQ-7) | 2 hours | `/lib/queries/*.ts` | ❌ TODO |
+| 24 | Add `robots.txt` and sitemap (DEP-6) | 1 hour | `/app/robots.ts`, `/app/sitemap.ts` | ❌ TODO |
+| 25 | Set up monitoring (Sentry or Vercel Analytics) | 2 hours | Config + package | ❌ TODO |
+| 26 | Add rate limiting on auth endpoints | 3 hours | Middleware or Supabase config | ❌ TODO |
+| 27 | Parallelize sequential queries in `getVaultSets` (PERF-4) | 30 min | `/lib/queries/vault.ts` | ❌ TODO |
 
 ### Estimated Total Effort
 
@@ -918,17 +918,17 @@ The PM identified 6 P0 items. Here is the technical alignment:
 
 | PM P0 | CTO Finding | Status |
 |-------|-------------|--------|
-| P0-1: Fix root layout metadata | DEP-1 | Aligned -- 5 min fix |
-| P0-2: Replace mock data on Home | Not a CTO concern (product decision) | Aligned on recommendation to replace with dashboard |
-| P0-3: Remove non-functional UI | Not a CTO concern (product decision) | Agreed |
-| P0-4: Add middleware | CRIT-1 | Aligned -- proxy.ts exists, just needs wiring |
-| P0-5: Enforce profile_visible | SEC-4 | Aligned, but CRIT-2 (RLS) must be fixed first or public profiles show nothing |
-| P0-6: email_notifications toggle | Not a CTO concern | Agreed, remove or label "coming soon" |
+| P0-1: Fix root layout metadata | DEP-1 | ✅ DONE |
+| P0-2: Replace mock data on Home | Not a CTO concern (product decision) | ✅ DONE -- replaced with real dashboard |
+| P0-3: Remove non-functional UI | Not a CTO concern (product decision) | ✅ DONE |
+| P0-4: Add middleware | CRIT-1 | ✅ DONE -- wired via `proxy.ts` |
+| P0-5: Enforce profile_visible | SEC-4 | ✅ DONE -- both profile and vault pages check flag |
+| P0-6: email_notifications toggle | Not a CTO concern | ✅ DONE -- labeled "Coming soon" and disabled |
 
 **Additional CTO-only blockers the PM did not identify:**
-- CRIT-2: RLS policies silently break public profiles (PM listed public profiles as "Working")
-- CRIT-3: Stale Supabase types (leaderboard may crash in production)
-- CQ-3/CQ-4: Explore page mutations bypass stat recalculation (leaderboard shows stale data)
+- CRIT-2: RLS policies silently break public profiles -- ✅ DONE (migration 007)
+- CRIT-3: Stale Supabase types -- ❌ STILL TODO (leaderboard may crash in production)
+- CQ-3/CQ-4: Explore page mutations bypass stat recalculation -- ✅ DONE (now uses command layer)
 
 ---
 

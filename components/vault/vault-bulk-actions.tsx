@@ -3,6 +3,17 @@
 import { Package, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import type { CollectionTab } from "@/types/lego-set";
 
 interface VaultBulkActionsProps {
@@ -16,7 +27,7 @@ interface VaultBulkActionsProps {
 
 export function VaultBulkActions({
   selectedCount,
-  selectedSetNums,
+  selectedSetNums: _selectedSetNums,
   activeTab,
   onRemove,
   onMoveToCollection,
@@ -38,7 +49,7 @@ export function VaultBulkActions({
             size="sm"
             onClick={onMoveToCollection}
             disabled={isProcessing}
-            className="text-xs font-bold text-gray-300 hover:text-primary hover:bg-transparent px-3 py-1.5 h-auto"
+            className="text-xs font-bold text-muted-foreground hover:text-primary hover:bg-primary/10 px-3 py-1.5 h-auto"
           >
             {isProcessing ? (
               <Loader2 className="size-[18px] animate-spin" />
@@ -49,20 +60,40 @@ export function VaultBulkActions({
           </Button>
         )}
 
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onRemove}
-          disabled={isProcessing}
-          className="text-xs font-bold text-red-400 hover:text-red-300 hover:bg-transparent px-3 py-1.5 h-auto"
-        >
-          {isProcessing ? (
-            <Loader2 className="size-[18px] animate-spin" />
-          ) : (
-            <Trash2 className="size-[18px]" />
-          )}
-          Remove
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={isProcessing}
+              className="text-xs font-bold text-destructive hover:text-destructive hover:bg-destructive/10 px-3 py-1.5 h-auto"
+            >
+              {isProcessing ? (
+                <Loader2 className="size-[18px] animate-spin" />
+              ) : (
+                <Trash2 className="size-[18px]" />
+              )}
+              Remove
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Remove {selectedCount} set{selectedCount !== 1 ? "s" : ""}?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                This will remove the selected sets from your vault. This action
+                cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction variant="destructive" onClick={onRemove}>
+                Remove
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );

@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { MobileHeader } from "./mobile-header";
+import { NotificationBellWrapper } from "./notification-bell-wrapper";
 import { NAV_ITEMS } from "@/lib/constants";
 
 async function getUser() {
@@ -26,5 +28,15 @@ async function getUser() {
 
 export async function MobileHeaderWrapper() {
   const user = await getUser();
-  return <MobileHeader navItems={NAV_ITEMS} user={user} />;
+  return (
+    <MobileHeader
+      navItems={NAV_ITEMS}
+      user={user}
+      notificationSlot={
+        <Suspense>
+          <NotificationBellWrapper />
+        </Suspense>
+      }
+    />
+  );
 }

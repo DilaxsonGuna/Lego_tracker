@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { isUsernameAvailable } from "@/lib/queries/profile";
+import { createProfileSchema, checkUsernameSchema } from "@/lib/schemas";
 import type { ThemeCategory } from "@/types/explore";
 
 export interface OnboardingResult {
@@ -21,6 +22,15 @@ export async function createProfile(data: {
   dateOfBirth?: string;
   themeIds?: number[];
 }): Promise<OnboardingResult> {
+  const parsed = createProfileSchema.safeParse(data);
+  if (!parsed.success) {
+    const usernameError = parsed.error.issues.find((i) => i.path[0] === "username");
+    return {
+      error: parsed.error.issues[0].message,
+      fieldErrors: usernameError ? { username: usernameError.message } : undefined,
+    };
+  }
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -30,24 +40,7 @@ export async function createProfile(data: {
     return { error: "Not authenticated" };
   }
 
-  // Validate username format
-  const username = data.username.trim().toLowerCase();
-
-  if (username.length < 3 || username.length > 20) {
-    return {
-      error: "Username must be 3-20 characters",
-      fieldErrors: { username: "Username must be 3-20 characters" },
-    };
-  }
-
-  if (!/^[a-z0-9_]+$/.test(username)) {
-    return {
-      error: "Username can only contain letters, numbers, and underscores",
-      fieldErrors: {
-        username: "Username can only contain letters, numbers, and underscores",
-      },
-    };
-  }
+  const username = parsed.data.username;
 
   // Check username availability
   const available = await isUsernameAvailable(username, user.id);
@@ -63,11 +56,11 @@ export async function createProfile(data: {
     {
       id: user.id,
       username,
-      full_name: data.fullName?.trim() || null,
-      avatar_url: data.avatarUrl || null,
-      bio: data.bio?.trim() || null,
-      location: data.location?.trim() || null,
-      date_of_birth: data.dateOfBirth || null,
+      full_name: parsed.data.fullName?.trim() || null,
+      avatar_url: parsed.data.avatarUrl || null,
+      bio: parsed.data.bio?.trim() || null,
+      location: parsed.data.location?.trim() || null,
+      date_of_birth: parsed.data.dateOfBirth || null,
       updated_at: new Date().toISOString(),
     },
     { onConflict: "id" }
@@ -78,9 +71,9 @@ export async function createProfile(data: {
   }
 
   // Save theme preferences if provided
-  if (data.themeIds && data.themeIds.length > 0) {
+  if (parsed.data.themeIds && parsed.data.themeIds.length > 0) {
     const { setUserThemes } = await import("@/lib/commands/user-themes");
-    const themeResult = await setUserThemes(data.themeIds);
+    const themeResult = await setUserThemes(parsed.data.themeIds);
     if (themeResult.error) {
       // Theme save failed but profile was created - don't block onboarding
       console.error("Failed to save themes:", themeResult.error);
@@ -93,12 +86,17 @@ export async function createProfile(data: {
 export async function checkUsernameAvailability(
   username: string
 ): Promise<{ available: boolean }> {
+  const parsed = checkUsernameSchema.safeParse({ username });
+  if (!parsed.success) {
+    return { available: false };
+  }
+
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const trimmed = username.trim().toLowerCase();
+  const trimmed = parsed.data.username.trim().toLowerCase();
 
   // Basic validation
   if (trimmed.length < 3) {

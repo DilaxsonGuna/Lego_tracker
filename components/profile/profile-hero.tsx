@@ -1,12 +1,18 @@
 "use client";
 
-import { BadgeCheck } from "lucide-react";
+import { useState } from "react";
+import Link from "next/link";
+import { BadgeCheck, Share2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { ShareCollectionCard } from "./share-collection-card";
+import { ShareProfileButton } from "./share-profile-button";
 import { UserProfile, UserStats } from "@/types/profile";
 
 interface ProfileHeroProps {
   user: UserProfile;
   stats?: UserStats | null;
+  isOwnProfile?: boolean;
 }
 
 function formatCount(n: number): string {
@@ -14,7 +20,8 @@ function formatCount(n: number): string {
   return n.toString();
 }
 
-export function ProfileHero({ user, stats }: ProfileHeroProps) {
+export function ProfileHero({ user, stats, isOwnProfile = true }: ProfileHeroProps) {
+  const [shareOpen, setShareOpen] = useState(false);
   const rank = stats?.rank;
   const displayRole = rank ? `${rank.icon} ${rank.name}` : "Collector";
 
@@ -46,38 +53,59 @@ export function ProfileHero({ user, stats }: ProfileHeroProps) {
         </div>
 
         <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/30 px-5 py-1.5 mb-6">
-          <span className="text-xs font-black uppercase tracking-[0.2em] text-primary">
+          <span className="text-xs font-black uppercase tracking-wider text-primary">
             {displayRole}
           </span>
         </div>
 
         {/* Social Stats */}
-        <div className="flex items-center justify-center gap-6 sm:gap-10 py-6 border-y border-border/50">
-          <div className="text-center">
+        <div className="flex items-center justify-center gap-6 sm:gap-10 py-6 border-y border-border">
+          <Link href={`/u/${user.id}/followers`} className="text-center hover:opacity-80 transition-opacity">
             <div className="text-xl sm:text-2xl font-bold text-foreground leading-none">
               {formatCount(user.followers)}
             </div>
-            <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mt-1">
+            <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">
               Followers
             </div>
-          </div>
-          <div className="text-center">
+          </Link>
+          <Link href={`/u/${user.id}/following`} className="text-center hover:opacity-80 transition-opacity">
             <div className="text-xl sm:text-2xl font-bold text-foreground leading-none">
               {formatCount(user.following)}
             </div>
-            <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mt-1">
+            <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">
               Following
             </div>
-          </div>
+          </Link>
           <div className="text-center">
             <div className="text-xl sm:text-2xl font-bold text-foreground leading-none">
               {formatCount(user.friends)}
             </div>
-            <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mt-1">
+            <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">
               Friends
             </div>
           </div>
         </div>
+
+        {/* Share buttons - own profile only */}
+        {isOwnProfile && (
+          <div className="mt-6 flex items-center gap-3">
+            <ShareProfileButton userId={user.id} username={user.username} />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShareOpen(true)}
+              className="gap-2"
+            >
+              <Share2 className="size-4" />
+              Share Collection Card
+            </Button>
+            <ShareCollectionCard
+              userId={user.id}
+              open={shareOpen}
+              onOpenChange={setShareOpen}
+            />
+          </div>
+        )}
       </div>
     </header>
   );

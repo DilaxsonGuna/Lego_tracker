@@ -6,3 +6,6 @@ export { RankProgressCard } from "./rank-progress";
 export { MilestoneVault } from "./milestone-vault";
 export { ProfileFooter } from "./profile-footer";
 export { StudPatternBg } from "./stud-pattern-bg";
+export { ShareProfileButton } from "./share-profile-button";
+export { ShareCollectionCard } from "./share-collection-card";
+export { MilestoneCelebration } from "./milestone-celebration";

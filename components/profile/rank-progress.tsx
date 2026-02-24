@@ -52,7 +52,7 @@ export function RankProgressCard({ progress, brickScore }: RankProgressCardProps
               <div className="text-lg font-bold text-foreground">
                 {brickScore.toLocaleString()}
               </div>
-              <div className="text-[10px] text-muted-foreground uppercase tracking-wide">
+              <div className="text-xs text-muted-foreground uppercase tracking-wide">
                 Brick Score
               </div>
             </div>
@@ -82,7 +82,7 @@ export function RankProgressCard({ progress, brickScore }: RankProgressCardProps
             <div className="text-lg font-bold text-foreground">
               {brickScore.toLocaleString()}
             </div>
-            <div className="text-[10px] text-muted-foreground uppercase tracking-wide">
+            <div className="text-xs text-muted-foreground uppercase tracking-wide">
               Brick Score
             </div>
           </div>
