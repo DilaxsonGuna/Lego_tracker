@@ -70,9 +70,7 @@ export function ThemeFilterModal({
   const filteredThemes = useMemo(() => {
     if (!searchQuery.trim()) return allThemes;
     const query = removeAccents(searchQuery.toLowerCase());
-    return allThemes.filter((theme) =>
-      removeAccents(theme.label.toLowerCase()).includes(query)
-    );
+    return allThemes.filter((theme) => removeAccents(theme.label.toLowerCase()).includes(query));
   }, [allThemes, searchQuery]);
 
   const renderThemeBadge = (theme: ThemeCategory) => {
@@ -97,8 +95,6 @@ export function ThemeFilterModal({
       </Badge>
     );
   };
-
-  const hasChanges = JSON.stringify(localSelection.sort()) !== JSON.stringify(selectedThemeIds.sort());
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -129,7 +125,7 @@ export function ThemeFilterModal({
               filteredThemes.map((theme) => renderThemeBadge(theme))
             ) : (
               <p className="text-sm text-muted-foreground">
-                No themes found matching "{searchQuery}"
+                No themes found matching &ldquo;{searchQuery}&rdquo;
               </p>
             )}
           </div>
@@ -154,11 +150,7 @@ export function ThemeFilterModal({
               </Button>
             )}
           </div>
-          <Button
-            type="button"
-            onClick={handleApply}
-            className="rounded-lg"
-          >
+          <Button type="button" onClick={handleApply} className="rounded-lg">
             Apply Filter
           </Button>
         </div>

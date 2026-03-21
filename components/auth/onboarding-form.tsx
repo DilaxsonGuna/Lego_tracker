@@ -3,13 +3,7 @@
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,7 +17,7 @@ import {
 } from "@/app/auth/onboarding/actions";
 import type { ThemeCategory } from "@/types/explore";
 
-interface OnboardingFormProps extends React.ComponentPropsWithoutRef<"div"> {}
+type OnboardingFormProps = React.ComponentPropsWithoutRef<"div">;
 
 export function OnboardingForm({ className, ...props }: OnboardingFormProps) {
   const [username, setUsername] = useState("");
@@ -34,9 +28,7 @@ export function OnboardingForm({ className, ...props }: OnboardingFormProps) {
   const [avatarColor, setAvatarColor] = useState("blue");
   const [error, setError] = useState<string | null>(null);
   const [usernameError, setUsernameError] = useState<string | null>(null);
-  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(
-    null
-  );
+  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [selectedThemes, setSelectedThemes] = useState<number[]>([]);
@@ -45,12 +37,10 @@ export function OnboardingForm({ className, ...props }: OnboardingFormProps) {
 
   // Fetch available and popular themes on mount
   useEffect(() => {
-    Promise.all([getAvailableThemes(), getPopularThemesAction()]).then(
-      ([available, popular]) => {
-        setAvailableThemes(available);
-        setPopularThemes(popular);
-      }
-    );
+    Promise.all([getAvailableThemes(), getPopularThemesAction()]).then(([available, popular]) => {
+      setAvailableThemes(available);
+      setPopularThemes(popular);
+    });
   }, []);
 
   // Debounced username availability check
@@ -108,17 +98,14 @@ export function OnboardingForm({ className, ...props }: OnboardingFormProps) {
     window.location.href = "/";
   };
 
-  const isFormValid =
-    username.length >= 3 && !usernameError && usernameAvailable !== false;
+  const isFormValid = username.length >= 3 && !usernameError && usernameAvailable !== false;
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Complete Your Profile</CardTitle>
-          <CardDescription>
-            Tell us about yourself to get started
-          </CardDescription>
+          <CardDescription>Tell us about yourself to get started</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
@@ -127,10 +114,7 @@ export function OnboardingForm({ className, ...props }: OnboardingFormProps) {
               <div className="grid gap-3">
                 <Label>Choose Your Avatar</Label>
                 <div className="flex justify-center py-2">
-                  <AvatarSelector
-                    value={avatarColor}
-                    onChange={setAvatarColor}
-                  />
+                  <AvatarSelector value={avatarColor} onChange={setAvatarColor} />
                 </div>
               </div>
 
@@ -147,24 +131,16 @@ export function OnboardingForm({ className, ...props }: OnboardingFormProps) {
                   minLength={3}
                   maxLength={20}
                   value={username}
-                  onChange={(e) =>
-                    setUsername(e.target.value.toLowerCase().replace(/\s/g, ""))
-                  }
+                  onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/\s/g, ""))}
                   className={cn(
                     usernameError && "border-destructive",
-                    usernameAvailable === true &&
-                      username.length >= 3 &&
-                      "border-green-500"
+                    usernameAvailable === true && username.length >= 3 && "border-green-500"
                   )}
                 />
                 {isCheckingUsername && (
-                  <p className="text-sm text-muted-foreground">
-                    Checking availability...
-                  </p>
+                  <p className="text-sm text-muted-foreground">Checking availability...</p>
                 )}
-                {usernameError && (
-                  <p className="text-sm text-destructive">{usernameError}</p>
-                )}
+                {usernameError && <p className="text-sm text-destructive">{usernameError}</p>}
                 {usernameAvailable === true && username.length >= 3 && (
                   <p className="text-sm text-green-500">Username available</p>
                 )}
@@ -197,9 +173,7 @@ export function OnboardingForm({ className, ...props }: OnboardingFormProps) {
                   rows={3}
                   className="resize-none"
                 />
-                <p className="text-xs text-muted-foreground text-right">
-                  {bio.length}/160
-                </p>
+                <p className="text-xs text-muted-foreground text-right">{bio.length}/160</p>
               </div>
 
               {/* Location */}
@@ -230,8 +204,7 @@ export function OnboardingForm({ className, ...props }: OnboardingFormProps) {
                 <div className="grid gap-3">
                   <Label>Favorite Themes</Label>
                   <p className="text-xs text-muted-foreground">
-                    Select up to 10 themes to personalize your explore page
-                    (optional)
+                    Select up to 10 themes to personalize your explore page (optional)
                   </p>
                   <ThemeSelector
                     availableThemes={availableThemes}
@@ -245,11 +218,7 @@ export function OnboardingForm({ className, ...props }: OnboardingFormProps) {
 
               {error && <p className="text-sm text-destructive">{error}</p>}
 
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isLoading || !isFormValid}
-              >
+              <Button type="submit" className="w-full" disabled={isLoading || !isFormValid}>
                 {isLoading ? "Creating Profile..." : "Get Started"}
               </Button>
             </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useTransition } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Search, Loader2, Box, Users, Palette, SearchX } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -10,12 +10,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/shared/empty-state";
 import { performSearch } from "@/app/(app)/search/actions";
-import type {
-  SearchTab,
-  SearchSet,
-  SearchUser,
-  SearchTheme,
-} from "@/types/search";
+import type { SearchTab, SearchSet, SearchUser, SearchTheme } from "@/types/search";
 
 interface SearchPageClientProps {
   initialQuery: string;
@@ -39,7 +34,6 @@ export function SearchPageClient({
   initialThemes,
 }: SearchPageClientProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [query, setQuery] = useState(initialQuery);
   const [tab, setTab] = useState<SearchTab>(initialTab);
   const [sets, setSets] = useState<SearchSet[] | null>(initialSets);
@@ -86,8 +80,7 @@ export function SearchPageClient({
   }, []);
 
   const hasQuery = query.trim().length > 0;
-  const currentResults =
-    tab === "sets" ? sets : tab === "users" ? users : themes;
+  const currentResults = tab === "sets" ? sets : tab === "users" ? users : themes;
   const isEmpty = hasQuery && currentResults !== null && currentResults.length === 0;
 
   return (
@@ -179,13 +172,9 @@ export function SearchPageClient({
                   )}
                 </div>
                 <div className="p-4 flex flex-col gap-1">
-                  <h3 className="text-sm font-bold text-foreground line-clamp-1">
-                    {set.name}
-                  </h3>
+                  <h3 className="text-sm font-bold text-foreground line-clamp-1">{set.name}</h3>
                   <div className="flex justify-between items-center">
-                    <span className="text-xs font-mono text-muted-foreground">
-                      #{set.setNum}
-                    </span>
+                    <span className="text-xs font-mono text-muted-foreground">#{set.setNum}</span>
                     <span className="text-xs text-muted-foreground">
                       {set.numParts.toLocaleString()} pcs
                     </span>
@@ -217,9 +206,7 @@ export function SearchPageClient({
                     }}
                     className="text-white font-bold"
                   >
-                    {user.username
-                      ? user.username.charAt(0).toUpperCase()
-                      : "?"}
+                    {user.username ? user.username.charAt(0).toUpperCase() : "?"}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col min-w-0">
@@ -227,9 +214,7 @@ export function SearchPageClient({
                     @{user.username}
                   </span>
                   {user.fullName && (
-                    <span className="text-xs text-muted-foreground truncate">
-                      {user.fullName}
-                    </span>
+                    <span className="text-xs text-muted-foreground truncate">{user.fullName}</span>
                   )}
                 </div>
               </Link>
@@ -249,13 +234,9 @@ export function SearchPageClient({
                   <Palette className="size-5 text-primary" />
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <span className="text-sm font-bold text-foreground">
-                    {theme.name}
-                  </span>
+                  <span className="text-sm font-bold text-foreground">{theme.name}</span>
                   {theme.parentName && (
-                    <span className="text-xs text-muted-foreground">
-                      {theme.parentName}
-                    </span>
+                    <span className="text-xs text-muted-foreground">{theme.parentName}</span>
                   )}
                 </div>
               </div>

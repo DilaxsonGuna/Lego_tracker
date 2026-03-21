@@ -7,7 +7,6 @@ import { BadgeCheck, UserPlus, UserMinus, Lock } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
-  FavoritesGrid,
   ProfileBio,
   ProfileStatsRow,
   RankProgressCard,
@@ -85,9 +84,7 @@ export function PublicProfileClient({
             <h1 className="text-5xl font-black tracking-tighter text-foreground">
               @{user.username}
             </h1>
-            {user.isVerified && (
-              <BadgeCheck className="size-7 text-blue-400 fill-blue-400" />
-            )}
+            {user.isVerified && <BadgeCheck className="size-7 text-blue-400 fill-blue-400" />}
           </div>
 
           <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/30 px-5 py-1.5 mb-6">
@@ -123,7 +120,10 @@ export function PublicProfileClient({
 
           {/* Social Stats */}
           <div className="flex items-center justify-center gap-10 py-6 border-y border-border">
-            <Link href={`/u/${targetUserId}/followers`} className="text-center hover:opacity-80 transition-opacity">
+            <Link
+              href={`/u/${targetUserId}/followers`}
+              className="text-center hover:opacity-80 transition-opacity"
+            >
               <div className="text-2xl font-bold text-foreground leading-none">
                 {formatCount(user.followers)}
               </div>
@@ -131,7 +131,10 @@ export function PublicProfileClient({
                 Followers
               </div>
             </Link>
-            <Link href={`/u/${targetUserId}/following`} className="text-center hover:opacity-80 transition-opacity">
+            <Link
+              href={`/u/${targetUserId}/following`}
+              className="text-center hover:opacity-80 transition-opacity"
+            >
               <div className="text-2xl font-bold text-foreground leading-none">
                 {formatCount(user.following)}
               </div>
@@ -187,10 +190,7 @@ export function PublicProfileClient({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2 space-y-8">
           <ProfileBio user={user} />
-          <RankProgressCard
-            progress={stats.rankProgress}
-            brickScore={stats.brickScore}
-          />
+          <RankProgressCard progress={stats.rankProgress} brickScore={stats.brickScore} />
           <ProfileStatsRow stats={stats} />
         </div>
         <MilestoneVault milestones={milestones} />

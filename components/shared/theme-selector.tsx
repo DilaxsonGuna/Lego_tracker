@@ -57,8 +57,7 @@ export function ThemeSelector({
     // Get selected themes that aren't in popular list
     const selectedNotInPopular = allThemes.filter(
       (theme) =>
-        selectedThemeIds.includes(theme.id as number) &&
-        !popularIds.has(theme.id as number)
+        selectedThemeIds.includes(theme.id as number) && !popularIds.has(theme.id as number)
     );
 
     return [...popularThemes, ...selectedNotInPopular];
@@ -68,12 +67,10 @@ export function ThemeSelector({
   const filteredThemes = useMemo(() => {
     if (!searchQuery.trim()) return allThemes;
     const query = searchQuery.toLowerCase();
-    return allThemes.filter((theme) =>
-      theme.label.toLowerCase().includes(query)
-    );
+    return allThemes.filter((theme) => theme.label.toLowerCase().includes(query));
   }, [allThemes, searchQuery]);
 
-  const renderThemeBadge = (theme: ThemeCategory, inDialog: boolean = false) => {
+  const renderThemeBadge = (theme: ThemeCategory) => {
     const themeId = theme.id as number;
     const isSelected = selectedThemeIds.includes(themeId);
     const isDisabled = !isSelected && selectedThemeIds.length >= maxThemes;
@@ -146,10 +143,10 @@ export function ThemeSelector({
           <div className="flex-1 overflow-y-auto py-4 -mx-6 px-6">
             <div className="flex flex-wrap gap-2">
               {filteredThemes.length > 0 ? (
-                filteredThemes.map((theme) => renderThemeBadge(theme, true))
+                filteredThemes.map((theme) => renderThemeBadge(theme))
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  No themes found matching "{searchQuery}"
+                  No themes found matching &ldquo;{searchQuery}&rdquo;
                 </p>
               )}
             </div>
@@ -160,11 +157,7 @@ export function ThemeSelector({
             <p className="text-sm text-muted-foreground">
               {selectedThemeIds.length}/{maxThemes} themes selected
             </p>
-            <Button
-              type="button"
-              onClick={() => setIsDialogOpen(false)}
-              className="rounded-lg"
-            >
+            <Button type="button" onClick={() => setIsDialogOpen(false)} className="rounded-lg">
               Done
             </Button>
           </div>

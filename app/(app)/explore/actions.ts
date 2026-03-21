@@ -28,7 +28,11 @@ export async function addSetToCollection(
     return { error: parsed.error.issues[0].message };
   }
 
-  const result = await addUserSet(parsed.data.setNum, parsed.data.quantity, parsed.data.collectionType);
+  const result = await addUserSet(
+    parsed.data.setNum,
+    parsed.data.quantity,
+    parsed.data.collectionType
+  );
   if (result.error) return result;
 
   // Invalidate popular sort cache since owner counts changed

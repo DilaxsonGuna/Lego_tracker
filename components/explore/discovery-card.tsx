@@ -26,12 +26,14 @@ export function DiscoveryCard({
 }: DiscoveryCardProps) {
   const isInWishlist = collectionType === "wishlist";
   const isInCollection = collectionType === "collection";
-  const isInVault = isInWishlist || isInCollection;
 
   return (
     <div className="group relative flex flex-col bg-card rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20 hover:ring-1 hover:ring-primary/50 transition-all duration-300 h-full">
       {/* Image - wrapped in Link */}
-      <Link href={`/set/${set.setNum}`} className="relative w-full aspect-[4/3] bg-muted flex items-center justify-center p-6">
+      <Link
+        href={`/set/${set.setNum}`}
+        className="relative w-full aspect-[4/3] bg-muted flex items-center justify-center p-6"
+      >
         <div
           className="size-full bg-center bg-contain bg-no-repeat transition-transform duration-500 group-hover:scale-105"
           style={{ backgroundImage: `url("${set.setImgUrl}")` }}
@@ -40,7 +42,10 @@ export function DiscoveryCard({
         {/* Year badge (top-left) */}
         {set.year && (
           <div className="absolute top-3 left-3">
-            <Badge variant="outline" className="bg-black/80 backdrop-blur-md text-xs font-bold px-2.5 py-1 rounded-md text-primary border-primary/20">
+            <Badge
+              variant="outline"
+              className="bg-black/80 backdrop-blur-md text-xs font-bold px-2.5 py-1 rounded-md text-primary border-primary/20"
+            >
               {set.year}
             </Badge>
           </div>
@@ -71,9 +76,7 @@ export function DiscoveryCard({
             {isPending ? (
               <Loader2 className="size-5 animate-spin" />
             ) : (
-              <Heart
-                className={`size-5 ${isInWishlist ? "fill-current" : ""}`}
-              />
+              <Heart className={`size-5 ${isInWishlist ? "fill-current" : ""}`} />
             )}
           </Button>
         )}
@@ -91,9 +94,7 @@ export function DiscoveryCard({
       {/* Info */}
       <div className="p-4 flex flex-col gap-2 flex-grow">
         <div className="flex justify-between items-start">
-          <h3 className="text-base font-bold text-foreground line-clamp-1 pr-2">
-            {set.name}
-          </h3>
+          <h3 className="text-base font-bold text-foreground line-clamp-1 pr-2">{set.name}</h3>
           <span className="text-xs font-mono text-muted-foreground whitespace-nowrap">
             #{set.setNum}
           </span>

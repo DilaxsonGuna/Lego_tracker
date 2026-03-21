@@ -55,12 +55,11 @@ export function FollowingActivity({ items }: FollowingActivityProps) {
                 {" added "}
                 <span className="font-medium">{item.setName}</span>
               </p>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {formatTimeAgo(item.addedAt)}
-              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">{formatTimeAgo(item.addedAt)}</p>
             </div>
             {item.setImgUrl && (
               <div className="size-10 rounded-lg bg-card border border-border overflow-hidden flex-shrink-0">
+                {/* eslint-disable-next-line @next/next/no-img-element -- external Rebrickable CDN URL, next/image requires remotePatterns allowlist */}
                 <img
                   src={item.setImgUrl}
                   alt={item.setName}

@@ -82,8 +82,7 @@ export function VaultBulkActions({
                 Remove {selectedCount} set{selectedCount !== 1 ? "s" : ""}?
               </AlertDialogTitle>
               <AlertDialogDescription>
-                This will remove the selected sets from your vault. This action
-                cannot be undone.
+                This will remove the selected sets from your vault. This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

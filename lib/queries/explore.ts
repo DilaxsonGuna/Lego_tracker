@@ -1,7 +1,11 @@
 import { unstable_cache } from "next/cache";
 import { createClient, createAnonClient } from "@/lib/supabase/server";
 import type { DiscoverySet, ThemeCategory, OrderByOption } from "@/types/explore";
+import type { Database } from "@/types/supabase";
 import { PAGE_SIZE } from "@/lib/constants";
+
+type PopularSetRow = Database["public"]["Functions"]["get_popular_sets"]["Returns"][number];
+type SearchSetRow = Database["public"]["Functions"]["search_sets"]["Returns"][number];
 
 interface GetDiscoverySetsParams {
   offset?: number;
@@ -45,7 +49,7 @@ export async function getDiscoverySets({
 
     if (!data) return [];
 
-    return data.map((row: any) => ({
+    return (data as PopularSetRow[]).map((row) => ({
       setNum: row.set_num,
       name: row.name,
       year: row.year,
@@ -72,7 +76,7 @@ export async function getDiscoverySets({
 
     if (!data) return [];
 
-    return data.map((row: any) => ({
+    return (data as SearchSetRow[]).map((row) => ({
       setNum: row.set_num,
       name: row.name,
       year: row.year,
@@ -129,13 +133,7 @@ export const getCachedParentThemes = unstable_cache(
   { revalidate: 86400, tags: ["themes"] }
 );
 
-const FEATURED_THEMES = [
-  "Star Wars",
-  "Technic",
-  "Harry Potter",
-  "NINJAGO",
-  "City",
-];
+const FEATURED_THEMES = ["Star Wars", "Technic", "Harry Potter", "NINJAGO", "City"];
 
 // Cached fallback for featured themes (guests) - 24h TTL
 // Uses anon client to avoid cookies() inside cache
@@ -150,9 +148,9 @@ const getCachedFeaturedThemesFallback = unstable_cache(
 
     if (error || !data) return [];
 
-    const sorted = FEATURED_THEMES
-      .map((name) => data.find((t) => t.name === name))
-      .filter((t): t is { id: number; name: string } => t !== undefined);
+    const sorted = FEATURED_THEMES.map((name) => data.find((t) => t.name === name)).filter(
+      (t): t is { id: number; name: string } => t !== undefined
+    );
 
     return sorted.map((theme) => ({
       id: theme.id,
@@ -177,4 +175,3 @@ export async function getFeaturedThemes(userId?: string): Promise<ThemeCategory[
   // Fallback to cached featured themes
   return getCachedFeaturedThemesFallback();
 }
-
