@@ -80,3 +80,42 @@ Detailed documentation lives in `agent_docs/` — read these when working on spe
 - `agent_docs/architecture.md` — Routes, component catalog, layout system
 - `agent_docs/database.md` — Full schema, relationships, RLS policies, migrations
 - `agent_docs/design-system.md` — Color tokens, custom utilities, typography
+- `agent_docs/future-workflows.md` — Deferred workflows (testing, CI/CD, parallelization, advanced ECC)
+
+## ECC Integration
+
+This project uses [Everything Claude Code](https://github.com/affaan-m/everything-claude-code) v1.8.0.
+
+### Active Workflow
+
+1. `/plan` before any multi-file feature
+2. Implement (use `/tdd` when Vitest is set up)
+3. `/code-review` before committing
+4. `/build-fix` when `npm run build` fails
+5. `/learn` after solving something non-trivial
+6. `/checkpoint` before context compaction
+
+### Custom Commands
+
+- `/valterian` — Workflow router: analyzes task, recommends commands + agents + docs
+- `/db-migrate` — Create Supabase migration with RLS following project conventions
+- `/new-page` — Scaffold sidebar page with all required files
+
+### Context Modes
+
+Switch Claude's mode via CLI aliases:
+```bash
+claude-dev        # Code-first, implementation mode
+claude-review     # Code quality and security review mode
+claude-research   # Research and exploration before acting
+```
+
+### Session Persistence
+
+Sessions persist to `~/.claude/sessions/` as `.tmp` files. SessionStart hook loads previous context. Use `/checkpoint` to save state at logical transitions. Disable auto-compact — use manual `/compact` at phase boundaries.
+
+### Model Routing
+
+- **Haiku**: File search, exploration, repetitive clear tasks
+- **Sonnet** (default): Implementation, review, tests, bug fixes
+- **Opus**: Architecture, security, planning, when first attempt failed
