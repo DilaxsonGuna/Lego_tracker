@@ -1,10 +1,5 @@
 import { AlertTriangle } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -17,8 +12,7 @@ const errorMessages: Record<string, { title: string; description: string }> = {
   },
   otp_expired: {
     title: "Link Expired",
-    description:
-      "The verification link has expired. Please request a new one and try again.",
+    description: "The verification link has expired. Please request a new one and try again.",
   },
   invalid_credentials: {
     title: "Invalid Credentials",
@@ -32,13 +26,11 @@ const errorMessages: Record<string, { title: string; description: string }> = {
   },
   user_not_found: {
     title: "Account Not Found",
-    description:
-      "We couldn't find an account with those details. You may need to sign up first.",
+    description: "We couldn't find an account with those details. You may need to sign up first.",
   },
   user_already_exists: {
     title: "Account Already Exists",
-    description:
-      "An account with this email already exists. Try logging in instead.",
+    description: "An account with this email already exists. Try logging in instead.",
   },
   validation_failed: {
     title: "Validation Error",
@@ -47,8 +39,7 @@ const errorMessages: Record<string, { title: string; description: string }> = {
   },
   email_address_invalid: {
     title: "Invalid Email",
-    description:
-      "The email address format is invalid. Please enter a valid email address.",
+    description: "The email address format is invalid. Please enter a valid email address.",
   },
   password_too_short: {
     title: "Password Too Short",
@@ -57,8 +48,7 @@ const errorMessages: Record<string, { title: string; description: string }> = {
   },
   over_request_rate_limit: {
     title: "Too Many Requests",
-    description:
-      "You've made too many requests. Please wait a moment and try again.",
+    description: "You've made too many requests. Please wait a moment and try again.",
   },
 };
 
@@ -83,14 +73,8 @@ async function ErrorContent({
         <AlertTriangle className="size-9 text-destructive" />
       </div>
       <CardTitle className="text-2xl">{info.title}</CardTitle>
-      <p className="text-sm text-muted-foreground mt-2">
-        {info.description}
-      </p>
-      {code && (
-        <p className="text-xs text-muted-foreground/60 mt-1">
-          Error code: {code}
-        </p>
-      )}
+      <p className="text-sm text-muted-foreground mt-2">{info.description}</p>
+      {code && <p className="text-xs text-muted-foreground/60 mt-1">Error code: {code}</p>}
     </>
   );
 }
@@ -104,7 +88,7 @@ export default function Page({
     <div className="flex w-full items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-md">
         <div className="flex flex-col gap-6">
-          <Card>
+          <Card className="border-primary/20">
             <CardHeader className="text-center">
               <Suspense>
                 <ErrorContent searchParams={searchParams} />

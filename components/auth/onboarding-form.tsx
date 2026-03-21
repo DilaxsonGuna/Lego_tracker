@@ -103,7 +103,7 @@ export function OnboardingForm({ className, ...props }: OnboardingFormProps) {
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
+      <Card className="border-primary/20">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Complete Your Profile</CardTitle>
           <CardDescription>Tell us about yourself to get started</CardDescription>

@@ -1,10 +1,5 @@
 import { CheckCircle2, Mail, MousePointerClick, UserCircle } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -31,14 +26,12 @@ export default function Page() {
     <div className="flex w-full items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-md">
         <div className="flex flex-col gap-6">
-          <Card>
+          <Card className="border-primary/20">
             <CardHeader className="text-center pb-2">
               <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-500/10">
                 <CheckCircle2 className="size-9 text-green-500" />
               </div>
-              <CardTitle className="text-2xl">
-                You&apos;re almost there!
-              </CardTitle>
+              <CardTitle className="text-2xl">You&apos;re almost there!</CardTitle>
               <p className="text-sm text-muted-foreground mt-1">
                 Your account has been created. Just a few more steps to go.
               </p>
@@ -52,12 +45,8 @@ export default function Page() {
                       <step.icon className="size-5" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold leading-tight">
-                        {step.title}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {step.description}
-                      </p>
+                      <p className="text-sm font-semibold leading-tight">{step.title}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{step.description}</p>
                     </div>
                   </li>
                 ))}
