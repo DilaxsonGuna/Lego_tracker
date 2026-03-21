@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Heart, Plus, Check, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -34,10 +35,19 @@ export function DiscoveryCard({
         href={`/set/${set.setNum}`}
         className="relative w-full aspect-[4/3] bg-muted flex items-center justify-center p-6"
       >
-        <div
-          className="size-full bg-center bg-contain bg-no-repeat transition-transform duration-500 group-hover:scale-105"
-          style={{ backgroundImage: `url("${set.setImgUrl}")` }}
-        />
+        {set.setImgUrl ? (
+          <Image
+            src={set.setImgUrl}
+            alt={`${set.name} LEGO set ${set.setNum}`}
+            fill
+            className="object-contain p-2 transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+          />
+        ) : (
+          <div className="size-full flex items-center justify-center text-muted-foreground text-xs">
+            No image
+          </div>
+        )}
 
         {/* Year badge (top-left) */}
         {set.year && (
@@ -66,7 +76,7 @@ export function DiscoveryCard({
               }
             }}
             disabled={isPending}
-            title={isInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
+            aria-label={isInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
             className={`absolute top-3 right-3 size-9 rounded-full backdrop-blur-sm transition-all ${
               isInWishlist
                 ? "bg-primary/20 text-primary opacity-100 hover:bg-primary/30"
@@ -117,7 +127,7 @@ export function DiscoveryCard({
                   onRemove();
                 }}
                 disabled={isPending}
-                title="Remove from Collection"
+                aria-label="Remove from Collection"
               >
                 {isPending ? (
                   <Loader2 className="size-4 animate-spin" />
@@ -140,7 +150,7 @@ export function DiscoveryCard({
                 onAddToCollection();
               }}
               disabled={isPending}
-              title="Add to Collection"
+              aria-label="Add to Collection"
             >
               {isPending ? (
                 <Loader2 className="size-4 animate-spin" />

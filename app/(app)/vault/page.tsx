@@ -46,7 +46,9 @@ export default function VaultPage() {
     <Suspense
       fallback={
         <main className="flex-1 flex items-center justify-center">
-          <Loader2 className="size-6 text-muted-foreground animate-spin" />
+          <div role="status" aria-label="Loading vault">
+            <Loader2 className="size-6 text-muted-foreground animate-spin" aria-hidden="true" />
+          </div>
         </main>
       }
     >

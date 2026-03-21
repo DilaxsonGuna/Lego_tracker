@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Heart } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
@@ -31,7 +32,15 @@ const STATUS_LABELS: Record<VaultSetStatus, string> = {
   "for-sale": "For Sale",
 };
 
-export function VaultCard({ set, isSelected, onToggleSelect, isFavorite, onToggleFavorite, showFavorite = true, readonly = false }: VaultCardProps) {
+export function VaultCard({
+  set,
+  isSelected,
+  onToggleSelect,
+  isFavorite,
+  onToggleFavorite,
+  showFavorite = true,
+  readonly = false,
+}: VaultCardProps) {
   return (
     <div className="group relative flex flex-col rounded-xl bg-card border border-border transition-all hover:border-primary/50 overflow-hidden">
       {/* Checkbox - hidden in readonly mode */}
@@ -69,16 +78,30 @@ export function VaultCard({ set, isSelected, onToggleSelect, isFavorite, onToggl
       {/* Image + Info - wrapped in Link */}
       <Link href={`/set/${set.setNum}`}>
         <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted flex items-center justify-center p-6">
-          <div
-            className="size-full bg-contain bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-105"
-            style={{ backgroundImage: `url("${set.setImgUrl}")` }}
-          />
+          {set.setImgUrl ? (
+            <Image
+              src={set.setImgUrl}
+              alt={`${set.name} LEGO set ${set.setNum}`}
+              fill
+              className="object-contain p-2 transition-transform duration-500 group-hover:scale-105"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            />
+          ) : (
+            <div className="size-full flex items-center justify-center text-muted-foreground text-xs">
+              No image
+            </div>
+          )}
           <div className="absolute bottom-2 right-2 flex gap-1">
-            <Badge variant="outline" className="bg-black/80 backdrop-blur-md text-xs font-bold px-2 py-0.5 text-white border-white/10">
+            <Badge
+              variant="outline"
+              className="bg-black/80 backdrop-blur-md text-xs font-bold px-2 py-0.5 text-white border-white/10"
+            >
               {set.setNum}
             </Badge>
             {set.status && (
-              <Badge className={`backdrop-blur-md text-xs font-bold px-2 py-0.5 uppercase ${STATUS_VARIANTS[set.status]}`}>
+              <Badge
+                className={`backdrop-blur-md text-xs font-bold px-2 py-0.5 uppercase ${STATUS_VARIANTS[set.status]}`}
+              >
                 {STATUS_LABELS[set.status]}
               </Badge>
             )}

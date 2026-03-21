@@ -29,18 +29,15 @@ export function MobileBottomNav() {
     >
       {BOTTOM_NAV_ITEMS.map((item) => {
         const Icon = navIconMap[item.icon] || navIconMap.home;
-        const isActive =
-          item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+        const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
 
         return (
           <Link
             key={item.href}
             href={item.href}
             className={cn(
-              "flex flex-col items-center gap-0.5 px-3 py-2.5 text-[10px] font-medium transition-colors min-w-0",
-              isActive
-                ? "text-primary font-bold"
-                : "text-muted-foreground"
+              "flex flex-col items-center gap-0.5 px-3 py-2.5 text-[10px] font-medium transition-colors min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-lg",
+              isActive ? "text-primary font-bold" : "text-muted-foreground"
             )}
           >
             <Icon className="size-5" />

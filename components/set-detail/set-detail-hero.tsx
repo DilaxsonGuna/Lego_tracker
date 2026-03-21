@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import type { SetDetail } from "@/types/set-detail";
 
@@ -10,10 +11,20 @@ export function SetDetailHero({ set }: SetDetailHeroProps) {
     <div className="flex flex-col lg:flex-row gap-8">
       {/* Image */}
       <div className="relative w-full lg:w-1/2 aspect-square bg-muted rounded-xl overflow-hidden flex items-center justify-center p-8">
-        <div
-          className="size-full bg-center bg-contain bg-no-repeat"
-          style={{ backgroundImage: `url("${set.imgUrl}")` }}
-        />
+        {set.imgUrl ? (
+          <Image
+            src={set.imgUrl}
+            alt={`${set.name} LEGO set ${set.setNum}`}
+            fill
+            className="object-contain p-2"
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            priority
+          />
+        ) : (
+          <div className="size-full flex items-center justify-center text-muted-foreground text-sm">
+            No image available
+          </div>
+        )}
       </div>
 
       {/* Info */}

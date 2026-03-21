@@ -26,24 +26,19 @@ export function Sidebar({ navItems, user, notificationSlot }: SidebarProps) {
     <aside className="sticky top-0 z-50 hidden h-screen w-64 flex-col border-r border-border bg-card/95 backdrop-blur-md px-6 py-6 md:flex">
       <div className="mb-10 flex items-center gap-3 px-2">
         <LegoFlexLogo />
-        <h2 className="text-lg font-bold tracking-tight text-foreground">
-          BrickMaster
-        </h2>
+        <h2 className="text-lg font-bold tracking-tight text-foreground">BrickMaster</h2>
       </div>
 
       <nav className="flex flex-1 flex-col gap-2">
         {navItems.map((item) => {
           const Icon = navIconMap[item.icon] || navIconMap.home;
-          const isActive =
-            item.href === "/"
-              ? pathname === "/"
-              : pathname.startsWith(item.href);
+          const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-4 rounded-xl px-4 py-3 text-sm font-medium transition-colors",
+                "flex items-center gap-4 rounded-xl px-4 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-card",
                 isActive
                   ? "bg-surface-accent text-primary font-bold"
                   : "text-muted-foreground hover:bg-surface-accent hover:text-foreground"
@@ -70,9 +65,7 @@ export function Sidebar({ navItems, user, notificationSlot }: SidebarProps) {
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-1 flex-col">
-            <span className="text-sm font-bold text-foreground">
-              @{user.username}
-            </span>
+            <span className="text-sm font-bold text-foreground">@{user.username}</span>
             <span className="text-xs text-muted-foreground">Collector</span>
           </div>
           {notificationSlot}

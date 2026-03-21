@@ -10,10 +10,7 @@ interface CollectionTabsProps {
   wishlistCount: number;
 }
 
-export function CollectionTabs({
-  activeTab,
-  onTabChange,
-}: CollectionTabsProps) {
+export function CollectionTabs({ activeTab, onTabChange }: CollectionTabsProps) {
   return (
     <div className="sticky top-0 z-30 flex justify-center py-4 pointer-events-none">
       <div
@@ -29,13 +26,13 @@ export function CollectionTabs({
 
         {/* Collection tab */}
         <button
+          id="tab-collection"
           onClick={() => onTabChange("collection")}
           aria-selected={activeTab === "collection"}
+          aria-controls="vault-tabpanel"
           role="tab"
-          className={`relative z-10 flex-1 flex items-center justify-center gap-2 text-xs font-black uppercase tracking-tighter transition-colors cursor-pointer ${
-            activeTab === "collection"
-              ? "text-primary-foreground"
-              : "text-muted-foreground"
+          className={`relative z-10 flex-1 flex items-center justify-center gap-2 text-xs font-black uppercase tracking-tighter transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full ${
+            activeTab === "collection" ? "text-primary-foreground" : "text-muted-foreground"
           }`}
         >
           <Package className="size-4" />
@@ -44,13 +41,13 @@ export function CollectionTabs({
 
         {/* Wishlist tab */}
         <button
+          id="tab-wishlist"
           onClick={() => onTabChange("wishlist")}
           aria-selected={activeTab === "wishlist"}
+          aria-controls="vault-tabpanel"
           role="tab"
-          className={`relative z-10 flex-1 flex items-center justify-center gap-2 text-xs font-black uppercase tracking-tighter transition-colors cursor-pointer ${
-            activeTab === "wishlist"
-              ? "text-primary-foreground"
-              : "text-muted-foreground"
+          className={`relative z-10 flex-1 flex items-center justify-center gap-2 text-xs font-black uppercase tracking-tighter transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full ${
+            activeTab === "wishlist" ? "text-primary-foreground" : "text-muted-foreground"
           }`}
         >
           <Heart className="size-4" />

@@ -2,7 +2,6 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { Search, X } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -79,20 +78,23 @@ export function ThemeFilterModal({
     const isDisabled = !isSelected && localSelection.length >= maxThemes;
 
     return (
-      <Badge
+      <button
         key={themeId}
-        variant={isSelected ? "default" : "outline"}
-        className={`px-4 py-2 rounded-full text-sm font-medium cursor-pointer transition-colors ${
+        type="button"
+        role="checkbox"
+        aria-checked={isSelected}
+        disabled={isDisabled}
+        className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
           isSelected
-            ? "border-primary bg-primary/5 text-primary hover:bg-primary/10"
+            ? "border border-primary bg-primary/5 text-primary hover:bg-primary/10"
             : isDisabled
-              ? "border-border text-muted-foreground cursor-not-allowed"
-              : "border-border text-muted-foreground hover:border-muted-foreground hover:bg-transparent"
+              ? "border border-border text-muted-foreground cursor-not-allowed opacity-50"
+              : "border border-border text-muted-foreground hover:border-muted-foreground hover:bg-transparent cursor-pointer"
         }`}
-        onClick={() => !isDisabled && handleToggle(themeId)}
+        onClick={() => handleToggle(themeId)}
       >
         {theme.label}
-      </Badge>
+      </button>
     );
   };
 

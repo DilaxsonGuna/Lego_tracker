@@ -8,7 +8,9 @@ import { ExplorePageClient } from "./explore-client";
 
 async function ExploreContent() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const [sets, categories, topThemes, userSetsInfo, userThemeIds] = await Promise.all([
     getDiscoverySets(),
@@ -36,7 +38,9 @@ export default function ExplorePage() {
     <Suspense
       fallback={
         <main className="flex-1 flex items-center justify-center">
-          <Loader2 className="size-6 text-muted-foreground animate-spin" />
+          <div role="status" aria-label="Loading explore">
+            <Loader2 className="size-6 text-muted-foreground animate-spin" aria-hidden="true" />
+          </div>
         </main>
       }
     >

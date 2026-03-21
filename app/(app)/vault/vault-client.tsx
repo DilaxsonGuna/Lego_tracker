@@ -14,15 +14,30 @@ import {
   VaultBulkActions,
 } from "@/components/vault";
 import { MilestoneCelebration } from "@/components/profile/milestone-celebration";
-import { fetchVaultSets, moveToCollection, removeSetFromVault, toggleFavorite, checkMilestones } from "./actions";
+import {
+  fetchVaultSets,
+  moveToCollection,
+  removeSetFromVault,
+  toggleFavorite,
+  checkMilestones,
+} from "./actions";
 import { useMilestoneCheck } from "@/lib/hooks/use-milestone-check";
 import { PAGE_SIZE } from "@/lib/constants";
-import type { VaultSet, CollectionStats, WishlistStats, VaultViewMode, VaultSortOption } from "@/types/vault";
+import type {
+  VaultSet,
+  CollectionStats,
+  WishlistStats,
+  VaultViewMode,
+  VaultSortOption,
+} from "@/types/vault";
 import type { CollectionTab } from "@/types/lego-set";
 
 // Normalize string for accent-insensitive search
 const normalize = (str: string) =>
-  str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
 
 interface VaultTheme {
   id: number;
@@ -148,18 +163,14 @@ export function VaultPageClient({
   const handleToggleFavorite = useCallback(async (setNum: string) => {
     // Optimistic update
     setSets((prev) =>
-      prev.map((s) =>
-        s.setNum === setNum ? { ...s, isFavorite: !s.isFavorite } : s
-      )
+      prev.map((s) => (s.setNum === setNum ? { ...s, isFavorite: !s.isFavorite } : s))
     );
 
     const result = await toggleFavorite(setNum);
     if (result.error) {
       // Revert on error
       setSets((prev) =>
-        prev.map((s) =>
-          s.setNum === setNum ? { ...s, isFavorite: !s.isFavorite } : s
-        )
+        prev.map((s) => (s.setNum === setNum ? { ...s, isFavorite: !s.isFavorite } : s))
       );
       toast.error(result.error);
     }
@@ -176,8 +187,7 @@ export function VaultPageClient({
         set.setNum.includes(searchQuery) ||
         normalize(set.themeName).includes(normalizedQuery);
 
-      const matchesTheme =
-        themeFilter === "all" || set.themeName === themeFilter;
+      const matchesTheme = themeFilter === "all" || set.themeName === themeFilter;
 
       return matchesTab && matchesSearch && matchesTheme;
     });
@@ -215,16 +225,12 @@ export function VaultPageClient({
     setSelectedSets(new Set());
 
     try {
-      const results = await Promise.all(
-        toMove.map((setNum) => moveToCollection(setNum))
-      );
+      const results = await Promise.all(toMove.map((setNum) => moveToCollection(setNum)));
 
       const errors = results.filter((r) => r.error);
       if (errors.length > 0) {
         // Revert failed ones
-        const failedNums = new Set(
-          toMove.filter((_, i) => results[i].error)
-        );
+        const failedNums = new Set(toMove.filter((_, i) => results[i].error));
         setSets((prev) =>
           prev.map((s) =>
             failedNums.has(s.setNum) ? { ...s, collectionType: "wishlist" as CollectionTab } : s
@@ -253,16 +259,12 @@ export function VaultPageClient({
     setSelectedSets(new Set());
 
     try {
-      const results = await Promise.all(
-        toRemove.map((setNum) => removeSetFromVault(setNum))
-      );
+      const results = await Promise.all(toRemove.map((setNum) => removeSetFromVault(setNum)));
 
       const errors = results.filter((r) => r.error);
       if (errors.length > 0) {
         // Re-add failed sets
-        const failedNums = new Set(
-          toRemove.filter((_, i) => results[i].error)
-        );
+        const failedNums = new Set(toRemove.filter((_, i) => results[i].error));
         const failedSets = removedSets.filter((s) => failedNums.has(s.setNum));
         setSets((prev) => [...prev, ...failedSets]);
         toast.error(`Failed to remove ${errors.length} set(s)`);
@@ -305,7 +307,12 @@ export function VaultPageClient({
         />
 
         {/* Grid or List */}
-        <div className="px-6 md:px-8 pb-24">
+        <div
+          id="vault-tabpanel"
+          role="tabpanel"
+          aria-labelledby={activeTab === "collection" ? "tab-collection" : "tab-wishlist"}
+          className="px-6 md:px-8 pb-24"
+        >
           {/* Grid: always visible on mobile, toggled on desktop */}
           <div className={viewMode === "grid" ? "block" : "sm:hidden"}>
             <VaultGrid
@@ -336,11 +343,7 @@ export function VaultPageClient({
                 disabled={isLoadingMore}
                 className="min-w-[140px]"
               >
-                {isLoadingMore ? (
-                  <Loader2 className="size-4 animate-spin" />
-                ) : (
-                  "Load More"
-                )}
+                {isLoadingMore ? <Loader2 className="size-4 animate-spin" /> : "Load More"}
               </Button>
             </div>
           )}

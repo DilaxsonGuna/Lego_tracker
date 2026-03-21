@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { VaultSet, VaultSetStatus } from "@/types/vault";
 
@@ -41,10 +42,7 @@ export function VaultList({ sets, selectedSets, onToggleSelect }: VaultListProps
         </thead>
         <tbody className="divide-y divide-border">
           {sets.map((set) => (
-            <tr
-              key={set.setNum}
-              className="group transition-colors hover:bg-card"
-            >
+            <tr key={set.setNum} className="group transition-colors hover:bg-card">
               <td className="px-4 py-2">
                 <Checkbox
                   checked={selectedSets.has(set.setNum)}
@@ -53,20 +51,25 @@ export function VaultList({ sets, selectedSets, onToggleSelect }: VaultListProps
                 />
               </td>
               <td className="px-2 py-2">
-                <div
-                  className="w-10 h-10 rounded bg-black bg-cover bg-center border border-border"
-                  style={{ backgroundImage: `url("${set.setImgUrl}")` }}
-                />
+                <div className="relative w-10 h-10 rounded bg-muted border border-border overflow-hidden">
+                  {set.setImgUrl ? (
+                    <Image
+                      src={set.setImgUrl}
+                      alt={`${set.name} LEGO set ${set.setNum}`}
+                      fill
+                      className="object-contain"
+                      sizes="40px"
+                    />
+                  ) : (
+                    <div className="size-full bg-muted" />
+                  )}
+                </div>
               </td>
               <td className="px-4 py-2 text-sm font-bold text-foreground uppercase tracking-tight">
                 {set.name}
               </td>
-              <td className="px-4 py-2 text-xs font-mono text-muted-foreground">
-                {set.setNum}
-              </td>
-              <td className="px-4 py-2 text-xs text-muted-foreground">
-                {set.themeName}
-              </td>
+              <td className="px-4 py-2 text-xs font-mono text-muted-foreground">{set.setNum}</td>
+              <td className="px-4 py-2 text-xs text-muted-foreground">{set.themeName}</td>
               <td className="px-4 py-2 text-sm font-medium text-right text-muted-foreground">
                 {set.numParts.toLocaleString()}
               </td>
