@@ -230,20 +230,3 @@ export async function checkMilestones() {
 
   return getMilestones(user.id);
 }
-
-export async function fetchDefaultGridView(): Promise<boolean> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) return true;
-
-  const { data } = await supabase
-    .from("profiles")
-    .select("default_grid_view")
-    .eq("id", user.id)
-    .single();
-
-  return data?.default_grid_view ?? true;
-}

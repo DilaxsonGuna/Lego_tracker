@@ -1,17 +1,26 @@
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
 import {
-  fetchVaultSets,
-  fetchCollectionStats,
-  fetchWishlistStats,
-  fetchVaultThemes,
-  fetchCollectionCount,
-  fetchWishlistCount,
-  fetchDefaultGridView,
-} from "./actions";
+  getVaultSets,
+  getCollectionStats,
+  getWishlistStats,
+  getVaultThemes,
+  getCollectionCount,
+  getWishlistCount,
+} from "@/lib/queries/vault";
 import { VaultPageClient } from "./vault-client";
 
 async function VaultContent() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) redirect("/auth/login");
+
+  // Single auth call, then all queries in parallel with userId
   const [
     collectionStats,
     wishlistStats,
@@ -20,17 +29,19 @@ async function VaultContent() {
     wishlistCount,
     collectionSets,
     wishlistSets,
-    defaultGridView,
+    profileData,
   ] = await Promise.all([
-    fetchCollectionStats(),
-    fetchWishlistStats(),
-    fetchVaultThemes(),
-    fetchCollectionCount(),
-    fetchWishlistCount(),
-    fetchVaultSets({ collectionType: "collection" }),
-    fetchVaultSets({ collectionType: "wishlist" }),
-    fetchDefaultGridView(),
+    getCollectionStats(user.id),
+    getWishlistStats(user.id),
+    getVaultThemes(user.id),
+    getCollectionCount(user.id),
+    getWishlistCount(user.id),
+    getVaultSets({ userId: user.id, collectionType: "collection" }),
+    getVaultSets({ userId: user.id, collectionType: "wishlist" }),
+    supabase.from("profiles").select("default_grid_view").eq("id", user.id).single(),
   ]);
+
+  const defaultGridView = profileData.data?.default_grid_view ?? true;
 
   return (
     <VaultPageClient
