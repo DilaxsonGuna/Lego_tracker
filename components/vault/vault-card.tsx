@@ -6,7 +6,7 @@ import { Heart } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { VaultSet, VaultSetStatus } from "@/types/vault";
+import type { VaultSet } from "@/types/vault";
 
 interface VaultCardProps {
   set: VaultSet;
@@ -17,20 +17,6 @@ interface VaultCardProps {
   showFavorite?: boolean;
   readonly?: boolean;
 }
-
-const STATUS_VARIANTS: Record<VaultSetStatus, string> = {
-  built: "bg-green-700 text-white border-transparent hover:bg-green-700/90",
-  "in-box": "bg-blue-700 text-white border-transparent hover:bg-blue-700/90",
-  "missing-parts": "bg-amber-700 text-white border-transparent hover:bg-amber-700/90",
-  "for-sale": "bg-red-700 text-white border-transparent hover:bg-red-700/90",
-};
-
-const STATUS_LABELS: Record<VaultSetStatus, string> = {
-  built: "Built",
-  "in-box": "In Box",
-  "missing-parts": "Missing Parts",
-  "for-sale": "For Sale",
-};
 
 export function VaultCard({
   set,
@@ -98,13 +84,6 @@ export function VaultCard({
             >
               {set.setNum}
             </Badge>
-            {set.status && (
-              <Badge
-                className={`backdrop-blur-md text-xs font-bold px-2 py-0.5 uppercase ${STATUS_VARIANTS[set.status]}`}
-              >
-                {STATUS_LABELS[set.status]}
-              </Badge>
-            )}
           </div>
         </div>
 

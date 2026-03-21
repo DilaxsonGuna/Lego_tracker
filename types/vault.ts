@@ -1,7 +1,5 @@
 import type { CollectionTab } from "./lego-set";
 
-export type VaultSetStatus = "built" | "in-box" | "missing-parts" | "for-sale";
-
 export interface VaultSet {
   setNum: string;
   name: string;
@@ -11,7 +9,6 @@ export interface VaultSet {
   themeName: string;
   collectionType: CollectionTab;
   isFavorite: boolean;
-  status?: VaultSetStatus;
 }
 
 export interface VaultStats {

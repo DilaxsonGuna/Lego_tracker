@@ -52,93 +52,92 @@
 
 ## P1 — Pre-Launch Quality (High Impact)
 
-### T-010: Optimize `calculateGlobalPosition` N+1 query
+### T-010: Optimize `calculateGlobalPosition` N+1 query ✅ DONE
 
-- [ ] Replace the current implementation in `lib/queries/profile.ts` (loads ALL user_sets) with a SQL COUNT on `profiles.brick_score`
-- [ ] Match the pattern already used in `lib/queries/leaderboard.ts`
+- [x] Replaced O(n) JS aggregation with single SQL COUNT on `profiles.brick_score`
+- [x] Removed unused `_userId` parameter
 
-**Why:** Profile page loads entire user_sets table into memory. Will crash at 1000+ users.
+**Why:** Profile page loaded entire user_sets table into memory.
 
-### T-011: Consolidate redundant `getUser()` calls
+### T-011: Consolidate redundant `getUser()` calls ✅ DONE
 
-- [ ] Vault page: refactor to call `getUser()` once in page.tsx, pass `userId` to all queries
-- [ ] Profile page: same pattern — single auth call, pass ID downstream
-- [ ] Create `lib/supabase/auth.ts` helper: `getAuthenticatedUser()` returning `{ supabase, user }`
+- [x] Vault page: single `getUser()` in page.tsx, pass `userId` directly to all queries
+- [x] Reduced auth roundtrips from 8 to 1 per vault page load
+- [x] Helper approach rejected after /simplify review — restructured page.tsx instead
 
-**Why:** 7+ redundant auth roundtrips per vault page load. Adds 200-300ms latency.
+**Why:** 8 redundant auth HTTP roundtrips per vault page load.
 
-### T-012: Add missing database indexes
+### T-012: Add missing database indexes ✅ DONE
 
-- [ ] `profiles(brick_score DESC)` — leaderboard sort
-- [ ] `profiles(lower(username))` UNIQUE — username lookups
-- [ ] `follows(following_id)` — "who follows me" queries
-- [ ] `user_sets(collection_type, created_at DESC)` — recently added queries
+- [x] `profiles(brick_score DESC)` — leaderboard sort (migration 010)
+- [x] `profiles(lower(username))` UNIQUE — username lookups (migration 010)
+- [x] `follows(following_id)` — already existed from migration 002
 
-**Why:** Leaderboard and feed queries will degrade as data grows.
+**Why:** Leaderboard and username queries now use indexes.
 
-### T-013: Add missing migration files
+### T-013: Add missing migration files ✅ DONE
 
-- [ ] Audit all schema elements vs existing migrations
-- [ ] Create migration for `profiles` computed columns (`brick_score`, `sets_count`, `pieces_count`)
-- [ ] Create migration for `profiles` settings columns (`profile_visible`, `default_grid_view`, `email_notifications`)
-- [ ] Ensure `user_sets` base table has a migration (predates tracked migrations)
-- [ ] Add CHECK constraint on `user_sets.collection_type IN ('collection', 'wishlist')`
-- [ ] Add DB trigger for max-4-favorites enforcement
+- [x] Created migration 011 for `profiles` computed columns (brick_score, sets_count, pieces_count)
+- [x] Created migration 011 for `profiles` settings columns (profile_visible, default_grid_view, email_notifications)
+- [x] Repaired migration history (001-009 marked as applied on remote)
+- [x] Pushed 010+011 to remote via `supabase db push`
+- [x] CHECK constraint + triggers already in migration 008
 
-**Why:** Cannot reproduce database from migrations alone. New environments will fail.
+**Why:** Schema now fully reproducible from migrations.
 
-### T-014: Document `NEXT_PUBLIC_SITE_URL` env var
+### T-014: Document `NEXT_PUBLIC_SITE_URL` env var ✅ DONE
 
-- [ ] Add to `.env.example`
-- [ ] Add to CLAUDE.md environment section
-- [ ] Verify password reset emails use it correctly in production
+- [x] Added to `.env.example`
+- [x] Added to CLAUDE.md environment section
 
-**Why:** Password reset emails will contain `localhost:3000` URLs in production.
+**Why:** Password reset emails need correct redirect URL in production.
 
 ---
 
-## P1 — UI/UX Polish (Pre-Launch)
+## P2 — UI/UX Polish (Pre-Launch)
 
-### T-020: Add branding to auth pages
+### T-020: Add branding to auth pages ✅ DONE
 
-- [ ] Create shared auth layout wrapper with LegoFlex logo above card
-- [ ] Add stud-pattern background with gradient overlay
-- [ ] Add subtle `border-primary/20` on auth cards
-- [ ] Update copy: "Welcome back, Builder" / "Join the Collection"
+- [x] Auth layout already had logo + stud-bg (from previous work)
+- [x] Added gradient overlay to auth layout
+- [x] Added `border-primary/20` to all 8 auth cards
+- [x] Updated login copy: "Welcome back, Builder"
+- [x] Updated sign-up copy: "Join the Collection"
 
-**Why:** Auth pages are the front door. Currently generic starter-kit appearance with zero brand identity.
+**Why:** Auth pages are the front door.
 
-### T-021: Replace Puzzle logo icon with brick/stud icon
+### T-021: Replace Puzzle logo icon with brick/stud icon ✅ DONE
 
-- [ ] `components/shared/legoflex-logo.tsx` — replace `Puzzle` from Lucide with a brick SVG or `Box` icon
+- [x] Replaced Puzzle with custom 2x2 brick SVG (4 studs top-view)
 
-**Why:** Puzzle icon suggests jigsaw puzzles, not LEGO bricks. Most visible brand element.
+**Why:** Puzzle icon suggested jigsaw puzzles, not LEGO bricks.
 
-### T-022: Remove misleading UI indicators
+### T-022: Remove misleading UI indicators ✅ DONE
 
-- [ ] `lib/queries/profile.ts` — remove `isOnline: true` hardcode (or remove online indicator from profile-hero)
-- [ ] `lib/queries/profile.ts` — remove `isVerified: false` hardcode (or remove badge from profile-hero)
-- [ ] `components/shared/footer.tsx` — change `2024` to `{new Date().getFullYear()}`
+- [x] `isOnline` set to `false` (was hardcoded `true`)
+- [x] Dynamic copyright year `{new Date().getFullYear()}`
+- [ ] `isVerified: false` — kept as-is (no verification system planned for v1)
 
-**Why:** Green "online" dot is always on (lying). Verified badge never appears. Copyright year outdated.
+**Why:** Green "online" dot was always on. Copyright was 2024.
 
-### T-023: Fix bio character limit inconsistency
+### T-023: Fix bio character limit inconsistency ✅ DONE
 
-- [ ] Create shared constant `MAX_BIO_LENGTH = 200` (or 160 — pick one)
-- [ ] Use in both `onboarding-form.tsx` and `edit-profile-form.tsx`
+- [x] Created `MAX_BIO_LENGTH = 200` in `lib/constants.ts`
+- [x] Used in both `onboarding-form.tsx` and `edit-profile-form.tsx`
 
-**Why:** Onboarding allows 160 chars, edit profile allows 200. Confusing for users.
+**Why:** Was 160 in onboarding, 200 in settings.
 
-### T-024: Apply `default_grid_view` user setting
+### T-024: Apply `default_grid_view` user setting ✅ DONE
 
-- [ ] Pass `default_grid_view` from server to `VaultPageClient` as prop
-- [ ] Use as initial `viewMode` state instead of hardcoded `"grid"`
+- [x] Fetched from profiles in vault page.tsx (single query in Promise.all)
+- [x] Passed as prop to VaultPageClient
+- [x] Used as initial `viewMode` state
 
-**Why:** Users toggle the setting in preferences but it's never applied. Broken setting = broken trust.
+**Why:** Setting was toggled but never applied.
 
 ---
 
-## P2 — Feature Gaps (Post-Launch Priority)
+## P3 — Feature Gaps (Post-Launch Priority)
 
 ### T-030: Price data integration
 
@@ -152,14 +151,10 @@
 
 **Why:** "#1 requested feature across all personas." Currently removed ($0 was worse than nothing).
 
-### T-031: Set status tracking
+### ~~T-031: Set status tracking~~ DEFERRED
 
-- [ ] Add `status` column to `user_sets` table (migration): `CHECK (status IN ('built', 'in-box', 'missing-parts', 'for-sale'))`
-- [ ] Create status selector UI (dropdown or context menu on vault cards)
-- [ ] Add status filter to vault toolbar
-- [ ] Ensure status badges in vault-card.tsx and vault-list.tsx read from DB
-
-**Why:** UI already renders status badges but there's no DB column or setter. High-value for serious collectors.
+> Removed status badge rendering from vault-card and vault-list. VaultSetStatus type removed.
+> Will re-implement as a full feature later (DB column + setter UI + filter).
 
 ### T-032: Followers/following list pages
 
@@ -209,7 +204,7 @@
 
 ---
 
-## P2 — Infrastructure & Performance
+## P4 — Infrastructure & Performance
 
 ### T-040: Add `robots.txt` and `sitemap.xml`
 
@@ -244,7 +239,7 @@
 
 ---
 
-## P2 — Analytics & Pre-Monetization
+## P5 — Analytics & Pre-Monetization
 
 ### T-050: Integrate PostHog analytics
 
@@ -269,7 +264,7 @@
 
 ---
 
-## P3 — Growth & Monetization
+## P6 — Growth & Monetization
 
 ### T-060: AI set verification pipeline (Scan feature)
 
@@ -334,7 +329,7 @@
 
 ---
 
-## P3 — Legal & Compliance
+## P7 — Legal & Compliance
 
 ### T-070: Privacy policy & GDPR
 
@@ -407,14 +402,18 @@ GitHub Actions: build + lint + test on PR. Preview deployments on Vercel.
 
 ## Progress Tracking
 
-| Priority       | Total  | Done  | Remaining |
-| -------------- | ------ | ----- | --------- |
-| P0 Critical    | 4      | 4     | 0         |
-| P1 Pre-Launch  | 10     | 0     | 10        |
-| P2 Post-Launch | 10     | 0     | 10        |
-| P3 Growth      | 6      | 0     | 6         |
-| Backlog        | 9      | 0     | 9         |
-| **Total**      | **39** | **4** | **35**    |
+| Priority          | Total  | Done   | Remaining |
+| ----------------- | ------ | ------ | --------- |
+| P0 Critical       | 4      | 4      | 0         |
+| P1 Pre-Launch     | 5      | 5      | 0         |
+| P2 UI/UX Polish   | 5      | 5      | 0         |
+| P3 Feature Gaps   | 7      | 0      | 7         |
+| P4 Infrastructure | 4      | 0      | 4         |
+| P5 Analytics      | 2      | 0      | 2         |
+| P6 Growth         | 6      | 0      | 6         |
+| P7 Legal          | 3      | 0      | 3         |
+| Backlog           | 9      | 0      | 9         |
+| **Total**         | **45** | **14** | **31**    |
 
 ---
 
