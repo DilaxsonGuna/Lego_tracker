@@ -6,14 +6,12 @@ interface FooterProps {
 
 export function Footer({ className }: FooterProps) {
   return (
-    <footer
-      className={`border-t border-border bg-background py-8 mt-auto ${className ?? ""}`}
-    >
+    <footer className={`border-t border-border bg-background py-8 mt-auto ${className ?? ""}`}>
       <div className="mx-auto flex max-w-[1000px] items-center justify-between px-6">
         <div className="flex items-center gap-2">
           <LegoFlexLogo className="h-6 w-6 rounded text-xs" />
           <span className="text-sm text-muted-foreground">
-            &copy; 2024 LegoFlex Inc.
+            &copy; {new Date().getFullYear()} LegoFlex Inc.
           </span>
         </div>
         <div className="flex gap-6">

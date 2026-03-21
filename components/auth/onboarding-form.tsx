@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { MAX_BIO_LENGTH } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -169,11 +170,13 @@ export function OnboardingForm({ className, ...props }: OnboardingFormProps) {
                   placeholder="Tell us about yourself and your Lego collection..."
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
-                  maxLength={160}
+                  maxLength={MAX_BIO_LENGTH}
                   rows={3}
                   className="resize-none"
                 />
-                <p className="text-xs text-muted-foreground text-right">{bio.length}/160</p>
+                <p className="text-xs text-muted-foreground text-right">
+                  {bio.length}/{MAX_BIO_LENGTH}
+                </p>
               </div>
 
               {/* Location */}

@@ -64,9 +64,11 @@ page.tsx (server) → actions.ts → lib/queries/*.ts → Supabase
 ## Environment
 
 Required in `.env.local`:
+
 ```
 NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+NEXT_PUBLIC_SITE_URL          # Used for password reset redirect URLs
 ```
 
 ## Design System
@@ -104,6 +106,7 @@ This project uses [Everything Claude Code](https://github.com/affaan-m/everythin
 ### Context Modes
 
 Switch Claude's mode via CLI aliases:
+
 ```bash
 claude-dev        # Code-first, implementation mode
 claude-review     # Code quality and security review mode

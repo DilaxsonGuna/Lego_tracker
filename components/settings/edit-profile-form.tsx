@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { AvatarSelector, getAvatarColor } from "@/components/auth/avatar-selector";
 import { ThemeSelector } from "@/components/shared/theme-selector";
 import { updateProfile, checkUsernameAvailability } from "@/app/(app)/profile/actions";
+import { MAX_BIO_LENGTH } from "@/lib/constants";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { ThemeCategory } from "@/types/explore";
@@ -42,7 +43,7 @@ export function EditProfileForm({ initialData }: EditProfileFormProps) {
   const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
 
-  const maxBioLength = 200;
+  const maxBioLength = MAX_BIO_LENGTH;
 
   // Debounced username validation
   useEffect(() => {
@@ -87,8 +88,7 @@ export function EditProfileForm({ initialData }: EditProfileFormProps) {
     return () => clearTimeout(timer);
   }, [username, initialData.username]);
 
-  const isFormValid =
-    username.trim().length >= 3 && !usernameError && usernameAvailable !== false;
+  const isFormValid = username.trim().length >= 3 && !usernameError && usernameAvailable !== false;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -163,9 +163,7 @@ export function EditProfileForm({ initialData }: EditProfileFormProps) {
               <Input
                 type="text"
                 value={username}
-                onChange={(e) =>
-                  setUsername(e.target.value.toLowerCase().replace(/\s/g, ""))
-                }
+                onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/\s/g, ""))}
                 placeholder="your_username"
                 maxLength={20}
                 className={cn(
@@ -183,17 +181,11 @@ export function EditProfileForm({ initialData }: EditProfileFormProps) {
                 )}
                 {!isCheckingUsername &&
                   usernameAvailable === true &&
-                  username.trim().length >= 3 && (
-                    <Check className="size-4 text-green-500" />
-                  )}
-                {!isCheckingUsername && usernameError && (
-                  <X className="size-4 text-destructive" />
-                )}
+                  username.trim().length >= 3 && <Check className="size-4 text-green-500" />}
+                {!isCheckingUsername && usernameError && <X className="size-4 text-destructive" />}
               </div>
             </div>
-            {usernameError && (
-              <p className="text-xs text-destructive ml-1">{usernameError}</p>
-            )}
+            {usernameError && <p className="text-xs text-destructive ml-1">{usernameError}</p>}
             {!isCheckingUsername &&
               usernameAvailable === true &&
               username.trim() !== initialData.username &&

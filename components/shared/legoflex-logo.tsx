@@ -1,4 +1,3 @@
-import { Puzzle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface LegoFlexLogoProps {
@@ -13,7 +12,14 @@ export function LegoFlexLogo({ className }: LegoFlexLogoProps) {
         className
       )}
     >
-      <Puzzle className="size-5" />
+      {/* 2x2 Lego brick top-view: 4 studs */}
+      <svg viewBox="0 0 24 24" fill="currentColor" className="size-5" aria-hidden="true">
+        <rect x="2" y="2" width="20" height="20" rx="3" opacity="0.3" />
+        <circle cx="8.5" cy="8.5" r="3" />
+        <circle cx="15.5" cy="8.5" r="3" />
+        <circle cx="8.5" cy="15.5" r="3" />
+        <circle cx="15.5" cy="15.5" r="3" />
+      </svg>
     </div>
   );
 }

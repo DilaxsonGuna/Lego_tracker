@@ -51,6 +51,7 @@ interface VaultPageClientProps {
   themes: VaultTheme[];
   collectionCount: number;
   wishlistCount: number;
+  defaultGridView?: boolean;
 }
 
 function applySortOption(sets: VaultSet[], sortOption: VaultSortOption): VaultSet[] {
@@ -94,6 +95,7 @@ export function VaultPageClient({
   themes,
   collectionCount,
   wishlistCount,
+  defaultGridView = true,
 }: VaultPageClientProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -104,7 +106,7 @@ export function VaultPageClient({
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [themeFilter, setThemeFilter] = useState("all");
-  const [viewMode, setViewMode] = useState<VaultViewMode>("grid");
+  const [viewMode, setViewMode] = useState<VaultViewMode>(defaultGridView ? "grid" : "list");
   const [sortOption, setSortOption] = useState<VaultSortOption>("recently-added");
   const [selectedSets, setSelectedSets] = useState<Set<string>>(new Set());
   const [isProcessing, setIsProcessing] = useState(false);

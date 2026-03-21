@@ -1,6 +1,7 @@
 import type { NavItem } from "@/types/navigation";
 
 export const PAGE_SIZE = 50;
+export const MAX_BIO_LENGTH = 200;
 
 export const NAV_ITEMS: NavItem[] = [
   { label: "Home", href: "/", icon: "home" },

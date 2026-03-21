@@ -18,11 +18,7 @@ import {
   recalculateUserStats,
   deleteUserSet,
 } from "@/lib/commands";
-import {
-  fetchVaultSetsSchema,
-  addSetToVaultSchema,
-  setNumSchema,
-} from "@/lib/schemas";
+import { fetchVaultSetsSchema, addSetToVaultSchema, setNumSchema } from "@/lib/schemas";
 import { getMilestones } from "@/lib/queries/profile";
 import type { CollectionTab } from "@/types/lego-set";
 
@@ -36,7 +32,9 @@ export async function fetchVaultSets(params: {
   if (!parsed.success) return [];
 
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return [];
 
@@ -45,7 +43,9 @@ export async function fetchVaultSets(params: {
 
 export async function fetchVaultStats() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return null;
 
@@ -54,7 +54,9 @@ export async function fetchVaultStats() {
 
 export async function fetchCollectionStats() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return null;
 
@@ -63,7 +65,9 @@ export async function fetchCollectionStats() {
 
 export async function fetchWishlistStats() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return null;
 
@@ -72,7 +76,9 @@ export async function fetchWishlistStats() {
 
 export async function fetchCollectionCount() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return 0;
 
@@ -81,7 +87,9 @@ export async function fetchCollectionCount() {
 
 export async function fetchWishlistCount() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return 0;
 
@@ -90,7 +98,9 @@ export async function fetchWishlistCount() {
 
 export async function fetchVaultThemes() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return [];
 
@@ -108,20 +118,23 @@ export async function addSetToVault(
   }
 
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return { error: "Not authenticated" };
 
-  const { error } = await supabase
-    .from("user_sets")
-    .upsert({
+  const { error } = await supabase.from("user_sets").upsert(
+    {
       user_id: user.id,
       set_num: parsed.data.setNum,
       quantity: parsed.data.quantity,
       collection_type: parsed.data.collectionType,
-    }, {
+    },
+    {
       onConflict: "user_id,set_num",
-    });
+    }
+  );
 
   if (error) return { error: error.message };
 
@@ -140,7 +153,9 @@ export async function moveToCollection(setNum: string) {
   }
 
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return { error: "Not authenticated" };
 
@@ -176,7 +191,9 @@ export async function toggleFavorite(setNum: string) {
   }
 
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return { error: "Not authenticated" };
 
@@ -205,9 +222,28 @@ export async function toggleFavorite(setNum: string) {
 
 export async function checkMilestones() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return [];
 
   return getMilestones(user.id);
+}
+
+export async function fetchDefaultGridView(): Promise<boolean> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return true;
+
+  const { data } = await supabase
+    .from("profiles")
+    .select("default_grid_view")
+    .eq("id", user.id)
+    .single();
+
+  return data?.default_grid_view ?? true;
 }

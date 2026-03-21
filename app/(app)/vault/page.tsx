@@ -7,6 +7,7 @@ import {
   fetchVaultThemes,
   fetchCollectionCount,
   fetchWishlistCount,
+  fetchDefaultGridView,
 } from "./actions";
 import { VaultPageClient } from "./vault-client";
 
@@ -19,6 +20,7 @@ async function VaultContent() {
     wishlistCount,
     collectionSets,
     wishlistSets,
+    defaultGridView,
   ] = await Promise.all([
     fetchCollectionStats(),
     fetchWishlistStats(),
@@ -27,6 +29,7 @@ async function VaultContent() {
     fetchWishlistCount(),
     fetchVaultSets({ collectionType: "collection" }),
     fetchVaultSets({ collectionType: "wishlist" }),
+    fetchDefaultGridView(),
   ]);
 
   return (
@@ -37,6 +40,7 @@ async function VaultContent() {
       themes={themes}
       collectionCount={collectionCount}
       wishlistCount={wishlistCount}
+      defaultGridView={defaultGridView}
     />
   );
 }
