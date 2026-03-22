@@ -208,13 +208,43 @@
 
 ### T-035: Collection analytics dashboard
 
-- [ ] Theme distribution chart (donut/bar — join user_sets -> lego_sets -> themes)
-- [ ] Year distribution chart (group by decade/year)
-- [ ] Collection growth timeline (sets added over time from `created_at`)
-- [ ] "Biggest Set" highlight (max num_parts)
-- [ ] Consider gating behind Pro tier
+**Tech:** shadcn/ui Charts (Recharts v3) — CSS variable theming via `--chart-1..5`, React 19 compatible, SVG-based SSR.
 
-**Why:** Data-driven collectors want insights. No competitor offers collection analytics.
+**Research:** Brickset uses bar charts for theme/year. BrickEconomy leads with portfolio-value + price forecasting (Pro-gated). BrickLog shows KPI cards + avg cost/piece. Horizontal bar > donut for 10-30 theme categories. Cumulative line + monthly-additions toggle for growth. Progressive disclosure layout: KPIs → charts → deep analytics.
+
+#### Phase 1 — Setup + Core Charts ✅ DONE
+
+- [x] Install shadcn chart: `npx shadcn@latest add chart`
+- [x] Create `app/(app)/vault/analytics/page.tsx` route
+- [x] Add "Analytics" link to vault toolbar (desktop icon + mobile sheet)
+
+#### Phase 2 — Queries (`lib/queries/analytics.ts`) ✅ DONE
+
+- [x] `getThemeDistribution(userId)` — GROUP BY theme, COUNT sets, ORDER BY count DESC
+- [x] `getYearDistribution(userId)` — GROUP BY year, COUNT sets
+- [x] `getCollectionGrowth(userId)` — sets added per month, cumulative
+- [x] `getNotableSets(userId)` — largest, oldest, newest, most valuable (deduplicated)
+- [x] `getCollectionKPIs(userId)` — total sets, pieces, value, avg price-per-piece, sets this month
+
+#### Phase 3 — Components (`components/analytics/`) ✅ DONE
+
+- [x] `AnalyticsKPIs` — 2x2 grid: Total Sets (+N this month), Total Pieces, Value, Avg Price/Piece
+- [x] `ThemeDistributionChart` — horizontal bar chart (top 8, "See all" expansion)
+- [x] `YearDistributionChart` — vertical BarChart (discrete years)
+- [x] `CollectionGrowthChart` — cumulative AreaChart with toggle to monthly additions bar
+- [x] `NotableSetsRow` — card row: Largest, Oldest, Newest, Most Valuable
+- [x] Page layout composing all components with Suspense loading
+
+#### Phase 4 — Polish ✅ DONE
+
+- [x] Responsive layout (single column mobile, 2-col grid desktop)
+- [x] Empty states for users with no collection data
+- [x] Loading skeleton via Suspense
+- [x] Chart tooltips using shadcn ChartTooltipContent
+- [x] All queries bounded with MAX_COLLECTION_SIZE limit
+- [x] SVG gradient ID scoped with useId() to prevent collisions
+
+**Why:** Data-driven collectors want insights. Brickset has basic charts; BrickEconomy gates behind Pro. Free analytics = differentiation.
 
 ### T-036: CSV/PDF export
 

@@ -1,7 +1,8 @@
 "use client";
 
-import { Search, LayoutGrid, List, SlidersHorizontal } from "lucide-react";
+import { Search, LayoutGrid, List, SlidersHorizontal, BarChart3 } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -133,6 +134,14 @@ export function VaultToolbar({
                 </Select>
               </div>
 
+              {/* Analytics link */}
+              <Link href="/vault/analytics" onClick={() => setSheetOpen(false)}>
+                <Button variant="outline" className="w-full gap-2">
+                  <BarChart3 className="size-4" />
+                  Collection Analytics
+                </Button>
+              </Link>
+
               {/* Apply / Reset */}
               <div className="flex gap-3">
                 <Button
@@ -220,6 +229,18 @@ export function VaultToolbar({
             <List className="size-[18px]" />
           </Button>
         </div>
+
+        {/* Analytics link */}
+        <Link href="/vault/analytics" className="hidden sm:block">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-9 rounded-lg bg-card/50"
+            aria-label="Analytics"
+          >
+            <BarChart3 className="size-[18px] text-muted-foreground" />
+          </Button>
+        </Link>
       </div>
     </div>
   );
