@@ -9,6 +9,8 @@ import {
   fetchPublicFavorites,
   fetchPublicMilestones,
   fetchIsFollowing,
+  fetchMutualFollowers,
+  fetchCollectionOverlap,
   getCurrentUserId,
   checkProfileAccess,
 } from "./actions";
@@ -38,12 +40,22 @@ async function PublicProfileContent({
     );
   }
 
-  const [profile, userStats, favoriteSets, milestones, currentUserId] = await Promise.all([
+  const [
+    profile,
+    userStats,
+    favoriteSets,
+    milestones,
+    currentUserId,
+    mutualFollowers,
+    collectionOverlap,
+  ] = await Promise.all([
     fetchPublicProfile(userId),
     fetchPublicStats(userId),
     fetchPublicFavorites(userId),
     fetchPublicMilestones(userId),
     getCurrentUserId(),
+    fetchMutualFollowers(userId),
+    fetchCollectionOverlap(userId),
   ]);
 
   // If profile doesn't exist, show 404
@@ -78,6 +90,8 @@ async function PublicProfileContent({
       isFollowing={isFollowing}
       isLoggedIn={isLoggedIn}
       targetUserId={userId}
+      mutualFollowers={mutualFollowers}
+      collectionOverlap={collectionOverlap}
     />
   );
 }

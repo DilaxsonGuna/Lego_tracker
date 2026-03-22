@@ -295,7 +295,9 @@ export async function getFollowingIds(userId: string): Promise<Set<string>> {
 }
 
 /**
- * Get suggested users to follow (users the current user is not following)
+ * Get suggested users to follow using friends-of-friends + shared theme overlap.
+ * Scores candidates by: (mutual follows * 3) + (shared themes * 2) + 1 (base).
+ * Falls back to random profiles if no social signal exists.
  */
 export async function getSuggestedUsers(
   currentUserId: string,
@@ -303,36 +305,87 @@ export async function getSuggestedUsers(
 ): Promise<SuggestedUserWithFollowStatus[]> {
   const supabase = await createClient();
 
-  // Get users the current user is already following
-  const followingIds = await getFollowingIds(currentUserId);
+  // Get current user's following list and themes in parallel
+  const [followingIds, currentUserThemes] = await Promise.all([
+    getFollowingIds(currentUserId),
+    supabase.from("user_themes").select("theme_id").eq("user_id", currentUserId),
+  ]);
 
-  // Fetch profiles excluding the current user
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("id, username, avatar_url")
-    .neq("id", currentUserId)
-    .limit(limit + followingIds.size); // Fetch extra to account for filtering
+  const currentThemeIds = new Set((currentUserThemes.data ?? []).map((t) => t.theme_id));
 
-  if (error || !data) return [];
+  // Get friends-of-friends: users followed by people the current user follows
+  const friendsOfFriendsScores = new Map<string, number>();
 
-  // Filter out users already being followed and map to the expected type
-  const suggestedUsers: SuggestedUserWithFollowStatus[] = [];
+  if (followingIds.size > 0) {
+    const { data: fofData } = await supabase
+      .from("follows")
+      .select("following_id")
+      .in("follower_id", [...followingIds])
+      .neq("following_id", currentUserId)
+      .limit(500);
 
-  for (const profile of data) {
-    if (suggestedUsers.length >= limit) break;
-
-    const isAlreadyFollowing = followingIds.has(profile.id);
-
-    // Include user - they can appear with isFollowing: true if already followed
-    suggestedUsers.push({
-      id: profile.id,
-      username: profile.username ?? "Anonymous",
-      avatarUrl: profile.avatar_url ?? "",
-      isFollowing: isAlreadyFollowing,
-    });
+    for (const row of fofData ?? []) {
+      if (!followingIds.has(row.following_id)) {
+        friendsOfFriendsScores.set(
+          row.following_id,
+          (friendsOfFriendsScores.get(row.following_id) ?? 0) + 3
+        );
+      }
+    }
   }
 
-  return suggestedUsers;
+  // Get candidate user IDs (friends-of-friends + some random profiles)
+  const candidateIds = new Set(friendsOfFriendsScores.keys());
+
+  // Fetch random profiles as fallback if not enough candidates
+  if (candidateIds.size < limit * 2) {
+    const { data: randomProfiles } = await supabase
+      .from("profiles")
+      .select("id")
+      .neq("id", currentUserId)
+      .limit(limit * 3);
+
+    for (const p of randomProfiles ?? []) {
+      if (!followingIds.has(p.id)) {
+        candidateIds.add(p.id);
+      }
+    }
+  }
+
+  if (candidateIds.size === 0) return [];
+
+  // Fetch profiles and theme data for candidates
+  const candidateArray = [...candidateIds].slice(0, 50);
+  const [profilesResult, themesResult] = await Promise.all([
+    supabase.from("profiles").select("id, username, avatar_url").in("id", candidateArray),
+    currentThemeIds.size > 0
+      ? supabase.from("user_themes").select("user_id, theme_id").in("user_id", candidateArray)
+      : Promise.resolve({ data: [] as Array<{ user_id: string; theme_id: number }> }),
+  ]);
+
+  if (!profilesResult.data) return [];
+
+  // Count shared themes per candidate
+  const themeOverlapScores = new Map<string, number>();
+  for (const row of themesResult.data ?? []) {
+    if (currentThemeIds.has(row.theme_id)) {
+      themeOverlapScores.set(row.user_id, (themeOverlapScores.get(row.user_id) ?? 0) + 2);
+    }
+  }
+
+  // Score and sort candidates
+  const scored = profilesResult.data.map((profile) => ({
+    id: profile.id,
+    username: profile.username ?? "Anonymous",
+    avatarUrl: profile.avatar_url ?? "",
+    isFollowing: false,
+    score:
+      (friendsOfFriendsScores.get(profile.id) ?? 0) + (themeOverlapScores.get(profile.id) ?? 0) + 1,
+  }));
+
+  scored.sort((a, b) => b.score - a.score);
+
+  return scored.slice(0, limit).map(({ score: _score, ...user }) => user);
 }
 
 /**
@@ -360,4 +413,162 @@ export async function getMutualFollowsCount(userId: string): Promise<number> {
 
   if (error) return 0;
   return count ?? 0;
+}
+
+/**
+ * Get mutual followers between the current user and a target user.
+ * Returns users that the current user follows who also follow the target user.
+ */
+export async function getMutualFollowers(
+  currentUserId: string,
+  targetUserId: string,
+  limit: number = 3
+): Promise<{
+  users: Array<{ id: string; username: string; avatarUrl: string | null }>;
+  totalCount: number;
+}> {
+  const supabase = await createClient();
+
+  // Get IDs the current user follows (bounded to 1000)
+  const { data: currentFollowing } = await supabase
+    .from("follows")
+    .select("following_id")
+    .eq("follower_id", currentUserId)
+    .limit(1000);
+
+  if (!currentFollowing || currentFollowing.length === 0) {
+    return { users: [], totalCount: 0 };
+  }
+
+  const followingArray = currentFollowing
+    .map((f) => f.following_id)
+    .filter((id) => id !== currentUserId);
+
+  // Server-side intersection: followers of target who are also followed by current user
+  const [countResult, displayResult] = await Promise.all([
+    supabase
+      .from("follows")
+      .select("*", { count: "exact", head: true })
+      .eq("following_id", targetUserId)
+      .in("follower_id", followingArray),
+    supabase
+      .from("follows")
+      .select("follower_id, profiles!follows_follower_id_fkey(id, username, avatar_url)")
+      .eq("following_id", targetUserId)
+      .in("follower_id", followingArray)
+      .limit(limit),
+  ]);
+
+  const totalCount = countResult.count ?? 0;
+  if (totalCount === 0) return { users: [], totalCount: 0 };
+
+  const users = (displayResult.data ?? []).map((row) => {
+    const profile = row.profiles as unknown as {
+      id: string;
+      username: string | null;
+      avatar_url: string | null;
+    };
+    return {
+      id: profile.id,
+      username: profile.username ?? "Anonymous",
+      avatarUrl: profile.avatar_url,
+    };
+  });
+
+  return { users, totalCount };
+}
+
+/**
+ * Get collection overlap between two users.
+ * Returns shared set count and Jaccard similarity score.
+ */
+export async function getCollectionOverlap(
+  userAId: string,
+  userBId: string
+): Promise<{ sharedCount: number; similarity: number }> {
+  const supabase = await createClient();
+  const MAX_SETS = 2000;
+
+  // Fetch both users' collection set_nums in parallel (bounded)
+  const [resultA, resultB] = await Promise.all([
+    supabase
+      .from("user_sets")
+      .select("set_num")
+      .eq("user_id", userAId)
+      .eq("collection_type", "collection")
+      .limit(MAX_SETS),
+    supabase
+      .from("user_sets")
+      .select("set_num")
+      .eq("user_id", userBId)
+      .eq("collection_type", "collection")
+      .limit(MAX_SETS),
+  ]);
+
+  if (!resultA.data || !resultB.data) return { sharedCount: 0, similarity: 0 };
+
+  const setsA = new Set(resultA.data.map((r) => r.set_num));
+  const setsB = new Set(resultB.data.map((r) => r.set_num));
+
+  if (setsA.size === 0 || setsB.size === 0) return { sharedCount: 0, similarity: 0 };
+
+  let sharedCount = 0;
+  for (const setNum of setsA) {
+    if (setsB.has(setNum)) sharedCount++;
+  }
+
+  const unionSize = setsA.size + setsB.size - sharedCount;
+  const similarity = unionSize > 0 ? sharedCount / unionSize : 0;
+
+  return { sharedCount, similarity };
+}
+
+/**
+ * Get how many users the current user follows who own a specific set.
+ * Returns count and up to `limit` usernames for display.
+ */
+export async function getFollowersWhoOwnSet(
+  currentUserId: string,
+  setNum: string,
+  limit: number = 3
+): Promise<{ users: Array<{ username: string }>; totalCount: number }> {
+  const supabase = await createClient();
+
+  // Get IDs the current user follows (bounded)
+  const { data: following } = await supabase
+    .from("follows")
+    .select("following_id")
+    .eq("follower_id", currentUserId)
+    .limit(1000);
+
+  if (!following || following.length === 0) return { users: [], totalCount: 0 };
+
+  const followingArray = following.map((f) => f.following_id);
+
+  // Count + display in parallel, server-side filtered
+  const [countResult, displayResult] = await Promise.all([
+    supabase
+      .from("user_sets")
+      .select("*", { count: "exact", head: true })
+      .eq("set_num", setNum)
+      .eq("collection_type", "collection")
+      .in("user_id", followingArray),
+    supabase
+      .from("user_sets")
+      .select("user_id, profiles!inner(username)")
+      .eq("set_num", setNum)
+      .eq("collection_type", "collection")
+      .in("user_id", followingArray)
+      .limit(limit),
+  ]);
+
+  const totalCount = countResult.count ?? 0;
+  if (totalCount === 0) return { users: [], totalCount: 0 };
+
+  const users = (displayResult.data ?? []).map((row) => {
+    const profile = row.profiles as unknown as { username: string | null };
+    return { username: profile.username ?? "Anonymous" };
+  });
+
+  return { users, totalCount };
 }

@@ -180,12 +180,12 @@
 - [x] Cursor input validation (prevent PostgREST filter injection)
 - [x] Optimistic follow/unfollow state updates (no pagination truncation)
 
-#### Phase 4 — Engagement
+#### Phase 4 — Engagement ✅ DONE
 
-- [ ] Mutual followers indicator on profile pages ("5 collectors you follow also follow this user")
-- [ ] Collection overlap score (Jaccard similarity: "You have N sets in common")
-- [ ] Social proof on set pages ("3 collectors you follow own this set")
-- [ ] Follow suggestions algorithm (friends-of-friends + shared theme overlap)
+- [x] Mutual followers indicator on profile pages ("Followed by X, Y you follow")
+- [x] Collection overlap score (Jaccard similarity: "N sets in common (X% match)")
+- [x] Social proof on set pages ("X, Y you follow own this set")
+- [x] Follow suggestions algorithm (friends-of-friends _ 3 + shared themes _ 2 scoring)
 
 **Why:** Social graph exists in DB but was invisible in UX. Phase 1 shipped; phases 2-4 optimize UX, performance, and engagement.
 

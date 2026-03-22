@@ -9,12 +9,14 @@ import {
   getRelatedSets,
   getUserSetStatus,
 } from "@/lib/queries/set-detail";
+import { getFollowersWhoOwnSet } from "@/lib/queries/social";
 import {
   SetDetailHero,
   SetDetailStats,
   SetDetailActions,
   RelatedSets,
 } from "@/components/set-detail";
+import { SocialProofBadge } from "@/components/social";
 
 interface SetDetailPageProps {
   params: Promise<{ setNum: string }>;
@@ -33,7 +35,7 @@ async function SetDetailContent({ paramsPromise }: { paramsPromise: Promise<{ se
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [ownerCount, relatedSets, userStatus, priceData] = await Promise.all([
+  const [ownerCount, relatedSets, userStatus, priceData, socialProof] = await Promise.all([
     getSetOwnerCount(setNum),
     getRelatedSets(set.themeId, setNum, 6),
     user
@@ -50,6 +52,7 @@ async function SetDetailContent({ paramsPromise }: { paramsPromise: Promise<{ se
       .eq("currency", "EUR")
       .eq("source", "brickset")
       .maybeSingle(),
+    user ? getFollowersWhoOwnSet(user.id, setNum) : Promise.resolve({ users: [], totalCount: 0 }),
   ]);
 
   return (
@@ -74,6 +77,11 @@ async function SetDetailContent({ paramsPromise }: { paramsPromise: Promise<{ se
           themeName={set.themeName}
           retailPrice={priceData.data?.retail_price ?? null}
         />
+
+        {/* Social proof */}
+        {socialProof.totalCount > 0 && (
+          <SocialProofBadge users={socialProof.users} totalCount={socialProof.totalCount} />
+        )}
 
         {/* Action buttons */}
         <SetDetailActions setNum={set.setNum} initialStatus={userStatus} isAuthenticated={!!user} />

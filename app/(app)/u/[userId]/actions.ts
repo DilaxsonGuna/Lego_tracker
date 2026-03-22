@@ -7,7 +7,7 @@ import {
   getFavoriteSets,
   getMilestones,
 } from "@/lib/queries/profile";
-import { isFollowing } from "@/lib/queries/social";
+import { isFollowing, getMutualFollowers, getCollectionOverlap } from "@/lib/queries/social";
 import { toggleFollow } from "@/lib/commands/follows";
 import { userIdSchema, toggleFollowSchema } from "@/lib/schemas";
 
@@ -90,14 +90,35 @@ export async function getCurrentUserId() {
   return user?.id ?? null;
 }
 
-export async function handleToggleFollow(
-  targetUserId: string,
-  isCurrentlyFollowing: boolean
-) {
+export async function handleToggleFollow(targetUserId: string, isCurrentlyFollowing: boolean) {
   const parsed = toggleFollowSchema.safeParse({ userId: targetUserId, isCurrentlyFollowing });
   if (!parsed.success) {
     return { error: parsed.error.issues[0].message };
   }
 
   return toggleFollow(parsed.data.userId, parsed.data.isCurrentlyFollowing);
+}
+
+export async function fetchMutualFollowers(targetUserId: string) {
+  const parsed = userIdSchema.safeParse({ userId: targetUserId });
+  if (!parsed.success) return { users: [], totalCount: 0 };
+
+  const currentUserId = await getCurrentUserId();
+  if (!currentUserId || currentUserId === parsed.data.userId) {
+    return { users: [], totalCount: 0 };
+  }
+
+  return getMutualFollowers(currentUserId, parsed.data.userId);
+}
+
+export async function fetchCollectionOverlap(targetUserId: string) {
+  const parsed = userIdSchema.safeParse({ userId: targetUserId });
+  if (!parsed.success) return { sharedCount: 0, similarity: 0 };
+
+  const currentUserId = await getCurrentUserId();
+  if (!currentUserId || currentUserId === parsed.data.userId) {
+    return { sharedCount: 0, similarity: 0 };
+  }
+
+  return getCollectionOverlap(currentUserId, parsed.data.userId);
 }

@@ -14,6 +14,7 @@ import {
   ProfileFooter,
   ShareProfileButton,
 } from "@/components/profile";
+import { MutualFollowers, CollectionOverlap } from "@/components/social";
 import { handleToggleFollow } from "./actions";
 import type { UserProfile, UserStats, FavoriteSet, Milestone } from "@/types/profile";
 
@@ -26,6 +27,14 @@ interface PublicProfileClientProps {
   isFollowing: boolean;
   isLoggedIn: boolean;
   targetUserId: string;
+  mutualFollowers: {
+    users: Array<{ id: string; username: string; avatarUrl: string | null }>;
+    totalCount: number;
+  };
+  collectionOverlap: {
+    sharedCount: number;
+    similarity: number;
+  };
 }
 
 function formatCount(n: number): string {
@@ -42,6 +51,8 @@ export function PublicProfileClient({
   isFollowing: initialIsFollowing,
   isLoggedIn,
   targetUserId,
+  mutualFollowers,
+  collectionOverlap,
 }: PublicProfileClientProps) {
   const router = useRouter();
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
@@ -151,6 +162,20 @@ export function PublicProfileClient({
               </div>
             </div>
           </div>
+          {/* Social engagement indicators */}
+          {!isOwner && (mutualFollowers.totalCount > 0 || collectionOverlap.sharedCount > 0) && (
+            <div className="flex flex-col items-center gap-2 pt-4">
+              <MutualFollowers
+                users={mutualFollowers.users}
+                totalCount={mutualFollowers.totalCount}
+                targetUserId={targetUserId}
+              />
+              <CollectionOverlap
+                sharedCount={collectionOverlap.sharedCount}
+                similarity={collectionOverlap.similarity}
+              />
+            </div>
+          )}
         </div>
       </header>
 
