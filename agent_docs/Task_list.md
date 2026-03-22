@@ -197,12 +197,12 @@
 
 **Why:** Vault has no user-facing sort. Users with 100+ sets can't organize their collection.
 
-### T-034: Milestone celebration modals
+### T-034: Milestone celebration modals ✅ DONE
 
-- [ ] Detect when user crosses a milestone threshold after adding a set
-- [ ] Show celebration modal with confetti animation + milestone badge
-- [ ] Add "Share" CTA in modal to generate milestone-specific shareable image
-- [ ] Track `milestone_reached` and `milestone_shared` events
+- [x] Detect when user crosses a milestone threshold after adding a set
+- [x] Show celebration modal with confetti animation + milestone badge
+- [x] Add "Share" CTA in modal (Web Share API + clipboard fallback)
+- [ ] Track `milestone_reached` and `milestone_shared` events (deferred to T-050 PostHog)
 
 **Why:** Milestones appear silently on profile. No celebration = no share trigger = no viral loop.
 
