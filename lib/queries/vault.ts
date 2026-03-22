@@ -3,6 +3,8 @@ import type { VaultSet, VaultStats, CollectionStats, WishlistStats } from "@/typ
 import type { CollectionTab } from "@/types/lego-set";
 import { PAGE_SIZE } from "@/lib/constants";
 
+const DEFAULT_CURRENCY = "EUR";
+
 interface GetVaultSetsParams {
   userId: string;
   collectionType: CollectionTab;
@@ -30,7 +32,8 @@ export async function getVaultSets({
 
   let query = supabase
     .from("user_sets")
-    .select(`
+    .select(
+      `
       quantity,
       notes,
       collection_type,
@@ -42,7 +45,8 @@ export async function getVaultSets({
         img_url,
         themes(name)
       )
-    `)
+    `
+    )
     .eq("user_id", userId)
     .eq("collection_type", collectionType);
 
@@ -50,10 +54,9 @@ export async function getVaultSets({
     // Sanitize search input by removing PostgREST special characters
     const sanitized = search.replace(/[%_(),.]/g, "");
     if (sanitized) {
-      query = query.or(
-        `name.ilike.%${sanitized}%,set_num.ilike.%${sanitized}%`,
-        { referencedTable: "lego_sets" }
-      );
+      query = query.or(`name.ilike.%${sanitized}%,set_num.ilike.%${sanitized}%`, {
+        referencedTable: "lego_sets",
+      });
     }
   }
 
@@ -66,6 +69,26 @@ export async function getVaultSets({
     .range(offset, offset + PAGE_SIZE - 1);
 
   if (error || !data) return [];
+
+  // Fetch prices for the returned sets
+  const setNums = data.map((row) => {
+    const set = row.lego_sets as unknown as { set_num: string };
+    return set.set_num;
+  });
+
+  const priceMap = new Map<string, number>();
+  if (setNums.length > 0) {
+    const { data: pricesData } = await supabase
+      .from("set_prices")
+      .select("set_num, retail_price")
+      .in("set_num", setNums)
+      .eq("currency", DEFAULT_CURRENCY)
+      .eq("source", "brickset");
+
+    for (const p of pricesData ?? []) {
+      priceMap.set(p.set_num, p.retail_price);
+    }
+  }
 
   return data.map((row) => {
     const set = row.lego_sets as unknown as {
@@ -86,6 +109,7 @@ export async function getVaultSets({
       themeName: set.themes?.name ?? "",
       collectionType: row.collection_type as CollectionTab,
       isFavorite: favoriteSetNums.has(set.set_num),
+      retailPrice: priceMap.get(set.set_num) ?? null,
     };
   });
 }
@@ -95,10 +119,12 @@ export async function getVaultStats(userId: string): Promise<VaultStats | null> 
 
   const { data, error } = await supabase
     .from("user_sets")
-    .select(`
+    .select(
+      `
       quantity,
       lego_sets!inner(num_parts, theme_id)
-    `)
+    `
+    )
     .eq("user_id", userId);
 
   if (error || !data) return null;
@@ -131,10 +157,13 @@ export async function getCollectionStats(userId: string): Promise<CollectionStat
 
   const { data, error } = await supabase
     .from("user_sets")
-    .select(`
+    .select(
+      `
+      set_num,
       quantity,
       lego_sets!inner(num_parts)
-    `)
+    `
+    )
     .eq("user_id", userId)
     .eq("collection_type", "collection");
 
@@ -145,9 +174,36 @@ export async function getCollectionStats(userId: string): Promise<CollectionStat
     return sum + (set.num_parts ?? 0) * (row.quantity ?? 1);
   }, 0);
 
+  // Fetch prices for collection sets
+  const setNums = data.map((row) => row.set_num);
+  let totalValue = 0;
+  let hasAnyPrice = false;
+
+  if (setNums.length > 0) {
+    const { data: pricesData } = await supabase
+      .from("set_prices")
+      .select("set_num, retail_price")
+      .in("set_num", setNums)
+      .eq("currency", DEFAULT_CURRENCY)
+      .eq("source", "brickset");
+
+    const priceMap = new Map((pricesData ?? []).map((p) => [p.set_num, p.retail_price]));
+
+    for (const row of data) {
+      const price = priceMap.get(row.set_num);
+      if (price) {
+        totalValue += price * (row.quantity ?? 1);
+        hasAnyPrice = true;
+      }
+    }
+  }
+
   return {
     totalPieces: totalParts.toLocaleString(),
     setsOwned: data.length,
+    totalValue: hasAnyPrice
+      ? `€${totalValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      : null,
   };
 }
 
@@ -156,10 +212,13 @@ export async function getWishlistStats(userId: string): Promise<WishlistStats | 
 
   const { data, error } = await supabase
     .from("user_sets")
-    .select(`
+    .select(
+      `
+      set_num,
       quantity,
       lego_sets!inner(num_parts)
-    `)
+    `
+    )
     .eq("user_id", userId)
     .eq("collection_type", "wishlist");
 
@@ -170,9 +229,36 @@ export async function getWishlistStats(userId: string): Promise<WishlistStats | 
     return sum + (set.num_parts ?? 0) * (row.quantity ?? 1);
   }, 0);
 
+  // Fetch prices for wishlist sets
+  const setNums = data.map((row) => row.set_num);
+  let totalValue = 0;
+  let hasAnyPrice = false;
+
+  if (setNums.length > 0) {
+    const { data: pricesData } = await supabase
+      .from("set_prices")
+      .select("set_num, retail_price")
+      .in("set_num", setNums)
+      .eq("currency", DEFAULT_CURRENCY)
+      .eq("source", "brickset");
+
+    const priceMap = new Map((pricesData ?? []).map((p) => [p.set_num, p.retail_price]));
+
+    for (const row of data) {
+      const price = priceMap.get(row.set_num);
+      if (price) {
+        totalValue += price * (row.quantity ?? 1);
+        hasAnyPrice = true;
+      }
+    }
+  }
+
   return {
     targetPieces: totalParts.toLocaleString(),
     savedSets: data.length,
+    totalValue: hasAnyPrice
+      ? `€${totalValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      : null,
   };
 }
 
@@ -203,12 +289,14 @@ export async function getVaultThemes(userId: string): Promise<VaultTheme[]> {
 
   const { data, error } = await supabase
     .from("user_sets")
-    .select(`
+    .select(
+      `
       lego_sets!inner(
         theme_id,
         themes!inner(id, name)
       )
-    `)
+    `
+    )
     .eq("user_id", userId);
 
   if (error || !data) return [];

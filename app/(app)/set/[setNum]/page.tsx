@@ -20,11 +20,7 @@ interface SetDetailPageProps {
   params: Promise<{ setNum: string }>;
 }
 
-async function SetDetailContent({
-  paramsPromise,
-}: {
-  paramsPromise: Promise<{ setNum: string }>;
-}) {
+async function SetDetailContent({ paramsPromise }: { paramsPromise: Promise<{ setNum: string }> }) {
   const { setNum } = await paramsPromise;
   const set = await getSetDetail(setNum);
 
@@ -37,7 +33,7 @@ async function SetDetailContent({
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [ownerCount, relatedSets, userStatus] = await Promise.all([
+  const [ownerCount, relatedSets, userStatus, priceData] = await Promise.all([
     getSetOwnerCount(setNum),
     getRelatedSets(set.themeId, setNum, 6),
     user
@@ -47,11 +43,18 @@ async function SetDetailContent({
           inWishlist: false,
           isFavorite: false,
         }),
+    supabase
+      .from("set_prices")
+      .select("retail_price")
+      .eq("set_num", setNum)
+      .eq("currency", "EUR")
+      .eq("source", "brickset")
+      .maybeSingle(),
   ]);
 
   return (
     <main className="flex-1 overflow-y-auto">
-      <div className="max-w-5xl mx-auto px-6 md:px-10 py-8 space-y-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-8 space-y-8">
         {/* Back link */}
         <Link
           href="/explore"
@@ -69,14 +72,11 @@ async function SetDetailContent({
           numParts={set.numParts}
           ownerCount={ownerCount}
           themeName={set.themeName}
+          retailPrice={priceData.data?.retail_price ?? null}
         />
 
         {/* Action buttons */}
-        <SetDetailActions
-          setNum={set.setNum}
-          initialStatus={userStatus}
-          isAuthenticated={!!user}
-        />
+        <SetDetailActions setNum={set.setNum} initialStatus={userStatus} isAuthenticated={!!user} />
 
         {/* Related sets */}
         <RelatedSets sets={relatedSets} themeName={set.themeName} />

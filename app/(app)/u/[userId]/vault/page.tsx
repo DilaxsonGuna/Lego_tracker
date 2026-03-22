@@ -69,11 +69,13 @@ async function PublicVaultContent({
   const defaultCollectionStats = collectionStats ?? {
     totalPieces: "0",
     setsOwned: 0,
+    totalValue: null,
   };
 
   const defaultWishlistStats = wishlistStats ?? {
     targetPieces: "0",
     savedSets: 0,
+    totalValue: null,
   };
 
   return (

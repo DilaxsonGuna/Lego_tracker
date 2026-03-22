@@ -11,8 +11,13 @@ interface VaultStatsHeroProps {
 export function VaultStatsHero({ stats, activeTab }: VaultStatsHeroProps) {
   const isCollection = activeTab === "collection";
 
+  const totalValue = isCollection
+    ? (stats as CollectionStats).totalValue
+    : (stats as WishlistStats).totalValue;
+
   const statItems = isCollection
     ? [
+        ...(totalValue ? [{ label: "Collection Value", value: totalValue, isPrimary: true }] : []),
         {
           label: "Total Pieces",
           value: (stats as CollectionStats).totalPieces,
@@ -23,6 +28,7 @@ export function VaultStatsHero({ stats, activeTab }: VaultStatsHeroProps) {
         },
       ]
     : [
+        ...(totalValue ? [{ label: "Wishlist Value", value: totalValue, isPrimary: true }] : []),
         {
           label: "Total Pieces",
           value: (stats as WishlistStats).targetPieces,
@@ -57,7 +63,11 @@ export function VaultStatsHero({ stats, activeTab }: VaultStatsHeroProps) {
                 <span className="text-xs uppercase tracking-wider text-muted-foreground font-bold mb-2">
                   {item.label}
                 </span>
-                <span className="text-3xl md:text-4xl font-black tracking-tighter text-foreground">
+                <span
+                  className={`text-3xl md:text-4xl font-black tracking-tighter ${
+                    "isPrimary" in item && item.isPrimary ? "text-primary" : "text-foreground"
+                  }`}
+                >
                   {item.value}
                 </span>
               </div>

@@ -92,10 +92,15 @@ export function VaultCard({
           <h3 className="text-sm font-bold text-foreground truncate group-hover:text-primary transition-colors uppercase tracking-tight">
             {set.name}
           </h3>
-          <div className="flex items-center mt-2">
+          <div className="flex items-center justify-between mt-2">
             <span className="text-xs text-muted-foreground">
               {set.year} &bull; {set.numParts.toLocaleString()} pcs
             </span>
+            {set.retailPrice != null && (
+              <span className="text-xs font-bold text-primary">
+                €{set.retailPrice.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+              </span>
+            )}
           </div>
         </div>
       </Link>

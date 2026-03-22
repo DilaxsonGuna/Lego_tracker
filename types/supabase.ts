@@ -155,6 +155,38 @@ export type Database = {
         };
         Relationships: [];
       };
+      set_prices: {
+        Row: {
+          currency: string;
+          retail_price: number;
+          set_num: string;
+          source: string;
+          updated_at: string | null;
+        };
+        Insert: {
+          currency: string;
+          retail_price: number;
+          set_num: string;
+          source?: string;
+          updated_at?: string | null;
+        };
+        Update: {
+          currency?: string;
+          retail_price?: number;
+          set_num?: string;
+          source?: string;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "set_prices_set_num_fkey";
+            columns: ["set_num"];
+            isOneToOne: false;
+            referencedRelation: "lego_sets";
+            referencedColumns: ["set_num"];
+          },
+        ];
+      };
       themes: {
         Row: {
           id: number;

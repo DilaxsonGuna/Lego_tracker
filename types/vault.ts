@@ -9,6 +9,7 @@ export interface VaultSet {
   themeName: string;
   collectionType: CollectionTab;
   isFavorite: boolean;
+  retailPrice: number | null;
 }
 
 export interface VaultStats {
@@ -30,9 +31,11 @@ export type VaultSortOption =
 export interface CollectionStats {
   totalPieces: string;
   setsOwned: number;
+  totalValue: string | null;
 }
 
 export interface WishlistStats {
   targetPieces: string;
   savedSets: number;
+  totalValue: string | null;
 }
