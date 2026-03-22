@@ -143,7 +143,7 @@ export function OnboardingForm({ className, ...props }: OnboardingFormProps) {
                 )}
                 {usernameError && <p className="text-sm text-destructive">{usernameError}</p>}
                 {usernameAvailable === true && username.length >= 3 && (
-                  <p className="text-sm text-green-500">Username available</p>
+                  <p className="text-sm text-success">Username available</p>
                 )}
                 <p className="text-xs text-muted-foreground">
                   3-20 characters, letters, numbers, and underscores only

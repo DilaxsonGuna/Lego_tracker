@@ -181,7 +181,7 @@ export function EditProfileForm({ initialData }: EditProfileFormProps) {
                 )}
                 {!isCheckingUsername &&
                   usernameAvailable === true &&
-                  username.trim().length >= 3 && <Check className="size-4 text-green-500" />}
+                  username.trim().length >= 3 && <Check className="size-4 text-success" />}
                 {!isCheckingUsername && usernameError && <X className="size-4 text-destructive" />}
               </div>
             </div>
@@ -190,7 +190,7 @@ export function EditProfileForm({ initialData }: EditProfileFormProps) {
               usernameAvailable === true &&
               username.trim() !== initialData.username &&
               username.trim().length >= 3 && (
-                <p className="text-xs text-green-500 ml-1">Username available</p>
+                <p className="text-xs text-success ml-1">Username available</p>
               )}
             <p className="text-xs text-muted-foreground ml-1">
               3-20 characters, lowercase letters, numbers, and underscores only

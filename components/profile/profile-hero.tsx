@@ -37,7 +37,7 @@ export function ProfileHero({ user, stats, isOwnProfile = true }: ProfileHeroPro
           </AvatarFallback>
         </Avatar>
         {user.isOnline && (
-          <div className="absolute bottom-2 right-2 size-6 sm:bottom-3 sm:right-3 sm:size-8 rounded-full border-4 border-background bg-green-500" />
+          <div className="absolute bottom-2 right-2 size-6 sm:bottom-3 sm:right-3 sm:size-8 rounded-full border-4 border-background bg-success" />
         )}
       </div>
 
@@ -47,9 +47,7 @@ export function ProfileHero({ user, stats, isOwnProfile = true }: ProfileHeroPro
           <h1 className="text-3xl sm:text-5xl font-black tracking-tighter text-foreground">
             @{user.username}
           </h1>
-          {user.isVerified && (
-            <BadgeCheck className="size-7 text-blue-400 fill-blue-400" />
-          )}
+          {user.isVerified && <BadgeCheck className="size-7 text-info fill-info" />}
         </div>
 
         <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/30 px-5 py-1.5 mb-6">
@@ -60,7 +58,10 @@ export function ProfileHero({ user, stats, isOwnProfile = true }: ProfileHeroPro
 
         {/* Social Stats */}
         <div className="flex items-center justify-center gap-6 sm:gap-10 py-6 border-y border-border">
-          <Link href={`/u/${user.id}/followers`} className="text-center hover:opacity-80 transition-opacity">
+          <Link
+            href={`/u/${user.id}/followers`}
+            className="text-center hover:opacity-80 transition-opacity"
+          >
             <div className="text-xl sm:text-2xl font-bold text-foreground leading-none">
               {formatCount(user.followers)}
             </div>
@@ -68,7 +69,10 @@ export function ProfileHero({ user, stats, isOwnProfile = true }: ProfileHeroPro
               Followers
             </div>
           </Link>
-          <Link href={`/u/${user.id}/following`} className="text-center hover:opacity-80 transition-opacity">
+          <Link
+            href={`/u/${user.id}/following`}
+            className="text-center hover:opacity-80 transition-opacity"
+          >
             <div className="text-xl sm:text-2xl font-bold text-foreground leading-none">
               {formatCount(user.following)}
             </div>
@@ -99,11 +103,7 @@ export function ProfileHero({ user, stats, isOwnProfile = true }: ProfileHeroPro
               <Share2 className="size-4" />
               Share Collection Card
             </Button>
-            <ShareCollectionCard
-              userId={user.id}
-              open={shareOpen}
-              onOpenChange={setShareOpen}
-            />
+            <ShareCollectionCard userId={user.id} open={shareOpen} onOpenChange={setShareOpen} />
           </div>
         )}
       </div>

@@ -55,8 +55,7 @@ async function PublicProfileContent({
   const isLoggedIn = currentUserId !== null;
 
   // Check if current user follows this profile (only if logged in and not owner)
-  const isFollowing =
-    isLoggedIn && !isOwner ? await fetchIsFollowing(userId) : false;
+  const isFollowing = isLoggedIn && !isOwner ? await fetchIsFollowing(userId) : false;
 
   // Fallback for users with no collection
   const stats = userStats ?? {
@@ -86,9 +85,7 @@ async function PublicProfileContent({
 function ProfileSkeleton() {
   return (
     <div className="flex items-center justify-center min-h-[400px]">
-      <div className="animate-pulse text-muted-foreground">
-        Loading profile...
-      </div>
+      <div className="animate-pulse text-muted-foreground">Loading profile...</div>
     </div>
   );
 }
@@ -98,7 +95,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
     <main className="flex-1 relative">
       <StudPatternBg />
 
-      <div className="relative z-10 mx-auto max-w-[1100px] px-8 py-12">
+      <div className="relative z-10 mx-auto max-w-[1100px] px-4 sm:px-6 md:px-8 py-12">
         <Suspense fallback={<ProfileSkeleton />}>
           <PublicProfileContent paramsPromise={params} />
         </Suspense>

@@ -56,10 +56,7 @@ async function ProfileContent() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
         <div className="lg:col-span-2 space-y-8">
           <ProfileBio user={user} />
-          <RankProgressCard
-            progress={stats.rankProgress}
-            brickScore={stats.brickScore}
-          />
+          <RankProgressCard progress={stats.rankProgress} brickScore={stats.brickScore} />
           <ProfileStatsRow stats={stats} />
         </div>
         <MilestoneVault milestones={milestones} />
@@ -83,7 +80,7 @@ export default function ProfilePage() {
     <main className="flex-1 relative">
       <StudPatternBg />
 
-      <div className="relative z-10 mx-auto max-w-[1100px] px-4 sm:px-8 py-8 sm:py-12">
+      <div className="relative z-10 mx-auto max-w-[1100px] px-4 sm:px-6 md:px-8 py-8 sm:py-12">
         <Suspense fallback={<ProfileSkeleton />}>
           <ProfileContent />
         </Suspense>

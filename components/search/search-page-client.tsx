@@ -197,12 +197,12 @@ export function SearchPageClient({
                 <Avatar
                   className="size-10 ring-2 ring-surface-accent"
                   style={{
-                    backgroundColor: user.avatarUrl || "#3b82f6",
+                    backgroundColor: user.avatarUrl || "hsl(var(--info))",
                   }}
                 >
                   <AvatarFallback
                     style={{
-                      backgroundColor: user.avatarUrl || "#3b82f6",
+                      backgroundColor: user.avatarUrl || "hsl(var(--info))",
                     }}
                     className="text-white font-bold"
                   >

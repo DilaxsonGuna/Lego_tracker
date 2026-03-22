@@ -5,7 +5,7 @@ import { SettingsClient } from "./settings-client";
 
 function SettingsLoading() {
   return (
-    <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-8 md:px-6 lg:py-12">
+    <main className="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-6 md:px-8 py-8 lg:py-12">
       <div className="mb-10">
         <div className="h-10 w-32 bg-muted animate-pulse rounded mb-2" />
         <div className="h-5 w-64 bg-muted animate-pulse rounded" />

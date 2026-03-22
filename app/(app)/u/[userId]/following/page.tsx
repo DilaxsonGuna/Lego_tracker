@@ -9,11 +9,7 @@ interface PageProps {
   params: Promise<{ userId: string }>;
 }
 
-async function FollowingContent({
-  paramsPromise,
-}: {
-  paramsPromise: Promise<{ userId: string }>;
-}) {
+async function FollowingContent({ paramsPromise }: { paramsPromise: Promise<{ userId: string }> }) {
   const { userId } = await paramsPromise;
 
   const [following, currentUserId] = await Promise.all([
@@ -29,9 +25,7 @@ async function FollowingContent({
             <ArrowLeft className="size-5" />
           </Button>
         </Link>
-        <h1 className="text-2xl font-black tracking-tight text-foreground">
-          Following
-        </h1>
+        <h1 className="text-2xl font-black tracking-tight text-foreground">Following</h1>
       </div>
       <FollowList
         users={following}
@@ -46,13 +40,11 @@ async function FollowingContent({
 export default async function FollowingPage({ params }: PageProps) {
   return (
     <main className="flex-1 relative">
-      <div className="mx-auto max-w-[600px] px-6 py-10">
+      <div className="mx-auto max-w-[600px] px-4 sm:px-6 md:px-8 py-10">
         <Suspense
           fallback={
             <div className="flex items-center justify-center py-16">
-              <div className="animate-pulse text-muted-foreground">
-                Loading following...
-              </div>
+              <div className="animate-pulse text-muted-foreground">Loading following...</div>
             </div>
           }
         >

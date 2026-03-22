@@ -41,7 +41,7 @@ async function getProfileData() {
 
 function EditProfileSkeleton() {
   return (
-    <div className="flex-1 w-full max-w-2xl mx-auto px-4 py-8 md:px-6 lg:py-12">
+    <div className="flex-1 w-full max-w-2xl mx-auto px-4 sm:px-6 md:px-8 py-8 lg:py-12">
       <div className="animate-pulse">
         <div className="h-6 w-32 bg-muted rounded mb-8" />
         <div className="h-10 w-48 bg-muted rounded mb-2" />

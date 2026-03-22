@@ -55,10 +55,10 @@ export function Sidebar({ navItems, user, notificationSlot }: SidebarProps) {
         <div className="mt-auto flex items-center gap-3 border-t border-border pt-6">
           <Avatar
             className="size-10 ring-2 ring-surface-accent"
-            style={{ backgroundColor: user.avatarUrl || "#3b82f6" }}
+            style={{ backgroundColor: user.avatarUrl || "hsl(var(--info))" }}
           >
             <AvatarFallback
-              style={{ backgroundColor: user.avatarUrl || "#3b82f6" }}
+              style={{ backgroundColor: user.avatarUrl || "hsl(var(--info))" }}
               className="text-white font-bold"
             >
               {user.username.charAt(0).toUpperCase()}

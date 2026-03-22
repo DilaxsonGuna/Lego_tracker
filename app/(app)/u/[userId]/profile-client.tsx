@@ -74,7 +74,7 @@ export function PublicProfileClient({
             </AvatarFallback>
           </Avatar>
           {user.isOnline && (
-            <div className="absolute bottom-3 right-3 size-8 rounded-full border-4 border-background bg-green-500" />
+            <div className="absolute bottom-3 right-3 size-8 rounded-full border-4 border-background bg-success" />
           )}
         </div>
 
@@ -84,7 +84,7 @@ export function PublicProfileClient({
             <h1 className="text-5xl font-black tracking-tighter text-foreground">
               @{user.username}
             </h1>
-            {user.isVerified && <BadgeCheck className="size-7 text-blue-400 fill-blue-400" />}
+            {user.isVerified && <BadgeCheck className="size-7 text-info fill-info" />}
           </div>
 
           <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/30 px-5 py-1.5 mb-6">
