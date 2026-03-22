@@ -4,12 +4,20 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="relative min-h-svh stud-bg bg-gradient-to-b from-background via-background/95 to-background">
       {/* Brand header */}
-      <div className="flex flex-col items-center pt-10 pb-2 gap-3">
-        <LegoFlexLogo className="h-12 w-12 rounded-xl [&_svg]:size-7" />
-        <span className="text-lg font-bold tracking-tight text-foreground">LegoFlex</span>
-        <p className="text-sm text-muted-foreground">
-          Track, collect, and share your Lego journey.
-        </p>
+      <div className="flex flex-col items-center pt-12 pb-4 gap-4">
+        <div className="relative">
+          {/* Pulsing glow behind logo */}
+          <div className="absolute -inset-3 rounded-2xl bg-primary/30 blur-xl motion-safe:animate-pulse" />
+          <LegoFlexLogo className="relative h-14 w-14 rounded-xl shadow-lg shadow-primary/20 [&_svg]:size-8" />
+        </div>
+        <div className="flex flex-col items-center gap-1">
+          <span className="text-xl font-black tracking-tight text-foreground uppercase">
+            LegoFlex
+          </span>
+          <p className="text-sm text-muted-foreground font-medium">
+            Track, collect, and share your Lego journey.
+          </p>
+        </div>
       </div>
       {children}
     </div>

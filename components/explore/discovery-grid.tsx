@@ -33,16 +33,17 @@ export function DiscoveryGrid({
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {sets.map((set) => (
-        <DiscoveryCard
-          key={set.setNum}
-          set={set}
-          collectionType={userSets.get(set.setNum)}
-          isPending={pendingToggles.has(set.setNum)}
-          onAddToWishlist={() => onAddToWishlist(set.setNum)}
-          onAddToCollection={() => onAddToCollection(set.setNum)}
-          onRemove={() => onRemove(set.setNum)}
-        />
+      {sets.map((set, index) => (
+        <div key={set.setNum} className={index === 0 ? "sm:col-span-2" : undefined}>
+          <DiscoveryCard
+            set={set}
+            collectionType={userSets.get(set.setNum)}
+            isPending={pendingToggles.has(set.setNum)}
+            onAddToWishlist={() => onAddToWishlist(set.setNum)}
+            onAddToCollection={() => onAddToCollection(set.setNum)}
+            onRemove={() => onRemove(set.setNum)}
+          />
+        </div>
       ))}
     </div>
   );

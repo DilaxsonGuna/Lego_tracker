@@ -50,7 +50,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="border-primary/20">
+      <Card className="border-primary/20 shadow-lg shadow-primary/5 ring-1 ring-primary/10">
         <CardHeader>
           <CardTitle className="text-2xl">Join the Collection</CardTitle>
           <CardDescription>Create your LegoFlex account</CardDescription>
@@ -95,7 +95,11 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                 />
               </div>
               {error && <p className="text-sm text-destructive">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button
+                type="submit"
+                className="w-full h-11 font-bold uppercase tracking-wider shadow-md shadow-primary/20"
+                disabled={isLoading}
+              >
                 {isLoading ? "Creating an account..." : "Sign up"}
               </Button>
             </div>

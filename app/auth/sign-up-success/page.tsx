@@ -26,7 +26,7 @@ export default function Page() {
     <div className="flex w-full items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-md">
         <div className="flex flex-col gap-6">
-          <Card className="border-primary/20">
+          <Card className="border-primary/20 shadow-lg shadow-primary/5 ring-1 ring-primary/10">
             <CardHeader className="text-center pb-2">
               <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success/10">
                 <CheckCircle2 className="size-9 text-success" />
