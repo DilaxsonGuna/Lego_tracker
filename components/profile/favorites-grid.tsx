@@ -39,7 +39,7 @@ export function FavoritesGrid({ favorites }: FavoritesGridProps) {
               ) : (
                 <div className="size-full bg-muted" />
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity" />
             </div>
           ))}
         </div>

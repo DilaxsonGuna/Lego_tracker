@@ -68,11 +68,21 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
                     type="email"
                     placeholder="m@example.com"
                     required
+                    aria-required="true"
+                    autoComplete="email"
+                    aria-describedby="forgot-error"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
-                {error && <p className="text-sm text-destructive">{error}</p>}
+                <p
+                  id="forgot-error"
+                  className="text-sm text-destructive min-h-[1.25rem]"
+                  role="alert"
+                  aria-atomic="true"
+                >
+                  {error ?? ""}
+                </p>
                 <Button
                   type="submit"
                   className="w-full h-11 font-bold uppercase tracking-wider shadow-md shadow-primary/20"

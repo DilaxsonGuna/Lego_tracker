@@ -204,6 +204,9 @@ export function ExplorePageClient({
       />
 
       <div className="flex-1 overflow-y-auto p-6 md:px-10 pb-20">
+        <p aria-live="polite" aria-atomic="true" className="sr-only">
+          {isPending ? "Loading sets…" : `${sets.length} sets loaded`}
+        </p>
         {isPending && sets.length === 0 ? (
           <div className="flex justify-center py-20">
             <Loader2 className="size-6 text-muted-foreground animate-spin" />

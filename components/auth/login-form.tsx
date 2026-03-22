@@ -55,6 +55,9 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                   type="email"
                   placeholder="m@example.com"
                   required
+                  aria-required="true"
+                  autoComplete="email"
+                  aria-describedby="login-error"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -73,11 +76,21 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                   id="password"
                   type="password"
                   required
+                  aria-required="true"
+                  autoComplete="current-password"
+                  aria-describedby="login-error"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
-              {error && <p className="text-sm text-destructive">{error}</p>}
+              <p
+                id="login-error"
+                className="text-sm text-destructive min-h-[1.25rem]"
+                role="alert"
+                aria-atomic="true"
+              >
+                {error ?? ""}
+              </p>
               <Button
                 type="submit"
                 className="w-full h-11 font-bold uppercase tracking-wider shadow-md shadow-primary/20"

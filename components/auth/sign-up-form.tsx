@@ -65,6 +65,9 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                   type="email"
                   placeholder="m@example.com"
                   required
+                  aria-required="true"
+                  autoComplete="email"
+                  aria-describedby="signup-error"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -77,6 +80,9 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                   id="password"
                   type="password"
                   required
+                  aria-required="true"
+                  autoComplete="new-password"
+                  aria-describedby="signup-error"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -90,11 +96,21 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                   id="repeat-password"
                   type="password"
                   required
+                  aria-required="true"
+                  autoComplete="new-password"
+                  aria-describedby="signup-error"
                   value={repeatPassword}
                   onChange={(e) => setRepeatPassword(e.target.value)}
                 />
               </div>
-              {error && <p className="text-sm text-destructive">{error}</p>}
+              <p
+                id="signup-error"
+                className="text-sm text-destructive min-h-[1.25rem]"
+                role="alert"
+                aria-atomic="true"
+              >
+                {error ?? ""}
+              </p>
               <Button
                 type="submit"
                 className="w-full h-11 font-bold uppercase tracking-wider shadow-md shadow-primary/20"
