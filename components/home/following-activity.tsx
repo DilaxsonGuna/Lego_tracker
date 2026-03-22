@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import type { FollowingActivityItem } from "@/lib/queries/home";
@@ -59,10 +60,12 @@ export function FollowingActivity({ items }: FollowingActivityProps) {
             </div>
             {item.setImgUrl && (
               <div className="size-16 rounded-xl bg-card border border-border overflow-hidden flex-shrink-0">
-                {/* eslint-disable-next-line @next/next/no-img-element -- external Rebrickable CDN URL, next/image requires remotePatterns allowlist */}
-                <img
+                <Image
                   src={item.setImgUrl}
                   alt={item.setName}
+                  width={64}
+                  height={64}
+                  unoptimized
                   className="w-full h-full object-cover"
                 />
               </div>

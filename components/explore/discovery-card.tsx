@@ -29,7 +29,7 @@ export function DiscoveryCard({
   const isInCollection = collectionType === "collection";
 
   return (
-    <div className="group relative flex flex-col bg-card rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20 hover:ring-1 hover:ring-primary/50 transition-all duration-300 h-full">
+    <div className="group relative flex flex-col bg-card rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20 hover:ring-1 hover:ring-primary/50 transition-[transform,box-shadow,ring-color] duration-300 h-full">
       {/* Image - wrapped in Link */}
       <Link
         href={`/set/${set.setNum}`}
@@ -77,7 +77,7 @@ export function DiscoveryCard({
             }}
             disabled={isPending}
             aria-label={isInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
-            className={`absolute top-3 right-3 size-10 rounded-full backdrop-blur-sm transition-all ${
+            className={`absolute top-3 right-3 size-10 rounded-full backdrop-blur-sm transition-[background-color,color,opacity] ${
               isInWishlist
                 ? "bg-primary/20 text-primary opacity-100 hover:bg-primary/30"
                 : "bg-black/20 hover:bg-black/50 text-white opacity-0 group-hover:opacity-100"

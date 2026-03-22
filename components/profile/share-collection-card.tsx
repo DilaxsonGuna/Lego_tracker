@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Copy, Check, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -18,11 +19,7 @@ interface ShareCollectionCardProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function ShareCollectionCard({
-  userId,
-  open,
-  onOpenChange,
-}: ShareCollectionCardProps) {
+export function ShareCollectionCard({ userId, open, onOpenChange }: ShareCollectionCardProps) {
   const [copied, setCopied] = useState(false);
 
   const ogImageUrl =
@@ -67,18 +64,18 @@ export function ShareCollectionCard({
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Share Collection Card</DialogTitle>
-          <DialogDescription>
-            Preview and share your collection card image.
-          </DialogDescription>
+          <DialogDescription>Preview and share your collection card image.</DialogDescription>
         </DialogHeader>
 
         {/* OG Image Preview */}
         <div className="rounded-lg overflow-hidden border border-border bg-muted/20">
           {ogImageUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={ogImageUrl}
               alt="Collection card preview"
+              width={600}
+              height={315}
+              unoptimized
               className="w-full h-auto"
             />
           )}
@@ -86,16 +83,8 @@ export function ShareCollectionCard({
 
         {/* Actions */}
         <div className="flex gap-3">
-          <Button
-            variant="outline"
-            className="flex-1"
-            onClick={handleCopyLink}
-          >
-            {copied ? (
-              <Check className="size-4 mr-2" />
-            ) : (
-              <Copy className="size-4 mr-2" />
-            )}
+          <Button variant="outline" className="flex-1" onClick={handleCopyLink}>
+            {copied ? <Check className="size-4 mr-2" /> : <Copy className="size-4 mr-2" />}
             {copied ? "Copied" : "Copy Link"}
           </Button>
           <Button className="flex-1" onClick={handleShare}>
