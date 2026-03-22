@@ -72,7 +72,9 @@ function StatItem({ icon, label, value }: { icon: React.ReactNode; label: string
     <div className="flex items-center gap-2">
       <div className="flex items-center justify-center size-7 rounded-md bg-primary/10">{icon}</div>
       <div className="flex flex-col min-w-0">
-        <span className="text-sm font-bold text-foreground truncate">{value}</span>
+        <span className="text-sm font-bold text-foreground truncate" title={value}>
+          {value}
+        </span>
         <span className="text-xs text-muted-foreground leading-none">{label}</span>
       </div>
     </div>

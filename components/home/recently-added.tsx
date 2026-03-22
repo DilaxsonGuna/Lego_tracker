@@ -16,20 +16,14 @@ export function RecentlyAdded({ sets }: RecentlyAddedProps) {
     <section>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-foreground font-bold text-lg">Recently Added</h2>
-        <Link
-          href="/vault"
-          className="text-primary text-xs font-medium hover:underline"
-        >
+        <Link href="/vault" className="text-primary text-xs font-medium hover:underline">
           View Vault
         </Link>
       </div>
       <ScrollArea className="w-full">
         <div className="flex gap-3 pb-4">
           {sets.map((set) => (
-            <div
-              key={set.setNum}
-              className="flex-shrink-0 w-[200px] sm:w-[240px] group"
-            >
+            <div key={set.setNum} className="flex-shrink-0 w-[200px] sm:w-[240px] group">
               <div className="aspect-square rounded-xl bg-card border border-border overflow-hidden mb-2">
                 {set.setImgUrl ? (
                   <Image
@@ -45,7 +39,7 @@ export function RecentlyAdded({ sets }: RecentlyAddedProps) {
                   </div>
                 )}
               </div>
-              <p className="text-sm font-medium text-foreground truncate">
+              <p className="text-sm font-medium text-foreground truncate" title={set.name}>
                 {set.name}
               </p>
               <p className="text-xs text-muted-foreground">

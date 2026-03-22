@@ -89,7 +89,10 @@ export function VaultCard({
 
         {/* Info */}
         <div className="p-4 flex flex-col gap-1">
-          <h3 className="text-sm font-bold text-foreground truncate group-hover:text-primary transition-colors uppercase tracking-tight">
+          <h3
+            className="text-sm font-bold text-foreground truncate group-hover:text-primary transition-colors uppercase tracking-tight"
+            title={set.name}
+          >
             {set.name}
           </h3>
           <div className="flex items-center justify-between mt-2">

@@ -104,7 +104,9 @@ export function DiscoveryCard({
       {/* Info */}
       <div className="p-4 flex flex-col gap-2 flex-grow">
         <div className="flex justify-between items-start">
-          <h3 className="text-base font-bold text-foreground line-clamp-1 pr-2">{set.name}</h3>
+          <h3 className="text-base font-bold text-foreground line-clamp-1 pr-2" title={set.name}>
+            {set.name}
+          </h3>
           <span className="text-xs font-mono text-muted-foreground whitespace-nowrap">
             #{set.setNum}
           </span>
