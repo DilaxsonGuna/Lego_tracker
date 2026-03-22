@@ -17,7 +17,7 @@ const strengthConfig: Record<StrengthLevel, { label: string; color: string; segm
   strong: { label: "Strong", color: "bg-success", segments: 5 },
 };
 
-function calculateStrength(password: string): StrengthLevel {
+export function calculateStrength(password: string): StrengthLevel {
   if (!password) return "very-weak";
 
   let score = 0;

@@ -12,7 +12,7 @@ const FOLLOW_LIST_PAGE_SIZE = 20;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
 
-function validateCursor(cursor: FollowListCursor): void {
+export function validateCursor(cursor: FollowListCursor): void {
   if (!UUID_RE.test(cursor.id)) throw new Error("Invalid cursor id");
   if (!ISO_DATE_RE.test(cursor.createdAt)) throw new Error("Invalid cursor createdAt");
 }

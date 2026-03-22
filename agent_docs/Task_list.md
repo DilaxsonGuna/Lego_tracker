@@ -443,9 +443,49 @@ Unique referral URLs, reward for referrer (1 month free Pro per 3 referrals), ex
 
 Spotify Wrapped for LEGO — December event showing sets added, rank changes, top themes. Primary viral mechanic.
 
-### T-087: Testing infrastructure
+### T-087: Testing infrastructure ✅ PROMOTED TO ACTIVE
 
-Set up Vitest + Testing Library. Priority test targets: user-favorites (max 4), user-themes (max 10), user-sets CRUD, vault queries.
+**Tech:** Vitest 4.x + React Testing Library 16.x + jsdom + Playwright (E2E). V8 coverage.
+
+**Research:** Vitest is 30-70% faster than Jest, native ESM, Next.js officially recommends it. RTL 16.3+ supports React 19. Async server components can only be tested via E2E (Playwright). Server actions are testable as unit functions with mocked Supabase.
+
+#### Step 1 — Setup (infrastructure)
+
+- [ ] Install dev dependencies: vitest, @vitest/coverage-v8, @vitejs/plugin-react, vite-tsconfig-paths, @testing-library/react, @testing-library/dom, @testing-library/jest-dom, @testing-library/user-event, jsdom
+- [ ] Create `vitest.config.mts` with jsdom env, path aliases, coverage config
+- [ ] Create `test/setup.ts` with jest-dom matchers
+- [ ] Add npm scripts: `test`, `test:ui`, `test:coverage`
+- [ ] Verify setup with a smoke test
+
+#### Step 2 — Business logic unit tests (highest value)
+
+- [ ] `lib/commands/user-favorites.ts` — max 4 favorites enforcement
+- [ ] `lib/commands/user-themes.ts` — max 10 themes enforcement
+- [ ] `lib/commands/follows.ts` — follow/unfollow, self-follow prevention
+- [ ] `lib/brick-score.ts` — score calculation, rank determination
+
+#### Step 3 — Query function tests
+
+- [ ] `lib/queries/social.ts` — cursor validation, getFollowCounts from denormalized columns
+- [ ] `lib/queries/analytics.ts` — theme/year distribution aggregation, notable sets deduplication
+- [ ] `lib/queries/vault.ts` — getVaultSets with search/theme filters
+
+#### Step 4 — Component tests
+
+- [ ] `components/social/follow-list.tsx` — search filter, badge rendering, empty state
+- [ ] `components/vault/vault-toolbar.tsx` — sort options, filter state
+- [ ] `components/analytics/` — chart components render without crashing
+
+#### Step 5 — E2E tests (Playwright, later)
+
+- [ ] Install Playwright + browser binaries
+- [ ] Auth flow: login redirect, sign-up -> onboarding
+- [ ] Vault flow: add set -> appears in vault
+- [ ] Profile flow: follow user -> count updates
+
+**Target:** 80% coverage on `lib/commands/` and `lib/queries/`, 60% on components.
+
+**Why:** Zero tests = zero confidence. Business logic (max 4 favorites, score calculation) has no safety net. Every deploy is a gamble.
 
 ### T-088: CI/CD pipeline
 

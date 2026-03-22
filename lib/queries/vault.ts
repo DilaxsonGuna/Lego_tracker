@@ -5,6 +5,14 @@ import { PAGE_SIZE } from "@/lib/constants";
 
 const DEFAULT_CURRENCY = "EUR";
 
+/**
+ * Remove PostgREST special characters from search input.
+ * Prevents filter injection via %, _, (), commas, and dots.
+ */
+export function sanitizeSearchInput(input: string): string {
+  return input.replace(/[%_(),.]/g, "");
+}
+
 interface GetVaultSetsParams {
   userId: string;
   collectionType: CollectionTab;
@@ -51,8 +59,7 @@ export async function getVaultSets({
     .eq("collection_type", collectionType);
 
   if (search) {
-    // Sanitize search input by removing PostgREST special characters
-    const sanitized = search.replace(/[%_(),.]/g, "");
+    const sanitized = sanitizeSearchInput(search);
     if (sanitized) {
       query = query.or(`name.ilike.%${sanitized}%,set_num.ilike.%${sanitized}%`, {
         referencedTable: "lego_sets",
