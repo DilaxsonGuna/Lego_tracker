@@ -33,6 +33,8 @@ export function ThemeChips({
             variant={isSelected ? "default" : "outline"}
             onClick={() => !isDisabled && onToggle(themeId)}
             disabled={isDisabled}
+            aria-label={`${isSelected ? "Remove" : "Add"} ${cat.label} theme filter`}
+            aria-pressed={isSelected}
             className={cn(
               "flex-shrink-0 h-10 px-4 rounded-xl font-medium text-sm whitespace-nowrap",
               isSelected ? "font-bold shadow-sm" : "bg-card hover:border-primary/50 text-primary",

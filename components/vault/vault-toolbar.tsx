@@ -196,7 +196,7 @@ export function VaultToolbar({
             onClick={() => onViewModeChange("grid")}
             aria-label="Grid view"
             aria-pressed={viewMode === "grid"}
-            className={`size-7 rounded ${
+            className={`size-9 rounded ${
               viewMode === "grid"
                 ? "bg-primary text-primary-foreground hover:bg-primary/90"
                 : "text-muted-foreground hover:text-foreground hover:bg-transparent"
@@ -210,7 +210,7 @@ export function VaultToolbar({
             onClick={() => onViewModeChange("list")}
             aria-label="List view"
             aria-pressed={viewMode === "list"}
-            className={`size-7 rounded ${
+            className={`size-9 rounded ${
               viewMode === "list"
                 ? "bg-primary text-primary-foreground hover:bg-primary/90"
                 : "text-muted-foreground hover:text-foreground hover:bg-transparent"

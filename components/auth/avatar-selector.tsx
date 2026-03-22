@@ -3,12 +3,12 @@
 import { cn } from "@/lib/utils";
 
 const AVATAR_COLORS = [
-  { name: "red", bg: "bg-red-500", ring: "ring-red-500" },
-  { name: "blue", bg: "bg-blue-500", ring: "ring-blue-500" },
-  { name: "green", bg: "bg-green-500", ring: "ring-green-500" },
-  { name: "yellow", bg: "bg-yellow-500", ring: "ring-yellow-500" },
-  { name: "purple", bg: "bg-purple-500", ring: "ring-purple-500" },
-  { name: "orange", bg: "bg-orange-500", ring: "ring-orange-500" },
+  { name: "red", bg: "bg-destructive" },
+  { name: "blue", bg: "bg-info" },
+  { name: "green", bg: "bg-success" },
+  { name: "yellow", bg: "bg-primary" },
+  { name: "purple", bg: "bg-chart-5" },
+  { name: "orange", bg: "bg-warning" },
 ];
 
 interface AvatarSelectorProps {
@@ -25,7 +25,7 @@ export function AvatarSelector({ value, onChange }: AvatarSelectorProps) {
           type="button"
           onClick={() => onChange(color.name)}
           className={cn(
-            "size-12 rounded-full transition-all",
+            "size-12 rounded-full transition-[transform,box-shadow]",
             color.bg,
             value === color.name
               ? "ring-2 ring-offset-2 ring-offset-background ring-primary scale-110"

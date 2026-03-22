@@ -28,7 +28,7 @@ export function VaultCard({
   readonly = false,
 }: VaultCardProps) {
   return (
-    <div className="group relative flex flex-col rounded-xl bg-card border border-border transition-all hover:border-primary/50 overflow-hidden">
+    <div className="group relative flex flex-col rounded-xl bg-card border border-border transition-colors hover:border-primary/50 overflow-hidden">
       {/* Checkbox - hidden in readonly mode */}
       {!readonly && onToggleSelect && (
         <div className="absolute top-3 left-3 z-10">
@@ -50,7 +50,7 @@ export function VaultCard({
             e.stopPropagation();
             onToggleFavorite(set.setNum);
           }}
-          className="absolute top-3 right-3 z-10 size-10 rounded-full bg-black/20 hover:bg-black/50 backdrop-blur-sm transition-all hover:scale-110"
+          className="absolute top-3 right-3 z-10 size-10 rounded-full bg-black/20 hover:bg-black/50 backdrop-blur-sm transition-[background-color,transform] hover:scale-110"
           aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
         >
           <Heart

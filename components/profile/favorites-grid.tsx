@@ -26,14 +26,14 @@ export function FavoritesGrid({ favorites }: FavoritesGridProps) {
           {favorites.map((fav) => (
             <div
               key={fav.setNum}
-              className="group relative aspect-[3/4] overflow-hidden rounded-lg border border-border transition-all hover:scale-[1.03] hover:border-primary/50 cursor-pointer"
+              className="group relative aspect-[3/4] overflow-hidden rounded-lg border border-border transition-[transform,border-color] hover:scale-[1.03] hover:border-primary/50 cursor-pointer"
             >
               {fav.imageUrl ? (
                 <Image
                   src={fav.imageUrl}
                   alt={`${fav.name ?? "Favorite"} LEGO set ${fav.setNum}`}
                   fill
-                  className="object-contain grayscale-[0.3] group-hover:grayscale-0 transition-all"
+                  className="object-contain grayscale-[0.3] group-hover:grayscale-0 transition-[filter]"
                   sizes="(max-width: 768px) 50vw, 25vw"
                 />
               ) : (

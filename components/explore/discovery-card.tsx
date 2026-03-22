@@ -123,7 +123,7 @@ export function DiscoveryCard({
               <Button
                 variant="default"
                 size="icon"
-                className="size-8 rounded-full bg-primary text-primary-foreground hover:bg-destructive transition-colors"
+                className="size-10 rounded-full bg-primary text-primary-foreground hover:bg-destructive transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
                   onRemove();
@@ -146,7 +146,7 @@ export function DiscoveryCard({
             <Button
               variant="secondary"
               size="icon"
-              className="size-8 rounded-full hover:bg-primary hover:text-primary-foreground transition-colors"
+              className="size-10 rounded-full hover:bg-primary hover:text-primary-foreground transition-colors"
               onClick={(e) => {
                 e.stopPropagation();
                 onAddToCollection();

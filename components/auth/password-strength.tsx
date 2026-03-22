@@ -9,15 +9,12 @@ interface PasswordStrengthProps {
 
 type StrengthLevel = "very-weak" | "weak" | "fair" | "good" | "strong";
 
-const strengthConfig: Record<
-  StrengthLevel,
-  { label: string; color: string; segments: number }
-> = {
-  "very-weak": { label: "Very weak", color: "bg-red-500", segments: 1 },
-  weak: { label: "Weak", color: "bg-orange-500", segments: 2 },
-  fair: { label: "Fair", color: "bg-yellow-500", segments: 3 },
-  good: { label: "Good", color: "bg-lime-500", segments: 4 },
-  strong: { label: "Strong", color: "bg-green-500", segments: 5 },
+const strengthConfig: Record<StrengthLevel, { label: string; color: string; segments: number }> = {
+  "very-weak": { label: "Very weak", color: "bg-destructive", segments: 1 },
+  weak: { label: "Weak", color: "bg-warning", segments: 2 },
+  fair: { label: "Fair", color: "bg-warning", segments: 3 },
+  good: { label: "Good", color: "bg-success", segments: 4 },
+  strong: { label: "Strong", color: "bg-success", segments: 5 },
 };
 
 function calculateStrength(password: string): StrengthLevel {
@@ -60,8 +57,7 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
         ))}
       </div>
       <p className="text-xs text-muted-foreground">
-        Password strength:{" "}
-        <span className="font-medium">{config.label}</span>
+        Password strength: <span className="font-medium">{config.label}</span>
       </p>
     </div>
   );

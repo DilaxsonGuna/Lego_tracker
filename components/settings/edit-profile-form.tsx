@@ -139,7 +139,7 @@ export function EditProfileForm({ initialData }: EditProfileFormProps) {
         <div className="flex flex-col items-center">
           <div className="relative group">
             <div
-              className="size-32 rounded-full border-4 border-card overflow-hidden ring-2 ring-border transition-all group-hover:ring-primary/50 flex items-center justify-center"
+              className="size-32 rounded-full border-4 border-card overflow-hidden ring-2 ring-border transition-[box-shadow] group-hover:ring-primary/50 flex items-center justify-center"
               style={{ backgroundColor: getAvatarColor(avatarColor) }}
             >
               <span className="text-4xl font-bold text-white">
@@ -167,11 +167,11 @@ export function EditProfileForm({ initialData }: EditProfileFormProps) {
                 placeholder="your_username"
                 maxLength={20}
                 className={cn(
-                  "h-12 bg-card border-border rounded-xl pl-11 pr-10 text-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-muted-foreground",
+                  "h-12 bg-card border-border rounded-xl pl-11 pr-10 text-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-[border-color,box-shadow] placeholder:text-muted-foreground",
                   usernameError && "border-destructive focus:ring-destructive",
                   usernameAvailable === true &&
                     username.trim().length >= 3 &&
-                    "border-green-500 focus:ring-green-500"
+                    "border-success focus:ring-success"
                 )}
               />
               {/* Status icon */}
@@ -209,7 +209,7 @@ export function EditProfileForm({ initialData }: EditProfileFormProps) {
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="City, Country"
-                className="h-12 bg-card border-border rounded-xl pl-11 pr-4 text-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-muted-foreground"
+                className="h-12 bg-card border-border rounded-xl pl-11 pr-4 text-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-[border-color,box-shadow] placeholder:text-muted-foreground"
               />
             </div>
           </div>
@@ -253,7 +253,7 @@ export function EditProfileForm({ initialData }: EditProfileFormProps) {
           <Button
             type="submit"
             disabled={isPending || !isFormValid}
-            className="w-full h-14 bg-primary text-primary-foreground font-black uppercase tracking-widest rounded-xl hover:bg-primary/90 active:scale-[0.98] transition-all shadow-lg shadow-primary/10"
+            className="w-full h-14 bg-primary text-primary-foreground font-black uppercase tracking-widest rounded-xl hover:bg-primary/90 active:scale-[0.98] transition-[background-color,transform] shadow-lg shadow-primary/10"
           >
             {isPending ? "Saving..." : "Save Changes"}
           </Button>

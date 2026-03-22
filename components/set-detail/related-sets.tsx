@@ -12,15 +12,13 @@ export function RelatedSets({ sets, themeName }: RelatedSetsProps) {
 
   return (
     <section className="space-y-4">
-      <h2 className="text-lg font-bold text-foreground">
-        More from {themeName}
-      </h2>
+      <h2 className="text-lg font-bold text-foreground">More from {themeName}</h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
         {sets.map((set) => (
           <Link
             key={set.setNum}
             href={`/set/${set.setNum}`}
-            className="group flex flex-col rounded-xl bg-card border border-border overflow-hidden hover:border-primary/50 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/10 transition-all duration-300"
+            className="group flex flex-col rounded-xl bg-card border border-border overflow-hidden hover:border-primary/50 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/10 transition-[transform,border-color,box-shadow] duration-300"
           >
             <div className="relative aspect-square bg-muted flex items-center justify-center p-4">
               <div
