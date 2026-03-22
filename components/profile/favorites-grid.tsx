@@ -11,7 +11,7 @@ export function FavoritesGrid({ favorites }: FavoritesGridProps) {
   return (
     <section className="mb-16">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xs font-black uppercase tracking-wider text-muted-foreground">
+        <h2 className="text-sm font-black uppercase tracking-wider text-muted-foreground">
           {favorites.length > 0 ? `Top ${favorites.length} Favorites` : "Favorites"}
         </h2>
       </div>

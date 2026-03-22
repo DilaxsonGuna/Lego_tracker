@@ -12,13 +12,11 @@ export function ProfileBio({ user }: ProfileBioProps) {
 
   return (
     <div>
-      <h3 className="text-xs font-black uppercase tracking-wider text-muted-foreground mb-4">
+      <h3 className="text-sm font-black uppercase tracking-wider text-muted-foreground mb-4">
         Identity Bio
       </h3>
       {hasBio ? (
-        <p className="text-lg text-muted-foreground leading-relaxed font-light">
-          {user.bio}
-        </p>
+        <p className="text-lg text-muted-foreground leading-relaxed font-light">{user.bio}</p>
       ) : (
         <EmptyState
           icon={Pencil}

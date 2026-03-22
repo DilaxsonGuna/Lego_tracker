@@ -16,7 +16,7 @@ const iconMap: Record<string, string> = {
 export function MilestoneVault({ milestones }: MilestoneVaultProps) {
   return (
     <div className="space-y-6">
-      <h3 className="text-xs font-black uppercase tracking-wider text-muted-foreground">
+      <h3 className="text-sm font-black uppercase tracking-wider text-muted-foreground">
         Milestone Vault
       </h3>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">

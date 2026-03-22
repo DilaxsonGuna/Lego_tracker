@@ -15,7 +15,7 @@ export function RecentlyAdded({ sets }: RecentlyAddedProps) {
   return (
     <section>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-foreground font-bold text-sm">Recently Added</h2>
+        <h2 className="text-foreground font-bold text-lg">Recently Added</h2>
         <Link
           href="/vault"
           className="text-primary text-xs font-medium hover:underline"
@@ -28,15 +28,15 @@ export function RecentlyAdded({ sets }: RecentlyAddedProps) {
           {sets.map((set) => (
             <div
               key={set.setNum}
-              className="flex-shrink-0 w-[140px] sm:w-[160px] group"
+              className="flex-shrink-0 w-[200px] sm:w-[240px] group"
             >
               <div className="aspect-square rounded-xl bg-card border border-border overflow-hidden mb-2">
                 {set.setImgUrl ? (
                   <Image
                     src={set.setImgUrl}
                     alt={set.name}
-                    width={160}
-                    height={160}
+                    width={240}
+                    height={240}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                   />
                 ) : (
@@ -45,7 +45,7 @@ export function RecentlyAdded({ sets }: RecentlyAddedProps) {
                   </div>
                 )}
               </div>
-              <p className="text-xs font-medium text-foreground truncate">
+              <p className="text-sm font-medium text-foreground truncate">
                 {set.name}
               </p>
               <p className="text-xs text-muted-foreground">

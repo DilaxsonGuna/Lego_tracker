@@ -33,14 +33,14 @@ export function DiscoveryCard({
       {/* Image - wrapped in Link */}
       <Link
         href={`/set/${set.setNum}`}
-        className="relative w-full aspect-[4/3] bg-muted flex items-center justify-center p-6"
+        className="relative w-full aspect-[4/3] bg-muted flex items-center justify-center p-4"
       >
         {set.setImgUrl ? (
           <Image
             src={set.setImgUrl}
             alt={`${set.name} LEGO set ${set.setNum}`}
             fill
-            className="object-contain p-2 transition-transform duration-500 group-hover:scale-105"
+            className="object-contain transition-transform duration-500 group-hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           />
         ) : (

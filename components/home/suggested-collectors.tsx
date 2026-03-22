@@ -57,9 +57,7 @@ export function SuggestedCollectors({ users }: SuggestedCollectorsProps) {
   const [optimisticUsers, setOptimisticUsers] = useOptimistic(
     users,
     (state, { userId, isFollowing }: { userId: string; isFollowing: boolean }) =>
-      state.map((user) =>
-        user.id === userId ? { ...user, isFollowing } : user
-      )
+      state.map((user) => (user.id === userId ? { ...user, isFollowing } : user))
   );
 
   const handleToggleFollow = (userId: string, newState: boolean) => {
@@ -71,9 +69,7 @@ export function SuggestedCollectors({ users }: SuggestedCollectorsProps) {
   return (
     <section>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-foreground font-bold text-sm">
-          Suggested Collectors
-        </h2>
+        <h2 className="text-foreground font-bold text-lg">Suggested Collectors</h2>
       </div>
       <div className="space-y-3">
         {optimisticUsers.map((user) => (
@@ -81,10 +77,7 @@ export function SuggestedCollectors({ users }: SuggestedCollectorsProps) {
             key={user.id}
             className="flex items-center justify-between rounded-xl bg-card border border-border p-3"
           >
-            <Link
-              href={`/u/${user.id}`}
-              className="flex items-center gap-2 min-w-0"
-            >
+            <Link href={`/u/${user.id}`} className="flex items-center gap-2 min-w-0">
               <Avatar className="size-8 flex-shrink-0">
                 <AvatarImage src={user.avatarUrl} alt={user.username} />
                 <AvatarFallback className="bg-primary/20 text-primary text-xs font-bold">

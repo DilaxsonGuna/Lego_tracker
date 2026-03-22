@@ -36,11 +36,13 @@ export function MobileBottomNav() {
             key={item.href}
             href={item.href}
             className={cn(
-              "flex flex-col items-center gap-0.5 px-3 py-2.5 text-[10px] font-medium transition-colors min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-lg",
-              isActive ? "text-primary font-bold" : "text-muted-foreground"
+              "flex flex-col items-center gap-0.5 px-3 text-[10px] font-medium transition-colors min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-lg",
+              isActive
+                ? "text-primary font-bold text-[11px] bg-primary/10 rounded-xl py-1.5"
+                : "text-muted-foreground py-2"
             )}
           >
-            <Icon className="size-5" />
+            <Icon className={isActive ? "size-6" : "size-5"} />
             <span className="truncate">{item.label}</span>
           </Link>
         );

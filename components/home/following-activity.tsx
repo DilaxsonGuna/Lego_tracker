@@ -29,7 +29,7 @@ export function FollowingActivity({ items }: FollowingActivityProps) {
   return (
     <section>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-foreground font-bold text-sm">Following Activity</h2>
+        <h2 className="text-foreground font-bold text-lg">Following Activity</h2>
       </div>
       <div className="space-y-3">
         {items.map((item) => (
@@ -38,7 +38,7 @@ export function FollowingActivity({ items }: FollowingActivityProps) {
             className="flex items-center gap-3 rounded-xl bg-card border border-border p-3"
           >
             <Link href={`/u/${item.userId}`}>
-              <Avatar className="size-8 flex-shrink-0">
+              <Avatar className="size-10 flex-shrink-0">
                 <AvatarFallback className="bg-primary/20 text-primary text-xs font-bold">
                   {item.username.charAt(0).toUpperCase()}
                 </AvatarFallback>
@@ -58,7 +58,7 @@ export function FollowingActivity({ items }: FollowingActivityProps) {
               <p className="text-xs text-muted-foreground mt-0.5">{formatTimeAgo(item.addedAt)}</p>
             </div>
             {item.setImgUrl && (
-              <div className="size-10 rounded-lg bg-card border border-border overflow-hidden flex-shrink-0">
+              <div className="size-16 rounded-xl bg-card border border-border overflow-hidden flex-shrink-0">
                 {/* eslint-disable-next-line @next/next/no-img-element -- external Rebrickable CDN URL, next/image requires remotePatterns allowlist */}
                 <img
                   src={item.setImgUrl}
