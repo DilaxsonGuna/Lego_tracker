@@ -24,3 +24,14 @@ export interface FollowListUser {
   avatarUrl: string | null;
   isFollowedByCurrentUser: boolean;
 }
+
+export interface FollowListCursor {
+  createdAt: string;
+  id: string;
+}
+
+export interface PaginatedFollowList {
+  users: FollowListUser[];
+  nextCursor: FollowListCursor | null;
+  hasMore: boolean;
+}

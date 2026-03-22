@@ -12,7 +12,7 @@ interface PageProps {
 async function FollowingContent({ paramsPromise }: { paramsPromise: Promise<{ userId: string }> }) {
   const { userId } = await paramsPromise;
 
-  const [following, currentUserId] = await Promise.all([
+  const [initialData, currentUserId] = await Promise.all([
     fetchFollowing(userId),
     getCurrentUserId(),
   ]);
@@ -28,10 +28,17 @@ async function FollowingContent({ paramsPromise }: { paramsPromise: Promise<{ us
         <h1 className="text-2xl font-black tracking-tight text-foreground">Following</h1>
       </div>
       <FollowList
-        users={following}
+        initialUsers={initialData.users}
+        initialCursor={initialData.nextCursor}
+        initialHasMore={initialData.hasMore}
         currentUserId={currentUserId}
         toggleFollowAction={handleToggleFollow}
+        loadMoreAction={async (cursor) => {
+          "use server";
+          return fetchFollowing(userId, cursor);
+        }}
         emptyMessage="Not following anyone yet."
+        badgeLabel="Mutual"
       />
     </>
   );

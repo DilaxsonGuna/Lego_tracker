@@ -158,13 +158,36 @@
 
 ### T-032: Followers/following list pages
 
-- [ ] Create `app/(app)/u/[userId]/followers/page.tsx`
-- [ ] Create `app/(app)/u/[userId]/following/page.tsx`
-- [ ] Create reusable `UserList` component with follow/unfollow buttons
-- [ ] Make follower/following/friends counts clickable in `profile-hero.tsx`
-- [ ] Same for public profile `profile-client.tsx`
+#### Phase 1 — Core pages ✅ DONE
 
-**Why:** Social graph exists in DB but is invisible in UX. Counts show but aren't clickable.
+- [x] Create `app/(app)/u/[userId]/followers/page.tsx`
+- [x] Create `app/(app)/u/[userId]/following/page.tsx`
+- [x] Create reusable `FollowList` component with follow/unfollow buttons
+- [x] Make follower/following counts clickable in `profile-hero.tsx`
+- [x] Same for public profile `profile-client.tsx`
+
+#### Phase 2 — Quick wins (UX polish) ✅ DONE
+
+- [x] Add "Follows you" badge to `FollowListItem` (data already in `isFollowedByCurrentUser`)
+- [x] Add search/filter bar within follower/following lists (client-side filter by username)
+- [x] Improve empty states with LEGO-themed illustration + "Discover collectors" CTA
+
+#### Phase 3 — Performance ✅ DONE
+
+- [x] Cursor-based pagination for `getFollowers`/`getFollowing` with "Load more" button
+- [x] Denormalized `follower_count`/`following_count` on `profiles` via PostgreSQL trigger (migration 014)
+- [x] Compound indexes: `(following_id, created_at DESC, id DESC)` and `(follower_id, created_at DESC, id DESC)`
+- [x] Cursor input validation (prevent PostgREST filter injection)
+- [x] Optimistic follow/unfollow state updates (no pagination truncation)
+
+#### Phase 4 — Engagement
+
+- [ ] Mutual followers indicator on profile pages ("5 collectors you follow also follow this user")
+- [ ] Collection overlap score (Jaccard similarity: "You have N sets in common")
+- [ ] Social proof on set pages ("3 collectors you follow own this set")
+- [ ] Follow suggestions algorithm (friends-of-friends + shared theme overlap)
+
+**Why:** Social graph exists in DB but was invisible in UX. Phase 1 shipped; phases 2-4 optimize UX, performance, and engagement.
 
 ### T-033: Vault sort controls
 

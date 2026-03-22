@@ -1,67 +1,67 @@
 import { createClient } from "@/lib/supabase/server";
-import type { FollowCounts, FollowListUser, SuggestedUserWithFollowStatus } from "@/types/social";
+import type {
+  FollowCounts,
+  FollowListCursor,
+  FollowListUser,
+  PaginatedFollowList,
+  SuggestedUserWithFollowStatus,
+} from "@/types/social";
+
+const FOLLOW_LIST_PAGE_SIZE = 20;
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
+
+function validateCursor(cursor: FollowListCursor): void {
+  if (!UUID_RE.test(cursor.id)) throw new Error("Invalid cursor id");
+  if (!ISO_DATE_RE.test(cursor.createdAt)) throw new Error("Invalid cursor createdAt");
+}
 
 /**
- * Get the follower and following counts for a user
+ * Get the follower and following counts for a user.
+ * Uses denormalized columns on profiles (maintained by trigger).
  */
 export async function getFollowCounts(userId: string): Promise<FollowCounts> {
   const supabase = await createClient();
 
-  // Run both count queries in parallel
-  const [followersResult, followingResult] = await Promise.all([
-    supabase
-      .from("follows")
-      .select("*", { count: "exact", head: true })
-      .eq("following_id", userId),
-    supabase
-      .from("follows")
-      .select("*", { count: "exact", head: true })
-      .eq("follower_id", userId),
-  ]);
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("follower_count, following_count")
+    .eq("id", userId)
+    .single();
+
+  if (error || !data) {
+    return { followers: 0, following: 0 };
+  }
 
   return {
-    followers: followersResult.count ?? 0,
-    following: followingResult.count ?? 0,
+    followers: data.follower_count ?? 0,
+    following: data.following_count ?? 0,
   };
 }
 
 /**
- * Get just the follower count for a user
+ * Get just the follower count for a user.
+ * Uses denormalized column on profiles (maintained by trigger).
  */
 export async function getFollowerCount(userId: string): Promise<number> {
-  const supabase = await createClient();
-
-  const { count, error } = await supabase
-    .from("follows")
-    .select("*", { count: "exact", head: true })
-    .eq("following_id", userId);
-
-  if (error) return 0;
-  return count ?? 0;
+  const counts = await getFollowCounts(userId);
+  return counts.followers;
 }
 
 /**
- * Get just the following count for a user
+ * Get just the following count for a user.
+ * Uses denormalized column on profiles (maintained by trigger).
  */
 export async function getFollowingCount(userId: string): Promise<number> {
-  const supabase = await createClient();
-
-  const { count, error } = await supabase
-    .from("follows")
-    .select("*", { count: "exact", head: true })
-    .eq("follower_id", userId);
-
-  if (error) return 0;
-  return count ?? 0;
+  const counts = await getFollowCounts(userId);
+  return counts.following;
 }
 
 /**
  * Check if a user is following another user
  */
-export async function isFollowing(
-  followerId: string,
-  followingId: string
-): Promise<boolean> {
+export async function isFollowing(followerId: string, followingId: string): Promise<boolean> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -111,8 +111,7 @@ export async function getFollowers(
       username: profile.username ?? "Anonymous",
       displayName: profile.full_name,
       avatarUrl: profile.avatar_url,
-      isFollowedByCurrentUser:
-        currentUserId !== null && currentUserFollowingIds.has(profile.id),
+      isFollowedByCurrentUser: currentUserId !== null && currentUserFollowingIds.has(profile.id),
     };
   });
 }
@@ -151,10 +150,133 @@ export async function getFollowing(
       username: profile.username ?? "Anonymous",
       displayName: profile.full_name,
       avatarUrl: profile.avatar_url,
-      isFollowedByCurrentUser:
-        currentUserId !== null && currentUserFollowingIds.has(profile.id),
+      isFollowedByCurrentUser: currentUserId !== null && currentUserFollowingIds.has(profile.id),
     };
   });
+}
+
+/**
+ * Get a paginated list of followers with cursor-based pagination.
+ */
+export async function getFollowersPaginated(
+  userId: string,
+  currentUserId: string | null,
+  cursor: FollowListCursor | null = null
+): Promise<PaginatedFollowList> {
+  const supabase = await createClient();
+
+  let query = supabase
+    .from("follows")
+    .select(
+      "id, created_at, follower_id, profiles!follows_follower_id_fkey(id, username, full_name, avatar_url)"
+    )
+    .eq("following_id", userId)
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: false })
+    .limit(FOLLOW_LIST_PAGE_SIZE + 1);
+
+  if (cursor) {
+    validateCursor(cursor);
+    query = query.or(
+      `created_at.lt.${cursor.createdAt},and(created_at.eq.${cursor.createdAt},id.lt.${cursor.id})`
+    );
+  }
+
+  const [result, currentUserFollowingIds] = await Promise.all([
+    query,
+    currentUserId ? getFollowingIds(currentUserId) : Promise.resolve(new Set<string>()),
+  ]);
+
+  if (result.error || !result.data) {
+    return { users: [], nextCursor: null, hasMore: false };
+  }
+
+  const hasMore = result.data.length > FOLLOW_LIST_PAGE_SIZE;
+  const pageData = hasMore ? result.data.slice(0, FOLLOW_LIST_PAGE_SIZE) : result.data;
+
+  const users: FollowListUser[] = pageData.map((row) => {
+    const profile = row.profiles as unknown as {
+      id: string;
+      username: string | null;
+      full_name: string | null;
+      avatar_url: string | null;
+    };
+    return {
+      id: profile.id,
+      username: profile.username ?? "Anonymous",
+      displayName: profile.full_name,
+      avatarUrl: profile.avatar_url,
+      isFollowedByCurrentUser: currentUserId !== null && currentUserFollowingIds.has(profile.id),
+    };
+  });
+
+  const lastRow = pageData[pageData.length - 1];
+  const nextCursor: FollowListCursor | null =
+    hasMore && lastRow ? { createdAt: lastRow.created_at!, id: lastRow.id } : null;
+
+  return { users, nextCursor, hasMore };
+}
+
+/**
+ * Get a paginated list of following with cursor-based pagination.
+ */
+export async function getFollowingPaginated(
+  userId: string,
+  currentUserId: string | null,
+  cursor: FollowListCursor | null = null
+): Promise<PaginatedFollowList> {
+  const supabase = await createClient();
+
+  let query = supabase
+    .from("follows")
+    .select(
+      "id, created_at, following_id, profiles!follows_following_id_fkey(id, username, full_name, avatar_url)"
+    )
+    .eq("follower_id", userId)
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: false })
+    .limit(FOLLOW_LIST_PAGE_SIZE + 1);
+
+  if (cursor) {
+    validateCursor(cursor);
+    query = query.or(
+      `created_at.lt.${cursor.createdAt},and(created_at.eq.${cursor.createdAt},id.lt.${cursor.id})`
+    );
+  }
+
+  const [result, currentUserFollowingIds] = await Promise.all([
+    query,
+    currentUserId ? getFollowingIds(currentUserId) : Promise.resolve(new Set<string>()),
+  ]);
+
+  if (result.error || !result.data) {
+    return { users: [], nextCursor: null, hasMore: false };
+  }
+
+  const hasMore = result.data.length > FOLLOW_LIST_PAGE_SIZE;
+  const pageData = hasMore ? result.data.slice(0, FOLLOW_LIST_PAGE_SIZE) : result.data;
+
+  const users: FollowListUser[] = pageData.map((row) => {
+    const profile = row.profiles as unknown as {
+      id: string;
+      username: string | null;
+      full_name: string | null;
+      avatar_url: string | null;
+    };
+    return {
+      id: profile.id,
+      username: profile.username ?? "Anonymous",
+      displayName: profile.full_name,
+      avatarUrl: profile.avatar_url,
+      isFollowedByCurrentUser: currentUserId !== null && currentUserFollowingIds.has(profile.id),
+    };
+  });
+
+  const lastRow = pageData[pageData.length - 1];
+  const nextCursor: FollowListCursor | null =
+    hasMore && lastRow ? { createdAt: lastRow.created_at!, id: lastRow.id } : null;
+
+  return { users, nextCursor, hasMore };
 }
 
 /**
