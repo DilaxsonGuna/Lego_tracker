@@ -9,7 +9,7 @@ export function ProfileFooter() {
           Digital Identity UUID: 75192-LF-2024
         </span>
       </div>
-      <div className="flex gap-8">
+      <div className="flex flex-wrap gap-4 sm:gap-8">
         <a
           className="text-xs font-bold text-muted-foreground hover:text-foreground uppercase tracking-widest transition-colors"
           href="#"

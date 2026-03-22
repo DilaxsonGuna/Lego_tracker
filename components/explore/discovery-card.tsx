@@ -77,7 +77,7 @@ export function DiscoveryCard({
             }}
             disabled={isPending}
             aria-label={isInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
-            className={`absolute top-3 right-3 size-9 rounded-full backdrop-blur-sm transition-all ${
+            className={`absolute top-3 right-3 size-10 rounded-full backdrop-blur-sm transition-all ${
               isInWishlist
                 ? "bg-primary/20 text-primary opacity-100 hover:bg-primary/30"
                 : "bg-black/20 hover:bg-black/50 text-white opacity-0 group-hover:opacity-100"

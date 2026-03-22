@@ -5,11 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Bell, Check, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Notification } from "@/types/notifications";
@@ -77,9 +73,7 @@ function NotificationItem({
   };
 
   const href =
-    notification.type === "follow" && notification.actor_id
-      ? `/u/${notification.actor_id}`
-      : "#";
+    notification.type === "follow" && notification.actor_id ? `/u/${notification.actor_id}` : "#";
 
   return (
     <Link
@@ -101,17 +95,13 @@ function NotificationItem({
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
           {getNotificationIcon(notification.type)}
-          <p className="text-xs text-foreground truncate">
-            {getNotificationMessage(notification)}
-          </p>
+          <p className="text-xs text-foreground truncate">{getNotificationMessage(notification)}</p>
         </div>
         <p className="text-[10px] text-muted-foreground mt-0.5">
           {timeAgo(notification.created_at)}
         </p>
       </div>
-      {!notification.read && (
-        <div className="size-2 rounded-full bg-primary flex-shrink-0 mt-2" />
-      )}
+      {!notification.read && <div className="size-2 rounded-full bg-primary flex-shrink-0 mt-2" />}
     </Link>
   );
 }
@@ -139,7 +129,7 @@ export function NotificationBell({
         <Button
           variant="ghost"
           size="icon"
-          className="relative size-9"
+          className="relative size-10"
           aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}
         >
           <Bell className="size-5" />
@@ -171,9 +161,7 @@ export function NotificationBell({
           {notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 gap-2">
               <Bell className="size-8 text-muted-foreground/40" />
-              <p className="text-xs text-muted-foreground">
-                No notifications yet
-              </p>
+              <p className="text-xs text-muted-foreground">No notifications yet</p>
             </div>
           ) : (
             <div className="divide-y divide-border">
