@@ -9,7 +9,7 @@ interface FollowingActivityProps {
   items: FollowingActivityItem[];
 }
 
-function formatTimeAgo(dateString: string): string {
+export function formatTimeAgo(dateString: string): string {
   const now = new Date();
   const date = new Date(dateString);
   const diffMs = now.getTime() - date.getTime();
