@@ -100,7 +100,11 @@ export function SearchPageClient({
                 autoFocus
               />
               {isPending && (
-                <Loader2 className="absolute right-4 size-5 text-muted-foreground animate-spin" />
+                <Loader2
+                  className="absolute right-4 size-5 text-muted-foreground animate-spin"
+                  role="status"
+                  aria-label="Searching"
+                />
               )}
             </label>
           </div>
@@ -146,7 +150,7 @@ export function SearchPageClient({
               <Link
                 key={set.setNum}
                 href={`/set/${set.setNum}`}
-                className="group flex flex-col bg-card rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20 hover:ring-1 hover:ring-primary/50 transition-all duration-300"
+                className="group flex flex-col bg-card rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20 hover:ring-1 hover:ring-primary/50 transition-[transform,box-shadow] duration-300"
               >
                 <div className="relative w-full aspect-[4/3] bg-muted flex items-center justify-center p-6">
                   <div

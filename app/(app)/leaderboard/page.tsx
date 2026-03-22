@@ -12,12 +12,7 @@ async function LeaderboardContent() {
 
   const leaderboardData = await getLeaderboard();
 
-  return (
-    <LeaderboardPageClient
-      initialData={leaderboardData}
-      currentUserId={user?.id ?? null}
-    />
-  );
+  return <LeaderboardPageClient initialData={leaderboardData} currentUserId={user?.id ?? null} />;
 }
 
 export default function LeaderboardPage() {
@@ -25,7 +20,11 @@ export default function LeaderboardPage() {
     <Suspense
       fallback={
         <main className="flex-1 flex items-center justify-center">
-          <Loader2 className="size-6 text-muted-foreground animate-spin" />
+          <Loader2
+            className="size-6 text-muted-foreground animate-spin"
+            role="status"
+            aria-label="Loading leaderboard"
+          />
         </main>
       }
     >

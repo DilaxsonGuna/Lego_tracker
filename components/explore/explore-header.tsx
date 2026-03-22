@@ -65,7 +65,7 @@ export function ExploreHeader({
   };
 
   return (
-    <div className="sm:sticky sm:top-0 z-10 bg-background sm:backdrop-blur-md pt-6 pb-4 px-4 sm:px-6 md:px-10 border-b border-border flex flex-col gap-6">
+    <div className="sticky top-14 sm:top-0 z-10 bg-background backdrop-blur-md pt-6 pb-4 px-4 sm:px-6 md:px-10 border-b border-border flex flex-col gap-6">
       {/* Row 1: Search & Title */}
       <div className="flex items-center justify-between gap-6">
         <div className="flex-1">
@@ -79,9 +79,9 @@ export function ExploreHeader({
             />
           </label>
         </div>
-        <h2 className="hidden lg:block text-2xl font-black tracking-tight uppercase italic">
+        <h1 className="hidden lg:block text-2xl font-black tracking-tight uppercase italic">
           Explore
-        </h2>
+        </h1>
       </div>
 
       {/* Row 2: Theme Filters & Order By */}
@@ -91,7 +91,7 @@ export function ExploreHeader({
           {/* Theme Filter Button */}
           <Button
             onClick={() => setIsThemeModalOpen(true)}
-            className="h-10 px-4 rounded-xl bg-primary text-primary-foreground font-bold text-sm shadow-sm hover:brightness-110 transition-all flex-shrink-0"
+            className="h-10 px-4 rounded-xl bg-primary text-primary-foreground font-bold text-sm shadow-sm hover:brightness-110 transition-[filter] flex-shrink-0"
           >
             {getThemeButtonLabel()}
             <ChevronDown className="size-4 ml-2" />

@@ -55,7 +55,7 @@ export function VaultToolbar({
   const hasActiveFilter = themeFilter !== "all" || sortOption !== "recently-added";
 
   return (
-    <div className="sticky top-0 z-40 h-14 bg-background/80 backdrop-blur-md border-b border-border">
+    <div className="sticky top-14 md:top-0 z-40 h-14 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="mx-auto h-full max-w-7xl flex items-center gap-4 px-6 md:px-8">
         {/* Search input */}
         <label className="relative flex items-center flex-1 max-w-none sm:max-w-sm group">
@@ -74,7 +74,7 @@ export function VaultToolbar({
             <Button
               variant="ghost"
               size="icon"
-              className="sm:hidden relative size-9 rounded-lg bg-card/50"
+              className="sm:hidden relative size-10 rounded-lg bg-card/50"
               aria-label="Filters"
             >
               <SlidersHorizontal className="size-4" />
@@ -197,7 +197,7 @@ export function VaultToolbar({
             onClick={() => onViewModeChange("grid")}
             aria-label="Grid view"
             aria-pressed={viewMode === "grid"}
-            className={`size-7 rounded ${
+            className={`size-9 rounded ${
               viewMode === "grid"
                 ? "bg-primary text-primary-foreground hover:bg-primary/90"
                 : "text-muted-foreground hover:text-foreground hover:bg-transparent"
@@ -211,7 +211,7 @@ export function VaultToolbar({
             onClick={() => onViewModeChange("list")}
             aria-label="List view"
             aria-pressed={viewMode === "list"}
-            className={`size-7 rounded ${
+            className={`size-9 rounded ${
               viewMode === "list"
                 ? "bg-primary text-primary-foreground hover:bg-primary/90"
                 : "text-muted-foreground hover:text-foreground hover:bg-transparent"

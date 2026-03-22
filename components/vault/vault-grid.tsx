@@ -12,7 +12,14 @@ interface VaultGridProps {
   readonly?: boolean;
 }
 
-export function VaultGrid({ sets, selectedSets, onToggleSelect, onToggleFavorite, showFavorite = true, readonly = false }: VaultGridProps) {
+export function VaultGrid({
+  sets,
+  selectedSets,
+  onToggleSelect,
+  onToggleFavorite,
+  showFavorite = true,
+  readonly = false,
+}: VaultGridProps) {
   if (sets.length === 0) {
     return (
       <EmptyState
@@ -25,17 +32,18 @@ export function VaultGrid({ sets, selectedSets, onToggleSelect, onToggleFavorite
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {sets.map((set) => (
-        <VaultCard
-          key={set.setNum}
-          set={set}
-          isSelected={selectedSets?.has(set.setNum)}
-          onToggleSelect={onToggleSelect}
-          isFavorite={set.isFavorite}
-          onToggleFavorite={onToggleFavorite}
-          showFavorite={showFavorite}
-          readonly={readonly}
-        />
+      {sets.map((set, index) => (
+        <div key={set.setNum} className={index === 0 ? "sm:col-span-2" : undefined}>
+          <VaultCard
+            set={set}
+            isSelected={selectedSets?.has(set.setNum)}
+            onToggleSelect={onToggleSelect}
+            isFavorite={set.isFavorite}
+            onToggleFavorite={onToggleFavorite}
+            showFavorite={showFavorite}
+            readonly={readonly}
+          />
+        </div>
       ))}
     </div>
   );

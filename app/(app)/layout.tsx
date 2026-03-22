@@ -19,11 +19,7 @@ function SidebarSkeleton() {
   );
 }
 
-export default function AppLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative flex min-h-screen w-full font-display">
       <Suspense fallback={<SidebarSkeleton />}>
@@ -33,9 +29,7 @@ export default function AppLayout({
         <Suspense>
           <MobileHeaderWrapper />
         </Suspense>
-        <div className="pb-20 md:pb-0">
-          {children}
-        </div>
+        <div className="pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">{children}</div>
         <Suspense>
           <MobileBottomNav />
         </Suspense>

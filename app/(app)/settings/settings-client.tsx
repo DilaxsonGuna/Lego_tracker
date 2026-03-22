@@ -21,10 +21,7 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
   const [settings, setSettings] = useState(initialSettings);
   const [isPending, startTransition] = useTransition();
 
-  const handleToggle = (
-    key: keyof ProfileSettings,
-    value: boolean
-  ) => {
+  const handleToggle = (key: keyof ProfileSettings, value: boolean) => {
     const previousValue = settings[key];
     setSettings((prev) => ({ ...prev, [key]: value }));
 
@@ -38,7 +35,7 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
   };
 
   return (
-    <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-8 md:px-6 lg:py-12">
+    <main className="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-6 md:px-8 py-8 lg:py-12">
       {/* Page Heading */}
       <div className="mb-10">
         <h1 className="text-3xl md:text-4xl font-black text-foreground tracking-tight mb-2">
@@ -69,15 +66,10 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
             title="Profile Visibility"
             description="Allow others to see your collection"
             checked={settings.profile_visible}
-            onCheckedChange={(checked) =>
-              handleToggle("profile_visible", checked)
-            }
+            onCheckedChange={(checked) => handleToggle("profile_visible", checked)}
             disabled={isPending}
           />
-          <DefaultViewDialog
-            defaultGridView={settings.default_grid_view}
-            isLast
-          />
+          <DefaultViewDialog defaultGridView={settings.default_grid_view} isLast />
         </SettingsSection>
 
         {/* Section: Appearance */}

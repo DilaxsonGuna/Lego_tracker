@@ -29,18 +29,18 @@ export function DiscoveryCard({
   const isInCollection = collectionType === "collection";
 
   return (
-    <div className="group relative flex flex-col bg-card rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20 hover:ring-1 hover:ring-primary/50 transition-all duration-300 h-full">
+    <div className="group relative flex flex-col bg-card rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20 hover:ring-1 hover:ring-primary/50 transition-[transform,box-shadow,ring-color] duration-300 h-full">
       {/* Image - wrapped in Link */}
       <Link
         href={`/set/${set.setNum}`}
-        className="relative w-full aspect-[4/3] bg-muted flex items-center justify-center p-6"
+        className="relative w-full aspect-[4/3] bg-muted flex items-center justify-center p-4"
       >
         {set.setImgUrl ? (
           <Image
             src={set.setImgUrl}
             alt={`${set.name} LEGO set ${set.setNum}`}
             fill
-            className="object-contain p-2 transition-transform duration-500 group-hover:scale-105"
+            className="object-contain transition-transform duration-500 group-hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           />
         ) : (
@@ -77,10 +77,10 @@ export function DiscoveryCard({
             }}
             disabled={isPending}
             aria-label={isInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
-            className={`absolute top-3 right-3 size-9 rounded-full backdrop-blur-sm transition-all ${
+            className={`absolute top-3 right-3 size-10 rounded-full backdrop-blur-sm transition-[background-color,color,opacity] ${
               isInWishlist
                 ? "bg-primary/20 text-primary opacity-100 hover:bg-primary/30"
-                : "bg-black/20 hover:bg-black/50 text-white opacity-0 group-hover:opacity-100"
+                : "bg-black/20 hover:bg-black/50 text-white opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
             }`}
           >
             {isPending ? (
@@ -104,7 +104,9 @@ export function DiscoveryCard({
       {/* Info */}
       <div className="p-4 flex flex-col gap-2 flex-grow">
         <div className="flex justify-between items-start">
-          <h3 className="text-base font-bold text-foreground line-clamp-1 pr-2">{set.name}</h3>
+          <h3 className="text-base font-bold text-foreground line-clamp-1 pr-2" title={set.name}>
+            {set.name}
+          </h3>
           <span className="text-xs font-mono text-muted-foreground whitespace-nowrap">
             #{set.setNum}
           </span>
@@ -121,7 +123,7 @@ export function DiscoveryCard({
               <Button
                 variant="default"
                 size="icon"
-                className="size-8 rounded-full bg-primary text-primary-foreground hover:bg-destructive transition-colors"
+                className="size-10 rounded-full bg-primary text-primary-foreground hover:bg-destructive transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
                   onRemove();
@@ -144,7 +146,7 @@ export function DiscoveryCard({
             <Button
               variant="secondary"
               size="icon"
-              className="size-8 rounded-full hover:bg-primary hover:text-primary-foreground transition-colors"
+              className="size-10 rounded-full hover:bg-primary hover:text-primary-foreground transition-colors"
               onClick={(e) => {
                 e.stopPropagation();
                 onAddToCollection();

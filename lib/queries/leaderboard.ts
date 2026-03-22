@@ -42,13 +42,8 @@ export async function getLeaderboard(
       .gt("brick_score", 0)
       .gte(
         "brick_score",
-        (
-          await supabase
-            .from("profiles")
-            .select("brick_score")
-            .eq("id", user.id)
-            .single()
-        ).data?.brick_score ?? 0
+        (await supabase.from("profiles").select("brick_score").eq("id", user.id).single()).data
+          ?.brick_score ?? 0
       );
     currentUserPosition = count ?? null;
   }
@@ -59,7 +54,7 @@ export async function getLeaderboard(
     userId: profile.id,
     username: profile.username ?? "Anonymous",
     avatarUrl: profile.avatar_url ?? "",
-    avatarColor: profile.avatar_url ?? "#3b82f6",
+    avatarColor: profile.avatar_url ?? "#ffd000",
     brickScore: profile.brick_score ?? 0,
     setsCount: profile.sets_count ?? 0,
     piecesCount: profile.pieces_count ?? 0,

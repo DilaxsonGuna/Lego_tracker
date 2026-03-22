@@ -135,7 +135,7 @@ export function OnboardingForm({ className, ...props }: OnboardingFormProps) {
                   onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/\s/g, ""))}
                   className={cn(
                     usernameError && "border-destructive",
-                    usernameAvailable === true && username.length >= 3 && "border-green-500"
+                    usernameAvailable === true && username.length >= 3 && "border-success"
                   )}
                 />
                 {isCheckingUsername && (

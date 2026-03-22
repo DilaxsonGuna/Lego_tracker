@@ -1,10 +1,6 @@
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
-import {
-  getDashboardStats,
-  getRecentlyAddedSets,
-  getFollowingActivity,
-} from "@/lib/queries/home";
+import { getDashboardStats, getRecentlyAddedSets, getFollowingActivity } from "@/lib/queries/home";
 import { fetchSuggestedUsers } from "./actions";
 import {
   DashboardStatsCard,
@@ -24,9 +20,7 @@ async function DashboardContent() {
   if (!user) {
     return (
       <div className="rounded-xl bg-card border border-border p-6 text-center">
-        <p className="text-sm text-muted-foreground">
-          Please log in to view your dashboard.
-        </p>
+        <p className="text-sm text-muted-foreground">Please log in to view your dashboard.</p>
       </div>
     );
   }
@@ -74,25 +68,15 @@ function DashboardSkeleton() {
   return (
     <div className="flex flex-col gap-6">
       {/* Stats skeleton */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {[1, 2, 3, 4].map((i) => (
-          <div
-            key={i}
-            className="h-[72px] bg-card/50 rounded-xl animate-pulse border border-border"
-          />
-        ))}
-      </div>
+      <div className="h-[52px] bg-card/50 rounded-xl animate-pulse border border-border" />
       {/* Recently added skeleton */}
       <div className="space-y-4">
-        <div className="h-4 w-32 bg-card/50 rounded animate-pulse" />
+        <div className="h-5 w-36 bg-card/50 rounded animate-pulse" />
         <div className="flex gap-3">
           {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="w-[140px] sm:w-[160px] flex-shrink-0 space-y-2"
-            >
+            <div key={i} className="w-[200px] sm:w-[240px] flex-shrink-0 space-y-2">
               <div className="aspect-square rounded-xl bg-card/50 animate-pulse border border-border" />
-              <div className="h-3 w-20 bg-card/50 rounded animate-pulse" />
+              <div className="h-3 w-24 bg-card/50 rounded animate-pulse" />
             </div>
           ))}
         </div>
@@ -100,10 +84,7 @@ function DashboardSkeleton() {
       {/* Activity skeleton */}
       <div className="space-y-3">
         {[1, 2, 3].map((i) => (
-          <div
-            key={i}
-            className="h-14 bg-card/50 rounded-xl animate-pulse border border-border"
-          />
+          <div key={i} className="h-14 bg-card/50 rounded-xl animate-pulse border border-border" />
         ))}
       </div>
     </div>

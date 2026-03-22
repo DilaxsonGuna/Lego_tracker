@@ -96,11 +96,22 @@
     scrollbar-width: none;
   }
   .stud-bg {
-    background-image: radial-gradient(#2a2a2a 15%, transparent 15%);
+    background-image: radial-gradient(hsl(var(--border)) 15%, transparent 15%);
     background-size: 24px 24px;
   }
   .mask-gradient-right {
     mask-image: linear-gradient(to right, black 85%, transparent 100%);
     -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

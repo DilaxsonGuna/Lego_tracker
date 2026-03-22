@@ -14,7 +14,7 @@ export function CollectionTabs({ activeTab, onTabChange }: CollectionTabsProps) 
   return (
     <div className="sticky top-0 z-30 flex justify-center py-4 pointer-events-none">
       <div
-        className="relative flex p-1 bg-card/90 backdrop-blur-md rounded-full border border-border w-64 h-12 items-center shadow-2xl pointer-events-auto"
+        className="relative flex p-1 bg-card/90 backdrop-blur-md rounded-full border border-border w-48 sm:w-64 h-12 items-center shadow-2xl pointer-events-auto"
         role="tablist"
       >
         {/* Sliding indicator */}

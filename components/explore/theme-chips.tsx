@@ -21,7 +21,7 @@ export function ThemeChips({
   const chips = categories.filter((cat) => cat.id !== "all");
 
   return (
-    <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide flex-1">
+    <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide flex-1 mask-gradient-right">
       {chips.map((cat) => {
         const themeId = cat.id as number;
         const isSelected = selectedIds.includes(themeId);
@@ -33,11 +33,11 @@ export function ThemeChips({
             variant={isSelected ? "default" : "outline"}
             onClick={() => !isDisabled && onToggle(themeId)}
             disabled={isDisabled}
+            aria-label={`${isSelected ? "Remove" : "Add"} ${cat.label} theme filter`}
+            aria-pressed={isSelected}
             className={cn(
               "flex-shrink-0 h-10 px-4 rounded-xl font-medium text-sm whitespace-nowrap",
-              isSelected
-                ? "font-bold shadow-sm"
-                : "bg-card hover:border-primary/50 text-primary",
+              isSelected ? "font-bold shadow-sm" : "bg-card hover:border-primary/50 text-primary",
               isDisabled && "opacity-50 cursor-not-allowed"
             )}
           >
