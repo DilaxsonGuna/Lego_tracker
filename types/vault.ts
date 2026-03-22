@@ -21,6 +21,7 @@ export type VaultViewMode = "grid" | "list";
 
 export type VaultSortOption =
   | "recently-added"
+  | "favorites-first"
   | "name-asc"
   | "name-desc"
   | "year-newest"

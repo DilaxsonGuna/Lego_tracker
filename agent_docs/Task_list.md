@@ -189,11 +189,11 @@
 
 **Why:** Social graph exists in DB but was invisible in UX. Phase 1 shipped; phases 2-4 optimize UX, performance, and engagement.
 
-### T-033: Vault sort controls
+### T-033: Vault sort controls ✅ DONE
 
-- [ ] Add sort dropdown to vault toolbar: Date Added, Name A-Z, Year, Most Pieces, Favorites First
-- [ ] Make sort work on both desktop and mobile (include in mobile filter sheet)
-- [ ] Persist sort preference in URL params or localStorage
+- [x] Add sort dropdown to vault toolbar: Date Added, Name A-Z, Year, Most Pieces, Favorites First
+- [x] Make sort work on both desktop and mobile (include in mobile filter sheet)
+- [x] Persist sort preference in URL params
 
 **Why:** Vault has no user-facing sort. Users with 100+ sets can't organize their collection.
 

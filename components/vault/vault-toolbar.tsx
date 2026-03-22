@@ -11,13 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import type { VaultViewMode, VaultSortOption } from "@/types/vault";
 
 interface VaultTheme {
@@ -27,6 +21,7 @@ interface VaultTheme {
 
 const SORT_OPTIONS: { value: VaultSortOption; label: string }[] = [
   { value: "recently-added", label: "Recently Added" },
+  { value: "favorites-first", label: "Favorites First" },
   { value: "name-asc", label: "Name A-Z" },
   { value: "name-desc", label: "Name Z-A" },
   { value: "year-newest", label: "Year (Newest)" },
@@ -95,10 +90,13 @@ export function VaultToolbar({
             <div className="flex flex-col gap-6 py-4">
               {/* Theme filter */}
               <div className="flex flex-col gap-2">
-                <span className="text-xs font-medium text-muted-foreground">
-                  Theme
-                </span>
-                <Select value={themeFilter} onValueChange={(v) => { onThemeChange(v); }}>
+                <span className="text-xs font-medium text-muted-foreground">Theme</span>
+                <Select
+                  value={themeFilter}
+                  onValueChange={(v) => {
+                    onThemeChange(v);
+                  }}
+                >
                   <SelectTrigger className="w-full text-sm">
                     <SelectValue placeholder="All Themes" />
                   </SelectTrigger>
@@ -115,10 +113,13 @@ export function VaultToolbar({
 
               {/* Sort */}
               <div className="flex flex-col gap-2">
-                <span className="text-xs font-medium text-muted-foreground">
-                  Sort By
-                </span>
-                <Select value={sortOption} onValueChange={(v) => { onSortChange(v as VaultSortOption); }}>
+                <span className="text-xs font-medium text-muted-foreground">Sort By</span>
+                <Select
+                  value={sortOption}
+                  onValueChange={(v) => {
+                    onSortChange(v as VaultSortOption);
+                  }}
+                >
                   <SelectTrigger className="w-full text-sm">
                     <SelectValue />
                   </SelectTrigger>
@@ -145,10 +146,7 @@ export function VaultToolbar({
                 >
                   Reset
                 </Button>
-                <Button
-                  className="flex-1"
-                  onClick={() => setSheetOpen(false)}
-                >
+                <Button className="flex-1" onClick={() => setSheetOpen(false)}>
                   Apply
                 </Button>
               </div>
@@ -158,9 +156,7 @@ export function VaultToolbar({
 
         {/* Desktop: Theme filter */}
         <div className="hidden sm:flex items-center gap-2">
-          <span className="text-xs font-medium text-muted-foreground">
-            Theme
-          </span>
+          <span className="text-xs font-medium text-muted-foreground">Theme</span>
           <Select value={themeFilter} onValueChange={onThemeChange}>
             <SelectTrigger size="sm" className="min-w-[120px] text-xs h-9 bg-card/50 border-none">
               <SelectValue placeholder="All Themes" />
@@ -178,9 +174,7 @@ export function VaultToolbar({
 
         {/* Desktop: Sort */}
         <div className="hidden sm:flex items-center gap-2">
-          <span className="text-xs font-medium text-muted-foreground">
-            Sort
-          </span>
+          <span className="text-xs font-medium text-muted-foreground">Sort</span>
           <Select value={sortOption} onValueChange={(v) => onSortChange(v as VaultSortOption)}>
             <SelectTrigger size="sm" className="min-w-[140px] text-xs h-9 bg-card/50 border-none">
               <SelectValue />

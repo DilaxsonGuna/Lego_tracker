@@ -39,6 +39,24 @@ const normalize = (str: string) =>
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
 
+const VALID_SORT_OPTIONS = new Set<VaultSortOption>([
+  "recently-added",
+  "favorites-first",
+  "name-asc",
+  "name-desc",
+  "year-newest",
+  "year-oldest",
+  "pieces-most",
+  "pieces-least",
+]);
+
+function parseSortParam(value: string | null): VaultSortOption {
+  if (value && VALID_SORT_OPTIONS.has(value as VaultSortOption)) {
+    return value as VaultSortOption;
+  }
+  return "recently-added";
+}
+
 interface VaultTheme {
   id: number;
   name: string;
@@ -75,14 +93,15 @@ function applySortOption(sets: VaultSet[], sortOption: VaultSortOption): VaultSe
     case "pieces-least":
       sorted.sort((a, b) => a.numParts - b.numParts);
       break;
-    case "recently-added":
-    default:
-      // Keep server order (created_at desc), but favorites first
+    case "favorites-first":
       sorted.sort((a, b) => {
         if (a.isFavorite && !b.isFavorite) return -1;
         if (!a.isFavorite && b.isFavorite) return 1;
         return 0;
       });
+      break;
+    case "recently-added":
+    default:
       break;
   }
   return sorted;
@@ -107,7 +126,9 @@ export function VaultPageClient({
   const [searchQuery, setSearchQuery] = useState("");
   const [themeFilter, setThemeFilter] = useState("all");
   const [viewMode, setViewMode] = useState<VaultViewMode>(defaultGridView ? "grid" : "list");
-  const [sortOption, setSortOption] = useState<VaultSortOption>("recently-added");
+  const [sortOption, setSortOption] = useState<VaultSortOption>(
+    parseSortParam(searchParams.get("sort"))
+  );
   const [selectedSets, setSelectedSets] = useState<Set<string>>(new Set());
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -145,6 +166,21 @@ export function VaultPageClient({
 
       const params = new URLSearchParams(searchParams);
       params.set("tab", tab);
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    },
+    [router, pathname, searchParams]
+  );
+
+  const handleSortChange = useCallback(
+    (sort: VaultSortOption) => {
+      setSortOption(sort);
+
+      const params = new URLSearchParams(searchParams);
+      if (sort === "recently-added") {
+        params.delete("sort");
+      } else {
+        params.set("sort", sort);
+      }
       router.push(`${pathname}?${params.toString()}`, { scroll: false });
     },
     [router, pathname, searchParams]
@@ -289,7 +325,7 @@ export function VaultPageClient({
         sortOption={sortOption}
         onThemeChange={setThemeFilter}
         onViewModeChange={setViewMode}
-        onSortChange={setSortOption}
+        onSortChange={handleSortChange}
       />
 
       {/* Scrollable content area */}
