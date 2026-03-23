@@ -103,23 +103,50 @@ Task received
 | "polish/improve UI"            | `designcheck` → recommends: audit, polish, arrange, typeset, harden, adapt                  |
 | "new page with UI"             | `/new-page` → implement → `designcheck` → impeccable commands                               |
 
-## Orchestrator Phases (for complex features)
+## Feature Implementation Workflow (mandatory for new features)
 
-For multi-step features, follow this sequential flow:
+Every new feature follows this sequential pipeline. Do NOT skip steps.
 
 ```
-RESEARCH (Explore agent) → research notes
-    ↓
-PLAN (planner agent, opus) → plan.md
-    ↓
-IMPLEMENT (direct or tdd-guide) → code changes
-    ↓
-REVIEW (code-reviewer, sonnet) → fix issues
-    ↓
-VERIFY (npm run build + /verify) → done or loop back
+1. PLAN         → /plan or planner agent → identify files, risks, approach
+       ↓
+2. TEST         → Write unit/component tests FIRST (TDD RED)
+       ↓           Use tdd-guide agent for lib/commands/ and lib/queries/
+       ↓           Tests should fail — the feature doesn't exist yet
+       ↓
+3. IMPLEMENT    → Write code to make tests pass (TDD GREEN)
+       ↓           Route via decision tree: direct, /new-page, subagent-driven, etc.
+       ↓
+4. VERIFY       → npx prettier --write [files] → npm run lint → npm run build
+       ↓           All three must pass. If not, fix before continuing.
+       ↓
+5. CODE REVIEW  → requesting-code-review skill → fix CRITICAL/HIGH issues
+       ↓           Re-run verify after fixes.
+       ↓
+5b. SIMPLIFY    → /simplify on changed files (optional but recommended)
+       ↓           Catches: duplicate logic, missed reuse of existing utils,
+       ↓           unnecessary complexity. Skip for trivial changes.
+       ↓
+6. E2E TEST     → Write/run Playwright test if the feature has a user flow
+       ↓           (optional for pure logic changes, mandatory for new routes/forms)
+       ↓           Requires: supabase start + npm run test:e2e:server
+       ↓
+7. COMMIT       → conventional commit format (<type>: <description>)
+                   No Co-Authored-By (disabled globally)
 ```
 
-Each phase: ONE clear input → ONE clear output. Outputs become inputs for next phase.
+**When to use E2E (step 6):**
+
+- New page/route → yes
+- New form or auth flow → yes
+- New button that calls a server action → yes
+- Refactor, query optimization, styling → no
+
+**When to skip TDD (step 2):**
+
+- Pure styling/CSS changes
+- Documentation updates
+- Config file changes
 
 ## Model Routing
 
@@ -161,11 +188,31 @@ Before saying "done", "works", "passes", or committing:
 2. Read full output
 3. THEN claim the result with evidence
 
+## Parallel Work
+
+| Need                                               | Tool                                               | Trigger                                                 |
+| -------------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------- |
+| Independent workers, no cross-talk needed          | `everything-claude-code:team-builder`              | Picks personas, spawns parallel subagents               |
+| Parallel tmux panes (manual orchestration)         | `everything-claude-code:dmux-workflows`            | `dmux` in terminal, `n` for panes, `m` to merge         |
+| Workers that talk to each other + shared task list | **Agent Teams** (native Claude Code, experimental) | Tell Claude: "Create an agent team with N teammates..." |
+| Isolated branches for parallel work                | Git worktrees                                      | `git worktree add ../lt-feature -b feat/name`           |
+
+### Agent Teams (requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in settings.json env)
+
+Use when teammates need to coordinate: research→implement pipelines, cross-layer features, competing hypotheses, multi-perspective reviews. Start by describing the team in natural language. Full docs: https://code.claude.com/docs/en/agent-teams
+
+## Testing Infrastructure (active)
+
+| Command                   | What it runs                         | When to use                  |
+| ------------------------- | ------------------------------------ | ---------------------------- |
+| `npm test`                | Vitest in watch mode                 | During development           |
+| `npm run test:run`        | Vitest single run (258 tests)        | Before commit                |
+| `npm run test:coverage`   | Vitest + V8 coverage report          | Check coverage gaps          |
+| `npm run test:e2e`        | Playwright (6 tests)                 | After feature with user flow |
+| `npm run test:e2e:server` | Next.js on :3001 with local Supabase | Start before E2E             |
+
+**Prerequisites for E2E:** Docker running + `supabase start` + `npm run test:e2e:server`
+
 ## Deferred Workflows
 
-These are documented in `agent_docs/future-workflows.md` and not yet active:
-
-- `/tdd`, `/e2e` — Requires Vitest setup (Phase 3)
-- `/orchestrate`, `/multi-plan` — For parallel work at scale
 - Continuous learning v2 — Instinct management
-- Git worktrees + cascade method — For multi-instance work
