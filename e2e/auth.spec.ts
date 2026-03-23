@@ -1,7 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { TEST_USER } from "./helpers/seed";
-
-// Setup/cleanup handled by global-setup.ts and global-teardown.ts
+import { loginAsTestUser } from "./helpers/login";
 
 test.describe("Auth redirect", () => {
   test("redirects unauthenticated users from / to /auth/login", async ({ page }) => {
@@ -22,13 +21,9 @@ test.describe("Auth redirect", () => {
 
 test.describe("Login flow", () => {
   test("logs in with valid credentials", async ({ page }) => {
-    await page.goto("/auth/login");
-    await page.getByLabel(/email/i).fill(TEST_USER.email);
-    await page.getByLabel(/password/i).fill(TEST_USER.password);
-    await page.getByRole("button", { name: /login/i }).click();
-
-    // Should leave the login page (goes to / or /auth/onboarding)
-    await expect(page).not.toHaveURL(/\/auth\/login/, { timeout: 10000 });
+    await loginAsTestUser(page);
+    // If we get here without error, login succeeded
+    await expect(page).not.toHaveURL(/\/auth\/login/);
   });
 
   test("shows error for invalid credentials", async ({ page }) => {
