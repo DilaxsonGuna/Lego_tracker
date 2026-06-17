@@ -1,7 +1,10 @@
-# LegoFlex Development Task List
+# BrickMaster Development Task List
 
 > Generated 2026-03-20 from full codebase audit + agent_docs analysis.
 > Priority: P0 (blocks launch) > P1 (pre-launch) > P2 (post-launch) > P3 (growth phase)
+>
+> **V1 Scope:** Personal collection/wishlist tracker + friends can see your sets.
+> No AI scanning. No leaderboard. No achievements. No monetization. Web only.
 
 ---
 
@@ -35,15 +38,8 @@
 
 ### T-004: Fix ESLint errors (14 errors) ✅ DONE
 
-- [x] Removed unused `FavoritesGrid` import (profile-client.tsx)
-- [x] Removed unused `isInVault`, `hasChanges`, `inDialog` vars (discovery-card, theme-filter-modal, theme-selector)
-- [x] Removed unused `searchParams` (search-page-client.tsx)
-- [x] Suppressed `selectedSetNums` in vault-bulk-actions (kept in interface for caller)
-- [x] Fixed 4x unescaped `"` → `&ldquo;`/`&rdquo;` (theme-filter-modal, theme-selector)
-- [x] Fixed 2x `any` → `Record<string, unknown>` (explore.ts)
-- [x] Fixed empty interface → type alias (onboarding-form.tsx)
-- [x] Replaced `require()` → ES import (tailwind.config.ts)
-- [x] Added eslint-disable for `<img>` in following-activity (external URLs, can't use next/image)
+- [x] Removed unused imports and vars
+- [x] Fixed unescaped entities, `any` types, empty interfaces
 - [x] Build passes, lint clean (0 errors, 0 warnings)
 
 **Why:** Clean lint = clean CI pipeline.
@@ -55,7 +51,6 @@
 ### T-010: Optimize `calculateGlobalPosition` N+1 query ✅ DONE
 
 - [x] Replaced O(n) JS aggregation with single SQL COUNT on `profiles.brick_score`
-- [x] Removed unused `_userId` parameter
 
 **Why:** Profile page loaded entire user_sets table into memory.
 
@@ -63,32 +58,26 @@
 
 - [x] Vault page: single `getUser()` in page.tsx, pass `userId` directly to all queries
 - [x] Reduced auth roundtrips from 8 to 1 per vault page load
-- [x] Helper approach rejected after /simplify review — restructured page.tsx instead
 
 **Why:** 8 redundant auth HTTP roundtrips per vault page load.
 
 ### T-012: Add missing database indexes ✅ DONE
 
-- [x] `profiles(brick_score DESC)` — leaderboard sort (migration 010)
-- [x] `profiles(lower(username))` UNIQUE — username lookups (migration 010)
-- [x] `follows(following_id)` — already existed from migration 002
+- [x] `profiles(brick_score DESC)` — leaderboard sort
+- [x] `profiles(lower(username))` UNIQUE — username lookups
+- [x] `follows(following_id)` — already existed
 
 **Why:** Leaderboard and username queries now use indexes.
 
 ### T-013: Add missing migration files ✅ DONE
 
-- [x] Created migration 011 for `profiles` computed columns (brick_score, sets_count, pieces_count)
-- [x] Created migration 011 for `profiles` settings columns (profile_visible, default_grid_view, email_notifications)
-- [x] Repaired migration history (001-009 marked as applied on remote)
-- [x] Pushed 010+011 to remote via `supabase db push`
-- [x] CHECK constraint + triggers already in migration 008
+- [x] Migrations 010+011 created and pushed to remote
 
 **Why:** Schema now fully reproducible from migrations.
 
 ### T-014: Document `NEXT_PUBLIC_SITE_URL` env var ✅ DONE
 
-- [x] Added to `.env.example`
-- [x] Added to CLAUDE.md environment section
+- [x] Added to `.env.example` and CLAUDE.md
 
 **Why:** Password reset emails need correct redirect URL in production.
 
@@ -98,42 +87,86 @@
 
 ### T-020: Add branding to auth pages ✅ DONE
 
-- [x] Auth layout already had logo + stud-bg (from previous work)
-- [x] Added gradient overlay to auth layout
-- [x] Added `border-primary/20` to all 8 auth cards
-- [x] Updated login copy: "Welcome back, Builder"
-- [x] Updated sign-up copy: "Join the Collection"
-
-**Why:** Auth pages are the front door.
+- [x] Auth layout with logo, gradient, stud-bg
 
 ### T-021: Replace Puzzle logo icon with brick/stud icon ✅ DONE
 
-- [x] Replaced Puzzle with custom 2x2 brick SVG (4 studs top-view)
-
-**Why:** Puzzle icon suggested jigsaw puzzles, not LEGO bricks.
+- [x] Custom 2x2 brick SVG
 
 ### T-022: Remove misleading UI indicators ✅ DONE
 
-- [x] `isOnline` set to `false` (was hardcoded `true`)
-- [x] Dynamic copyright year `{new Date().getFullYear()}`
-- [ ] `isVerified: false` — kept as-is (no verification system planned for v1)
-
-**Why:** Green "online" dot was always on. Copyright was 2024.
+- [x] `isOnline` set to `false`, dynamic copyright year
 
 ### T-023: Fix bio character limit inconsistency ✅ DONE
 
-- [x] Created `MAX_BIO_LENGTH = 200` in `lib/constants.ts`
-- [x] Used in both `onboarding-form.tsx` and `edit-profile-form.tsx`
-
-**Why:** Was 160 in onboarding, 200 in settings.
+- [x] `MAX_BIO_LENGTH = 200` in constants
 
 ### T-024: Apply `default_grid_view` user setting ✅ DONE
 
-- [x] Fetched from profiles in vault page.tsx (single query in Promise.all)
-- [x] Passed as prop to VaultPageClient
-- [x] Used as initial `viewMode` state
+- [x] Fetched from profiles, passed as initial vault state
 
-**Why:** Setting was toggled but never applied.
+---
+
+## V1 Release — Blockers (NEW)
+
+### T-090: Rename app LegoFlex → BrickMaster ✅ DONE
+
+- [x] Renamed in 13 source files: layout, auth, sidebar, mobile header, login/signup forms, welcome, profile share, search, settings
+- [x] Logo component renamed `LegoFlexLogo` → `BrickMasterLogo`
+- [x] Meta title/description updated
+- [x] Build verified
+
+**Why:** "LegoFlex" contains LEGO trademark. C&D risk.
+
+### T-091: Privacy policy page ✅ DONE
+
+- [x] Created `app/privacy/page.tsx` (public route, no auth required)
+- [x] 8 sections: data collection, usage, storage, rights, cookies, children, changes, contact
+- [x] LEGO trademark disclaimer included
+
+**Why:** Legal requirement. GDPR applies to any EU visitor.
+
+### T-092: Terms of service page ✅ DONE
+
+- [x] Created `app/terms/page.tsx` (public route, no auth required)
+- [x] 9 sections: acceptance, service, accounts, acceptable use, data accuracy, termination, liability, trademarks, changes
+
+**Why:** Protects the project legally.
+
+### T-093: LEGO trademark disclaimer ✅ DONE
+
+- [x] Added to sidebar footer (always visible on desktop)
+- [x] Added to settings page footer
+- [x] Added to both legal pages
+- [x] Links to /privacy and /terms from sidebar + settings
+
+**Why:** LEGO Fair Play policy requires disclaimer on fan sites.
+
+### T-094: Delete account functionality ✅ DONE
+
+- [x] `lib/commands/delete-account.ts` — deletes all user data in dependency order
+- [x] `components/settings/delete-account-dialog.tsx` — confirmation dialog requiring username re-type
+- [x] Wired into Settings page under "Danger Zone" section
+- [x] Redirects to login after deletion
+
+**Why:** GDPR requires users to be able to delete their data.
+
+### T-095: Remove leaderboard from navigation ✅ DONE
+
+- [x] Removed from `lib/constants.ts` nav items
+- [x] Route files kept (not deleted, just unlinked)
+
+**Why:** Out of v1 scope. No purpose without active community.
+
+### T-096: Remove milestones/achievements from profiles ✅ DONE
+
+- [x] Removed `MilestoneVault` from own profile page
+- [x] Removed `MilestoneVault` from public profile page
+- [x] Removed `fetchMilestones` / `fetchPublicMilestones` from data fetching
+- [x] Brick score + rank progress card KEPT (still displayed)
+- [x] Analytics dashboard KEPT (still linked from vault)
+
+**Why:** Out of v1 scope. Brick score/analytics kept as personal tracking features.
 
 ---
 
@@ -146,149 +179,75 @@
 - [ ] Create price sync script/cron (Rebrickable API -> lego_sets)
 - [ ] Update vault queries to use real price data
 - [ ] Update vault stats hero to show real "Collection Value"
-- [ ] Update vault cards to show per-set price
-- [ ] Gate advanced price analytics (market value, trends) behind Pro tier
 
-**Why:** "#1 requested feature across all personas." Currently removed ($0 was worse than nothing).
+**Why:** "#1 requested feature across all personas."
 
 ### ~~T-031: Set status tracking~~ DEFERRED
 
-> Removed status badge rendering from vault-card and vault-list. VaultSetStatus type removed.
 > Will re-implement as a full feature later (DB column + setter UI + filter).
 
-### T-032: Followers/following list pages
+### T-032: Followers/following list pages ✅ DONE (all 4 phases)
 
-#### Phase 1 — Core pages ✅ DONE
-
-- [x] Create `app/(app)/u/[userId]/followers/page.tsx`
-- [x] Create `app/(app)/u/[userId]/following/page.tsx`
-- [x] Create reusable `FollowList` component with follow/unfollow buttons
-- [x] Make follower/following counts clickable in `profile-hero.tsx`
-- [x] Same for public profile `profile-client.tsx`
-
-#### Phase 2 — Quick wins (UX polish) ✅ DONE
-
-- [x] Add "Follows you" badge to `FollowListItem` (data already in `isFollowedByCurrentUser`)
-- [x] Add search/filter bar within follower/following lists (client-side filter by username)
-- [x] Improve empty states with LEGO-themed illustration + "Discover collectors" CTA
-
-#### Phase 3 — Performance ✅ DONE
-
-- [x] Cursor-based pagination for `getFollowers`/`getFollowing` with "Load more" button
-- [x] Denormalized `follower_count`/`following_count` on `profiles` via PostgreSQL trigger (migration 014)
-- [x] Compound indexes: `(following_id, created_at DESC, id DESC)` and `(follower_id, created_at DESC, id DESC)`
-- [x] Cursor input validation (prevent PostgREST filter injection)
-- [x] Optimistic follow/unfollow state updates (no pagination truncation)
-
-#### Phase 4 — Engagement ✅ DONE
-
-- [x] Mutual followers indicator on profile pages ("Followed by X, Y you follow")
-- [x] Collection overlap score (Jaccard similarity: "N sets in common (X% match)")
-- [x] Social proof on set pages ("X, Y you follow own this set")
-- [x] Follow suggestions algorithm (friends-of-friends _ 3 + shared themes _ 2 scoring)
-
-**Why:** Social graph exists in DB but was invisible in UX. Phase 1 shipped; phases 2-4 optimize UX, performance, and engagement.
+- [x] Core pages, UX polish, cursor-based pagination, social features (mutual followers, collection overlap, follow suggestions)
 
 ### T-033: Vault sort controls ✅ DONE
 
-- [x] Add sort dropdown to vault toolbar: Date Added, Name A-Z, Year, Most Pieces, Favorites First
-- [x] Make sort work on both desktop and mobile (include in mobile filter sheet)
-- [x] Persist sort preference in URL params
-
-**Why:** Vault has no user-facing sort. Users with 100+ sets can't organize their collection.
-
 ### T-034: Milestone celebration modals ✅ DONE
 
-- [x] Detect when user crosses a milestone threshold after adding a set
-- [x] Show celebration modal with confetti animation + milestone badge
-- [x] Add "Share" CTA in modal (Web Share API + clipboard fallback)
-- [ ] Track `milestone_reached` and `milestone_shared` events (deferred to T-050 PostHog)
+- [x] Detect milestones, confetti animation, Web Share API
+- [ ] Track events (deferred to T-050 PostHog)
 
-**Why:** Milestones appear silently on profile. No celebration = no share trigger = no viral loop.
+### T-035: Collection analytics dashboard ✅ DONE (all 4 phases)
 
-### T-035: Collection analytics dashboard
-
-**Tech:** shadcn/ui Charts (Recharts v3) — CSS variable theming via `--chart-1..5`, React 19 compatible, SVG-based SSR.
-
-**Research:** Brickset uses bar charts for theme/year. BrickEconomy leads with portfolio-value + price forecasting (Pro-gated). BrickLog shows KPI cards + avg cost/piece. Horizontal bar > donut for 10-30 theme categories. Cumulative line + monthly-additions toggle for growth. Progressive disclosure layout: KPIs → charts → deep analytics.
-
-#### Phase 1 — Setup + Core Charts ✅ DONE
-
-- [x] Install shadcn chart: `npx shadcn@latest add chart`
-- [x] Create `app/(app)/vault/analytics/page.tsx` route
-- [x] Add "Analytics" link to vault toolbar (desktop icon + mobile sheet)
-
-#### Phase 2 — Queries (`lib/queries/analytics.ts`) ✅ DONE
-
-- [x] `getThemeDistribution(userId)` — GROUP BY theme, COUNT sets, ORDER BY count DESC
-- [x] `getYearDistribution(userId)` — GROUP BY year, COUNT sets
-- [x] `getCollectionGrowth(userId)` — sets added per month, cumulative
-- [x] `getNotableSets(userId)` — largest, oldest, newest, most valuable (deduplicated)
-- [x] `getCollectionKPIs(userId)` — total sets, pieces, value, avg price-per-piece, sets this month
-
-#### Phase 3 — Components (`components/analytics/`) ✅ DONE
-
-- [x] `AnalyticsKPIs` — 2x2 grid: Total Sets (+N this month), Total Pieces, Value, Avg Price/Piece
-- [x] `ThemeDistributionChart` — horizontal bar chart (top 8, "See all" expansion)
-- [x] `YearDistributionChart` — vertical BarChart (discrete years)
-- [x] `CollectionGrowthChart` — cumulative AreaChart with toggle to monthly additions bar
-- [x] `NotableSetsRow` — card row: Largest, Oldest, Newest, Most Valuable
-- [x] Page layout composing all components with Suspense loading
-
-#### Phase 4 — Polish ✅ DONE
-
-- [x] Responsive layout (single column mobile, 2-col grid desktop)
-- [x] Empty states for users with no collection data
-- [x] Loading skeleton via Suspense
-- [x] Chart tooltips using shadcn ChartTooltipContent
-- [x] All queries bounded with MAX_COLLECTION_SIZE limit
-- [x] SVG gradient ID scoped with useId() to prevent collisions
-
-**Why:** Data-driven collectors want insights. Brickset has basic charts; BrickEconomy gates behind Pro. Free analytics = differentiation.
+- [x] KPIs, theme/year distribution charts, growth chart, notable sets
 
 ### T-036: CSV/PDF export
 
 - [ ] Add "Export" button to vault toolbar
-- [ ] Generate CSV with: set_num, name, year, theme, pieces, collection_type, status, date_added
-- [ ] Optional: PDF export with formatted layout
-- [ ] Consider gating behind Pro tier
+- [ ] Generate CSV with set data
 
-**Why:** Serious collectors maintain parallel spreadsheets. Export reduces friction.
+**Why:** Serious collectors maintain parallel spreadsheets.
 
 ---
 
 ## P4 — Infrastructure & Performance
 
-### T-040: Add `robots.txt` and `sitemap.xml`
+### T-040: Add `robots.txt` and `sitemap.xml` ✅ DONE
 
-- [ ] Create `app/robots.ts` — allow indexing of public profiles and set pages
-- [ ] Create `app/sitemap.ts` — include `/explore`, `/leaderboard`, public `/u/[userId]` pages
+- [x] Created `app/robots.ts` — allows indexing of `/explore`, `/set/*`, `/u/*`, `/privacy`, `/terms`; disallows `/vault`, `/settings`, `/profile`, `/auth/`, `/api/`
+- [x] Created `app/sitemap.ts` — includes `/`, `/explore`, `/privacy`, `/terms`
 
-**Why:** SEO basics missing. Public profiles should be indexable.
+**Why:** SEO basics. Public profiles and set pages should be indexable.
 
-### T-041: Set up monitoring (Sentry or Vercel Analytics)
+### T-041: Set up monitoring (Sentry) ✅ DONE
 
-- [ ] Install error tracking (Sentry recommended)
-- [ ] Add to `app/layout.tsx` and server actions
-- [ ] Configure source maps for production
-- [ ] Set up error alerts
+- [x] Installed `@sentry/nextjs`
+- [x] Created `sentry.client.config.ts` — error tracking + session replay (1% sessions, 100% error sessions)
+- [x] Created `sentry.server.config.ts` — server-side error tracking
+- [x] Created `sentry.edge.config.ts` — edge/middleware error tracking
+- [x] Created `app/global-error.tsx` — reports to Sentry + shows user-friendly error page
+- [x] Wrapped `next.config.ts` with `withSentryConfig()` — source maps upload, tree-shaking
+- [x] Added `NEXT_PUBLIC_SENTRY_DSN` to `.env.example`
+- [ ] **USER ACTION:** Create Sentry project at sentry.io, add DSN to `.env.local`
 
-**Why:** No visibility into production errors. Flying blind.
+**Why:** No visibility into production errors without this.
 
 ### T-042: Parallelize sequential queries in vault
 
-- [ ] `lib/queries/vault.ts` — run favorites + main query in `Promise.all()`
-- [ ] `lib/queries/vault.ts:getVaultThemes` — use SQL DISTINCT instead of fetching all sets
-- [ ] `lib/queries/user-themes.ts:getPopularThemes` — use SQL GROUP BY + COUNT instead of JS aggregation
+- [ ] Run favorites + main query in `Promise.all()`
+- [ ] Use SQL DISTINCT instead of fetching all sets for themes
+- [ ] Use SQL GROUP BY + COUNT instead of JS aggregation
 
 **Why:** Vault page makes 9+ queries sequentially. Parallelizing saves 200-400ms.
 
-### T-043: Add error logging to query functions
+### T-043: Add error logging to query functions ✅ DONE
 
-- [ ] Add `console.error("[functionName]", error.message, error.code)` to all `lib/queries/*.ts` functions
-- [ ] Currently query failures return empty arrays silently — bugs are invisible
+- [x] Created `lib/log-error.ts` utility (centralised, swap-ready for Sentry later)
+- [x] Added `logError()` calls to 27 error return points across 6 query files:
+  - `home.ts` (4), `social.ts` (7), `profile.ts` (6), `set-detail.ts` (3), `explore.ts` (5), `notifications.ts` (2)
+- [x] Guarded compound conditions (`if (error || !data)`) to only log when error exists
 
-**Why:** Query failures show empty states instead of errors. Database timeouts look like "you have no sets."
+**Why:** Query failures were returning empty arrays silently. Now all errors are logged with context.
 
 ---
 
@@ -297,23 +256,19 @@
 ### T-050: Integrate PostHog analytics
 
 - [ ] Install `posthog-js` + `posthog-node`
-- [ ] Create PostHog provider component in `app/(app)/layout.tsx`
-- [ ] Add cookie consent banner (block PostHog until consent)
-- [ ] Implement `posthog.identify()` on login with user properties
-- [ ] Track core events: signup, set_added, collection_shared, leaderboard_viewed
-- [ ] Set up activation funnel dashboard
-- [ ] Set up D1/D7/D30 retention cohorts
+- [ ] Create PostHog provider component
+- [ ] Cookie consent banner
+- [ ] Track core events: signup, set_added, collection_shared
+- [ ] Activation funnel + retention cohorts
 
-**Why:** No analytics = no data-driven decisions. PostHog free tier covers 1M events/month.
+**Why:** No analytics = no data-driven decisions. PostHog free tier covers 1M events/month. Add when you have 50+ users.
 
 ### T-051: Track North Star metric (WAC)
 
 - [ ] Define Weekly Active Collectors: users with vault mutations in past 7 days
-- [ ] Create Supabase SQL function for quick WAC queries
-- [ ] Add to PostHog dashboard
-- [ ] Set up weekly automated report
+- [ ] Create Supabase SQL function for WAC queries
 
-**Why:** WAC is the metric that best captures product-market fit for a collection tracker.
+**Why:** WAC captures product-market fit for a collection tracker.
 
 ---
 
@@ -321,95 +276,72 @@
 
 ### T-060: AI set verification pipeline (Scan feature)
 
-- [ ] Client-side: EXIF extraction with `exifr` (camera-specific fields only)
-- [ ] Client-side: Canvas API image resize (max 1600px, JPEG 85%)
-- [ ] Server: Presigned upload URL to Supabase Storage
-- [ ] Server: Gemini 2.5 Flash API call for identification + fraud detection
-- [ ] Server: 3-tier DB matching (direct lookup -> fuzzy search -> Rebrickable API)
-- [ ] UI: Results page with confirmed/fuzzy/manual search states
-- [ ] UI: `/scan` route with camera entry point
+- [ ] Camera scan → Gemini Flash identification → DB matching
 - [ ] Rate limiting: 10/hour, 50/day per user
 
-**Why:** Core differentiator. Photo verification replaces manual "Add to Collection." Tested 6/6 correct.
+**Why:** Core differentiator. Out of v1 scope.
 
-### T-061: Pro tier (LegoFlex Pro)
+### T-061: Pro tier (BrickMaster Pro)
 
-- [ ] Stripe integration for payments ($4.99/mo or $39.99/yr)
-- [ ] Pro badge on profile
-- [ ] Feature gates: value tracking, analytics, export, unlimited collection cards
-- [ ] Pricing page UI
-- [ ] 14-day free trial flow
-- [ ] Founding member pricing ($29.99/yr, locked for life, first 1000)
+- [ ] Stripe integration ($4.99/mo or $39.99/yr)
+- [ ] Feature gates: value tracking, export, unlimited collection cards
 
-**Why:** Revenue. Target 3-5% conversion of MAU. Projected $18-39K ARR at Month 12.
+**Why:** Revenue. Out of v1 scope.
 
 ### T-062: Theme completion tracking
 
-- [ ] Query: count user's sets per theme vs total sets in theme
-- [ ] UI: Progress bars per theme on analytics dashboard
+- [ ] Progress bars per theme on analytics dashboard
 - [ ] "You own 42 of 87 Star Wars sets (48%)"
-- [ ] Consider gating behind Pro tier
 
-**Why:** Completionist persona killer feature. No competitor offers this.
+**Why:** Completionist persona killer feature.
 
 ### T-063: PWA support
 
-- [ ] Create `manifest.json` with app metadata and icons
-- [ ] Add service worker for offline caching
-- [ ] Add install prompt for mobile users
+- [ ] `manifest.json`, service worker, install prompt
 
-**Why:** Mobile-first audience. PWA enables "Add to Home Screen" for app-like experience.
+**Why:** Mobile-first audience. "Add to Home Screen" for app-like experience.
 
 ### T-064: Email notification system
 
-- [ ] Set up Resend (or similar) for transactional emails
-- [ ] Welcome email on signup
-- [ ] Weekly digest: activity from followed users
-- [ ] Milestone congratulations
-- [ ] Re-engagement: "You haven't visited in 2 weeks"
-- [ ] Honor `email_notifications` user setting
+- [ ] Welcome email, weekly digest, milestone congrats, re-engagement
 
-**Why:** No re-engagement mechanism currently. Users who leave have no trigger to return.
+**Why:** No re-engagement mechanism currently.
 
 ### T-065: Landing page & pre-launch
 
-- [ ] Create public landing page with email capture
-- [ ] SEO-optimized for "lego collection tracker", "lego inventory app"
-- [ ] Collection Card preview as visual hook
-- [ ] "What's your LEGO rank?" headline
+- [ ] Public landing page with email capture
+- [ ] SEO-optimized for "lego collection tracker"
 
-**Why:** Pre-launch email list for launch day blast. SEO long-game.
+**Why:** Pre-launch email list for launch day blast.
 
 ---
 
 ## P7 — Legal & Compliance
 
-### T-070: Privacy policy & GDPR
+### T-070: Privacy policy & GDPR ✅ MOSTLY DONE
 
-- [ ] Create `/privacy` page (currently dead link)
-- [ ] Document what data is collected and why
-- [ ] Add "Delete my account" in settings (remove all user data)
-- [ ] Add "Export my data" button (JSON/CSV of vault)
-- [ ] Cookie consent before loading PostHog
+- [x] Created `/privacy` page
+- [x] Documented data collection
+- [x] "Delete my account" in settings
+- [ ] "Export my data" button (JSON/CSV of vault) — deferred
+- [ ] Cookie consent before loading PostHog — deferred (PostHog not installed yet)
 
-**Why:** GDPR applies to any EU users. Currently no privacy policy, no data deletion, no export.
+**Why:** GDPR applies to EU users.
 
-### T-071: Evaluate trademark risk
+### T-071: Evaluate trademark risk ✅ DONE
 
-- [ ] Research LEGO Group Fair Play policy on "LegoFlex" name
-- [ ] Prepare backup names: BrickVault, BrickFlex, StudTracker
-- [ ] Add disclaimer: "Not affiliated with the LEGO Group"
-- [ ] Ensure "LEGO" used only as adjective in all copy
+- [x] Renamed from "LegoFlex" to "BrickMaster" (no LEGO trademark in name)
+- [x] Added disclaimer: "Not affiliated with the LEGO Group" (sidebar, settings, legal pages)
+- [x] "LEGO" used only as adjective in copy
 
-**Why:** "LegoFlex" incorporates LEGO trademark. Could trigger cease-and-desist.
+**Why:** "LegoFlex" incorporated LEGO trademark. Now resolved.
 
 ### T-072: Remove Date of Birth from onboarding
 
 - [ ] Remove DOB field from `onboarding-form.tsx`
-- [ ] Or move to Settings with clear justification
 - [ ] GDPR data minimization: collecting DOB without stated purpose is a violation
 
-**Why:** Users don't understand why a LEGO tracker needs their birthday. Privacy friction.
+**Why:** Users don't understand why a LEGO tracker needs their birthday.
 
 ---
 
@@ -419,73 +351,34 @@
 
 Currently avatar is a color-based circle. Users need real profile photos for a social app.
 
-### T-081: Bottom mobile navigation bar
+### T-081: Bottom mobile navigation bar ✅ DONE
 
-5 core destinations (Home, Explore, Vault, Profile, Leaderboard) should be one tap away instead of behind hamburger menu.
+- [x] Already implemented: Home, Explore, Vault, Profile
 
 ### T-082: Vault "Select All" for bulk actions
 
-Users with large collections must individually check each set. Add select-all checkbox.
+Users with large collections must individually check each set.
 
 ### T-083: "Move to Wishlist" on collection tab
 
-Currently only wishlist has "Move to Collection." Asymmetric — add reverse direction.
+Currently only wishlist has "Move to Collection." Add reverse direction.
 
 ### T-084: Year range filter on Explore
 
-"Star Wars sets from 2015-2020" — currently only theme + sort are available.
+"Star Wars sets from 2015-2020" — currently only theme + sort.
 
 ### T-085: Referral program
 
-Unique referral URLs, reward for referrer (1 month free Pro per 3 referrals), extended trial for referee.
+Unique referral URLs, reward for referrer. Out of v1 scope.
 
 ### T-086: "Year in Bricks" annual recap
 
-Spotify Wrapped for LEGO — December event showing sets added, rank changes, top themes. Primary viral mechanic.
+Spotify Wrapped for LEGO. Out of v1 scope.
 
-### T-087: Testing infrastructure ✅ PROMOTED TO ACTIVE
+### T-087: Testing infrastructure ✅ DONE
 
-**Tech:** Vitest 4.x + React Testing Library 16.x + jsdom + Playwright (E2E). V8 coverage.
-
-**Research:** Vitest is 30-70% faster than Jest, native ESM, Next.js officially recommends it. RTL 16.3+ supports React 19. Async server components can only be tested via E2E (Playwright). Server actions are testable as unit functions with mocked Supabase.
-
-#### Step 1 — Setup (infrastructure)
-
-- [ ] Install dev dependencies: vitest, @vitest/coverage-v8, @vitejs/plugin-react, vite-tsconfig-paths, @testing-library/react, @testing-library/dom, @testing-library/jest-dom, @testing-library/user-event, jsdom
-- [ ] Create `vitest.config.mts` with jsdom env, path aliases, coverage config
-- [ ] Create `test/setup.ts` with jest-dom matchers
-- [ ] Add npm scripts: `test`, `test:ui`, `test:coverage`
-- [ ] Verify setup with a smoke test
-
-#### Step 2 — Business logic unit tests (highest value)
-
-- [ ] `lib/commands/user-favorites.ts` — max 4 favorites enforcement
-- [ ] `lib/commands/user-themes.ts` — max 10 themes enforcement
-- [ ] `lib/commands/follows.ts` — follow/unfollow, self-follow prevention
-- [ ] `lib/brick-score.ts` — score calculation, rank determination
-
-#### Step 3 — Query function tests
-
-- [ ] `lib/queries/social.ts` — cursor validation, getFollowCounts from denormalized columns
-- [ ] `lib/queries/analytics.ts` — theme/year distribution aggregation, notable sets deduplication
-- [ ] `lib/queries/vault.ts` — getVaultSets with search/theme filters
-
-#### Step 4 — Component tests
-
-- [ ] `components/social/follow-list.tsx` — search filter, badge rendering, empty state
-- [ ] `components/vault/vault-toolbar.tsx` — sort options, filter state
-- [ ] `components/analytics/` — chart components render without crashing
-
-#### Step 5 — E2E tests (Playwright, later)
-
-- [ ] Install Playwright + browser binaries
-- [ ] Auth flow: login redirect, sign-up -> onboarding
-- [ ] Vault flow: add set -> appears in vault
-- [ ] Profile flow: follow user -> count updates
-
-**Target:** 80% coverage on `lib/commands/` and `lib/queries/`, 60% on components.
-
-**Why:** Zero tests = zero confidence. Business logic (max 4 favorites, score calculation) has no safety net. Every deploy is a gamble.
+- [x] 271 tests total (258 unit/component + 13 E2E), all passing
+- [x] Vitest 4.x + RTL 16.x + Playwright
 
 ### T-088: CI/CD pipeline
 
@@ -495,19 +388,28 @@ GitHub Actions: build + lint + test on PR. Preview deployments on Vercel.
 
 ## Progress Tracking
 
-| Priority          | Total  | Done   | Remaining |
-| ----------------- | ------ | ------ | --------- |
-| P0 Critical       | 4      | 4      | 0         |
-| P1 Pre-Launch     | 5      | 5      | 0         |
-| P2 UI/UX Polish   | 5      | 5      | 0         |
-| P3 Feature Gaps   | 7      | 0      | 7         |
-| P4 Infrastructure | 4      | 0      | 4         |
-| P5 Analytics      | 2      | 0      | 2         |
-| P6 Growth         | 6      | 0      | 6         |
-| P7 Legal          | 3      | 0      | 3         |
-| Backlog           | 9      | 0      | 9         |
-| **Total**         | **45** | **14** | **31**    |
+| Priority                | Total  | Done   | Remaining |
+| ----------------------- | ------ | ------ | --------- |
+| P0 Critical             | 4      | 4      | 0         |
+| P1 Pre-Launch           | 5      | 5      | 0         |
+| P2 UI/UX Polish         | 5      | 5      | 0         |
+| **V1 Release Blockers** | **7**  | **7**  | **0**     |
+| P3 Feature Gaps         | 7      | 5      | 2         |
+| P4 Infrastructure       | 4      | 3      | 1         |
+| P5 Analytics            | 2      | 0      | 2         |
+| P6 Growth               | 6      | 0      | 6         |
+| P7 Legal                | 3      | 2      | 1         |
+| Backlog                 | 9      | 2      | 7         |
+| **Total**               | **52** | **33** | **19**    |
+
+### V1 Release Readiness
+
+All blockers resolved. Remaining before deploying:
+
+1. Add `NEXT_PUBLIC_SENTRY_DSN` to `.env.local` (user action — create Sentry project)
+2. T-072: Remove DOB from onboarding (GDPR data minimization)
+3. Verify `npm run build` on deployment target
 
 ---
 
-_Last updated: 2026-03-20_
+_Last updated: 2026-03-27_
