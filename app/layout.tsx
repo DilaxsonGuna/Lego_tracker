@@ -15,8 +15,9 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "LegoFlex — Social Lego Collection Tracker",
-  description: "Track your Lego collection, discover new sets, follow other collectors, and climb the leaderboard. The social platform for Lego enthusiasts.",
+  title: "BrickMaster — Track & Share Your LEGO Collection",
+  description:
+    "Track your LEGO collection, discover new sets, and share your vault with friends. The personal collection tracker for LEGO enthusiasts.",
 };
 
 const geistSans = Geist({
@@ -33,12 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.className} antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           {children}
           <Toaster />
         </ThemeProvider>

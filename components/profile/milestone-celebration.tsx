@@ -79,13 +79,13 @@ export function MilestoneCelebration({ milestone, open, onOpenChange }: Mileston
   const emoji = iconMap[milestone.icon] ?? "\u{2B50}";
 
   const handleShare = () => {
-    const shareText = `${emoji} I just unlocked the "${milestone.label}" milestone on LegoFlex!`;
+    const shareText = `${emoji} I just unlocked the "${milestone.label}" milestone on BrickMaster!`;
     const shareUrl = `${window.location.origin}/profile`;
 
     const doShare = async () => {
       if (navigator.share) {
         await navigator.share({
-          title: `${milestone.label} — LegoFlex Milestone`,
+          title: `${milestone.label} — BrickMaster Milestone`,
           text: shareText,
           url: shareUrl,
         });

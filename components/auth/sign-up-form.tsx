@@ -53,7 +53,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
       <Card className="border-primary/20 shadow-lg shadow-primary/5 ring-1 ring-primary/10">
         <CardHeader>
           <CardTitle className="text-2xl">Join the Collection</CardTitle>
-          <CardDescription>Create your LegoFlex account</CardDescription>
+          <CardDescription>Create your BrickMaster account</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignUp}>

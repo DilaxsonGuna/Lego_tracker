@@ -43,7 +43,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
       <Card className="border-primary/20 shadow-lg shadow-primary/5 ring-1 ring-primary/10">
         <CardHeader>
           <CardTitle className="text-2xl">Welcome back, Builder</CardTitle>
-          <CardDescription>Sign in to your LegoFlex account</CardDescription>
+          <CardDescription>Sign in to your BrickMaster account</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin}>

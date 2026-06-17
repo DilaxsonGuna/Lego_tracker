@@ -271,7 +271,7 @@ export function EditProfileForm({ initialData }: EditProfileFormProps) {
 
       {/* Footer */}
       <div className="mt-20 flex flex-col items-center justify-center gap-2 border-t border-border pt-8">
-        <p className="text-xs text-muted-foreground">LegoFlex v1.0.0</p>
+        <p className="text-xs text-muted-foreground">BrickMaster v1.0.0</p>
       </div>
     </div>
   );

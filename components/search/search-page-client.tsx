@@ -130,7 +130,7 @@ export function SearchPageClient({
         {!hasQuery && (
           <EmptyState
             icon={Search}
-            title="Search LegoFlex"
+            title="Search BrickMaster"
             description="Find sets by name or number, discover other collectors, or browse themes."
           />
         )}
