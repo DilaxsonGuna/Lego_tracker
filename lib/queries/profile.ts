@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { UserProfile, UserStats, FavoriteSet, Milestone } from "@/types/profile";
 import { getFollowCounts, getMutualFollowsCount } from "./social";
 import { calculateBrickScore, getCurrentRank, calculateRankProgress } from "@/lib/brick-score";
+import { logError } from "@/lib/log-error";
 
 export async function getUserProfile(userId: string): Promise<UserProfile | null> {
   const supabase = await createClient();
@@ -18,7 +19,10 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
       .order("display_order", { ascending: true }),
   ]);
 
-  if (profileResult.error || !profileResult.data) return null;
+  if (profileResult.error || !profileResult.data) {
+    if (profileResult.error) logError("getUserProfile", profileResult.error);
+    return null;
+  }
 
   const data = profileResult.data;
 
@@ -59,7 +63,10 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
     .eq("user_id", userId)
     .eq("collection_type", "collection");
 
-  if (error || !data) return null;
+  if (error || !data) {
+    if (error) logError("getUserStats", error);
+    return null;
+  }
 
   // Calculate total parts
   let totalParts = 0;
@@ -100,7 +107,10 @@ async function calculateGlobalPosition(
     .select("*", { count: "exact", head: true })
     .gt("brick_score", userBrickScore);
 
-  if (error) return 0;
+  if (error) {
+    logError("calculateGlobalPosition", error);
+    return 0;
+  }
 
   return (count ?? 0) + 1;
 }
@@ -124,7 +134,10 @@ export async function getFavoriteSets(userId: string): Promise<FavoriteSet[]> {
     .order("created_at", { ascending: false })
     .limit(4);
 
-  if (error || !data) return [];
+  if (error || !data) {
+    if (error) logError("getFavoriteSets", error);
+    return [];
+  }
 
   return data.map((row) => {
     const set = row.lego_sets as unknown as {
@@ -158,7 +171,10 @@ export async function getMilestones(userId: string): Promise<Milestone[]> {
     .eq("user_id", userId)
     .eq("collection_type", "collection");
 
-  if (error || !data || data.length === 0) return [];
+  if (error || !data || data.length === 0) {
+    if (error) logError("getMilestones", error);
+    return [];
+  }
 
   let totalParts = 0;
   const years = new Set<number>();
@@ -197,7 +213,10 @@ export async function isProfileComplete(userId: string): Promise<boolean> {
     .eq("id", userId)
     .single();
 
-  if (error || !data) return false;
+  if (error || !data) {
+    if (error) logError("isProfileComplete", error);
+    return false;
+  }
   return Boolean(data.username && data.username.trim().length > 0);
 }
 

@@ -1,6 +1,7 @@
 import { createClient, createAnonClient } from "@/lib/supabase/server";
 import type { SetDetail, UserSetStatus } from "@/types/set-detail";
 import type { DiscoverySet } from "@/types/explore";
+import { logError } from "@/lib/log-error";
 
 export async function getSetDetail(setNum: string): Promise<SetDetail | null> {
   const supabase = createAnonClient();
@@ -11,7 +12,10 @@ export async function getSetDetail(setNum: string): Promise<SetDetail | null> {
     .eq("set_num", setNum)
     .single();
 
-  if (error || !data) return null;
+  if (error || !data) {
+    if (error) logError("getSetDetail", error);
+    return null;
+  }
 
   const theme = data.themes as unknown as { name: string } | null;
 
@@ -35,7 +39,10 @@ export async function getSetOwnerCount(setNum: string): Promise<number> {
     .eq("set_num", setNum)
     .eq("collection_type", "collection");
 
-  if (error) return 0;
+  if (error) {
+    logError("getSetOwnerCount", error);
+    return 0;
+  }
   return count ?? 0;
 }
 
@@ -54,7 +61,10 @@ export async function getRelatedSets(
     .order("year", { ascending: false })
     .limit(limit);
 
-  if (error || !data) return [];
+  if (error || !data) {
+    if (error) logError("getRelatedSets", error);
+    return [];
+  }
 
   return data.map((row) => {
     const theme = row.themes as unknown as { name: string } | null;
@@ -69,10 +79,7 @@ export async function getRelatedSets(
   });
 }
 
-export async function getUserSetStatus(
-  userId: string,
-  setNum: string
-): Promise<UserSetStatus> {
+export async function getUserSetStatus(userId: string, setNum: string): Promise<UserSetStatus> {
   const supabase = await createClient();
 
   const [setResult, favResult] = await Promise.all([

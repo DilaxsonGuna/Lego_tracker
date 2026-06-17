@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { logError } from "@/lib/log-error";
 import type { Notification } from "@/types/notifications";
 
 /**
@@ -19,7 +20,10 @@ export async function getNotifications(
     .order("created_at", { ascending: false })
     .limit(limit);
 
-  if (error || !data) return [];
+  if (error || !data) {
+    if (error) logError("getNotifications", error);
+    return [];
+  }
 
   return data.map((row) => {
     const actor = row.profiles as unknown as {
@@ -58,6 +62,9 @@ export async function getUnreadCount(userId: string): Promise<number> {
     .eq("user_id", userId)
     .eq("read", false);
 
-  if (error) return 0;
+  if (error) {
+    logError("getUnreadCount", error);
+    return 0;
+  }
   return count ?? 0;
 }

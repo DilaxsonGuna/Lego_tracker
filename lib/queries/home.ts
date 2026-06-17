@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { calculateBrickScore, getCurrentRank, calculateRankProgress } from "@/lib/brick-score";
+import { logError } from "@/lib/log-error";
 
 export interface DashboardStats {
   totalSets: number;
@@ -46,14 +47,19 @@ export async function getDashboardStats(userId: string): Promise<DashboardStats 
   // Fetch user's collection with set details
   const { data, error } = await supabase
     .from("user_sets")
-    .select(`
+    .select(
+      `
       quantity,
       lego_sets!inner(num_parts)
-    `)
+    `
+    )
     .eq("user_id", userId)
     .eq("collection_type", "collection");
 
-  if (error) return null;
+  if (error) {
+    logError("getDashboardStats", error);
+    return null;
+  }
 
   let totalPieces = 0;
   const totalSets = data?.length ?? 0;
@@ -103,7 +109,8 @@ export async function getRecentlyAddedSets(
 
   const { data, error } = await supabase
     .from("user_sets")
-    .select(`
+    .select(
+      `
       created_at,
       lego_sets!inner(
         set_num,
@@ -113,13 +120,17 @@ export async function getRecentlyAddedSets(
         img_url,
         themes(name)
       )
-    `)
+    `
+    )
     .eq("user_id", userId)
     .eq("collection_type", "collection")
     .order("created_at", { ascending: false })
     .limit(limit);
 
-  if (error || !data) return [];
+  if (error || !data) {
+    if (error) logError("getRecentlyAddedSets", error);
+    return [];
+  }
 
   return data.map((row) => {
     const set = row.lego_sets as unknown as {
@@ -158,14 +169,18 @@ export async function getFollowingActivity(
     .select("following_id")
     .eq("follower_id", userId);
 
-  if (followError || !following || following.length === 0) return [];
+  if (followError || !following || following.length === 0) {
+    if (followError) logError("getFollowingActivity", followError);
+    return [];
+  }
 
   const followingIds = following.map((f) => f.following_id);
 
   // Get recent set additions from those users
   const { data, error } = await supabase
     .from("user_sets")
-    .select(`
+    .select(
+      `
       id,
       user_id,
       created_at,
@@ -174,13 +189,17 @@ export async function getFollowingActivity(
         name,
         img_url
       )
-    `)
+    `
+    )
     .in("user_id", followingIds)
     .eq("collection_type", "collection")
     .order("created_at", { ascending: false })
     .limit(limit);
 
-  if (error || !data) return [];
+  if (error || !data) {
+    if (error) logError("getFollowingActivity", error);
+    return [];
+  }
 
   // Get profile info for those users
   const userIds = [...new Set(data.map((row) => row.user_id))];
@@ -190,7 +209,10 @@ export async function getFollowingActivity(
     .in("id", userIds);
 
   const profileMap = new Map(
-    (profiles ?? []).map((p) => [p.id, { username: p.username ?? "Anonymous", avatarUrl: p.avatar_url ?? "" }])
+    (profiles ?? []).map((p) => [
+      p.id,
+      { username: p.username ?? "Anonymous", avatarUrl: p.avatar_url ?? "" },
+    ])
   );
 
   return data.map((row) => {

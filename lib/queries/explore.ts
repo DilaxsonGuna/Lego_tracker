@@ -3,6 +3,7 @@ import { createClient, createAnonClient } from "@/lib/supabase/server";
 import type { DiscoverySet, ThemeCategory, OrderByOption } from "@/types/explore";
 import type { Database } from "@/types/supabase";
 import { PAGE_SIZE } from "@/lib/constants";
+import { logError } from "@/lib/log-error";
 
 type PopularSetRow = Database["public"]["Functions"]["get_popular_sets"]["Returns"][number];
 type SearchSetRow = Database["public"]["Functions"]["search_sets"]["Returns"][number];
@@ -43,7 +44,7 @@ export async function getDiscoverySets({
     });
 
     if (error) {
-      console.error("Most popular query error:", error);
+      logError("getDiscoverySets", error);
       return [];
     }
 
@@ -70,7 +71,7 @@ export async function getDiscoverySets({
     });
 
     if (error) {
-      console.error("Search sets query error:", error);
+      logError("getDiscoverySets", error);
       return [];
     }
 
@@ -96,7 +97,10 @@ export async function getParentThemes(): Promise<ThemeCategory[]> {
     .is("parent_id", null)
     .order("name", { ascending: true });
 
-  if (error || !data) return [{ id: "all", label: "All" }];
+  if (error || !data) {
+    if (error) logError("getParentThemes", error);
+    return [{ id: "all", label: "All" }];
+  }
 
   return [
     { id: "all", label: "All" },
@@ -119,7 +123,10 @@ export const getCachedParentThemes = unstable_cache(
       .is("parent_id", null)
       .order("name", { ascending: true });
 
-    if (error || !data) return [{ id: "all", label: "All" }];
+    if (error || !data) {
+      if (error) logError("getCachedParentThemes", error);
+      return [{ id: "all", label: "All" }];
+    }
 
     return [
       { id: "all", label: "All" },
@@ -146,7 +153,10 @@ const getCachedFeaturedThemesFallback = unstable_cache(
       .in("name", FEATURED_THEMES)
       .is("parent_id", null);
 
-    if (error || !data) return [];
+    if (error || !data) {
+      if (error) logError("getCachedFeaturedThemesFallback", error);
+      return [];
+    }
 
     const sorted = FEATURED_THEMES.map((name) => data.find((t) => t.name === name)).filter(
       (t): t is { id: number; name: string } => t !== undefined

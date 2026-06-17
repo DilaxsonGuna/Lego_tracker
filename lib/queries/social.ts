@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { logError } from "@/lib/log-error";
 import type {
   FollowCounts,
   FollowListCursor,
@@ -31,6 +32,7 @@ export async function getFollowCounts(userId: string): Promise<FollowCounts> {
     .single();
 
   if (error || !data) {
+    if (error) logError("getFollowCounts", error);
     return { followers: 0, following: 0 };
   }
 
@@ -71,7 +73,10 @@ export async function isFollowing(followerId: string, followingId: string): Prom
     .eq("following_id", followingId)
     .maybeSingle();
 
-  if (error) return false;
+  if (error) {
+    logError("isFollowing", error);
+    return false;
+  }
   return data !== null;
 }
 
@@ -108,6 +113,7 @@ export async function getFollowersPaginated(
   ]);
 
   if (result.error || !result.data) {
+    if (result.error) logError("getFollowersPaginated", result.error);
     return { users: [], nextCursor: null, hasMore: false };
   }
 
@@ -170,6 +176,7 @@ export async function getFollowingPaginated(
   ]);
 
   if (result.error || !result.data) {
+    if (result.error) logError("getFollowingPaginated", result.error);
     return { users: [], nextCursor: null, hasMore: false };
   }
 
@@ -210,7 +217,10 @@ export async function getFollowingIds(userId: string): Promise<Set<string>> {
     .select("following_id")
     .eq("follower_id", userId);
 
-  if (error || !data) return new Set();
+  if (error || !data) {
+    if (error) logError("getFollowingIds", error);
+    return new Set();
+  }
   return new Set(data.map((row) => row.following_id));
 }
 
@@ -331,7 +341,10 @@ export async function getMutualFollowsCount(userId: string): Promise<number> {
     .eq("following_id", userId)
     .in("follower_id", followingIds);
 
-  if (error) return 0;
+  if (error) {
+    logError("getMutualFollowsCount", error);
+    return 0;
+  }
   return count ?? 0;
 }
 

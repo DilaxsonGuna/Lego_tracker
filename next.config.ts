@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
@@ -18,4 +19,15 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  // Upload source maps for readable stack traces
+  silent: !process.env.CI,
+
+  // Automatically tree-shake Sentry logger in production
+  disableLogger: true,
+
+  // Hide source maps from the client bundle
+  sourcemaps: {
+    deleteSourcemapsAfterUpload: true,
+  },
+});
