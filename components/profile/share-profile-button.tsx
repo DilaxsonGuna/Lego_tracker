@@ -16,7 +16,7 @@ export function ShareProfileButton({ userId, username }: ShareProfileButtonProps
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `@${username} on LegoFlex`,
+          title: `@${username} on BrickMaster`,
           url: profileUrl,
         });
       } catch (err) {
@@ -34,12 +34,7 @@ export function ShareProfileButton({ userId, username }: ShareProfileButtonProps
   };
 
   return (
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={handleShare}
-      className="gap-1.5"
-    >
+    <Button variant="outline" size="sm" onClick={handleShare} className="gap-1.5">
       <Share2 className="size-4" />
       Share
     </Button>
