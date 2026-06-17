@@ -25,7 +25,6 @@ export function OnboardingForm({ className, ...props }: OnboardingFormProps) {
   const [fullName, setFullName] = useState("");
   const [bio, setBio] = useState("");
   const [location, setLocation] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState("");
   const [avatarColor, setAvatarColor] = useState("blue");
   const [error, setError] = useState<string | null>(null);
   const [usernameError, setUsernameError] = useState<string | null>(null);
@@ -82,7 +81,6 @@ export function OnboardingForm({ className, ...props }: OnboardingFormProps) {
       avatarUrl: getAvatarColor(avatarColor),
       bio: bio || undefined,
       location: location || undefined,
-      dateOfBirth: dateOfBirth || undefined,
       themeIds: selectedThemes.length > 0 ? selectedThemes : undefined,
     });
 
@@ -188,17 +186,6 @@ export function OnboardingForm({ className, ...props }: OnboardingFormProps) {
                   placeholder="City, Country"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                />
-              </div>
-
-              {/* Date of Birth */}
-              <div className="grid gap-2">
-                <Label htmlFor="dateOfBirth">Date of Birth</Label>
-                <Input
-                  id="dateOfBirth"
-                  type="date"
-                  value={dateOfBirth}
-                  onChange={(e) => setDateOfBirth(e.target.value)}
                 />
               </div>
 

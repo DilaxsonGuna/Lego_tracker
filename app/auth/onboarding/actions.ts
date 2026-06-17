@@ -19,7 +19,6 @@ export async function createProfile(data: {
   avatarUrl?: string;
   bio?: string;
   location?: string;
-  dateOfBirth?: string;
   themeIds?: number[];
 }): Promise<OnboardingResult> {
   const parsed = createProfileSchema.safeParse(data);
@@ -60,7 +59,6 @@ export async function createProfile(data: {
       avatar_url: parsed.data.avatarUrl || null,
       bio: parsed.data.bio?.trim() || null,
       location: parsed.data.location?.trim() || null,
-      date_of_birth: parsed.data.dateOfBirth || null,
       updated_at: new Date().toISOString(),
     },
     { onConflict: "id" }
@@ -83,9 +81,7 @@ export async function createProfile(data: {
   return { success: true };
 }
 
-export async function checkUsernameAvailability(
-  username: string
-): Promise<{ available: boolean }> {
+export async function checkUsernameAvailability(username: string): Promise<{ available: boolean }> {
   const parsed = checkUsernameSchema.safeParse({ username });
   if (!parsed.success) {
     return { available: false };

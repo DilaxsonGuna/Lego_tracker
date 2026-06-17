@@ -14,7 +14,6 @@ export const createProfileSchema = z.object({
   avatarUrl: z.string().optional().or(z.literal("")),
   bio: z.string().trim().max(500).optional(),
   location: z.string().trim().max(100).optional(),
-  dateOfBirth: z.string().optional(),
   themeIds: z.array(z.number().int().positive()).max(10).optional(),
 });
 

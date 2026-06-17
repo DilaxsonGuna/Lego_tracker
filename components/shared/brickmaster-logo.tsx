@@ -1,10 +1,10 @@
 import { cn } from "@/lib/utils";
 
-interface LegoFlexLogoProps {
+interface BrickMasterLogoProps {
   className?: string;
 }
 
-export function LegoFlexLogo({ className }: LegoFlexLogoProps) {
+export function BrickMasterLogo({ className }: BrickMasterLogoProps) {
   return (
     <div
       className={cn(

@@ -1,4 +1,4 @@
-import { LegoFlexLogo } from "@/components/shared/legoflex-logo";
+import { BrickMasterLogo } from "@/components/shared/brickmaster-logo";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -8,14 +8,14 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div className="relative">
           {/* Pulsing glow behind logo */}
           <div className="absolute -inset-3 rounded-2xl bg-primary/30 blur-xl motion-safe:animate-pulse" />
-          <LegoFlexLogo className="relative h-14 w-14 rounded-xl shadow-lg shadow-primary/20 [&_svg]:size-8" />
+          <BrickMasterLogo className="relative h-14 w-14 rounded-xl shadow-lg shadow-primary/20 [&_svg]:size-8" />
         </div>
         <div className="flex flex-col items-center gap-1">
           <span className="text-xl font-black tracking-tight text-foreground uppercase">
-            LegoFlex
+            BrickMaster
           </span>
           <p className="text-sm text-muted-foreground font-medium">
-            Track, collect, and share your Lego journey.
+            Track, collect, and share your LEGO journey.
           </p>
         </div>
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { LegoFlexLogo } from "./legoflex-logo";
+import { BrickMasterLogo } from "./brickmaster-logo";
 import { cn } from "@/lib/utils";
 import { NavItem } from "@/types/navigation";
 
@@ -20,10 +20,8 @@ export function MobileHeader({ className, notificationSlot }: MobileHeaderProps)
       )}
     >
       <div className="flex items-center gap-3">
-        <LegoFlexLogo />
-        <h2 className="text-lg font-bold tracking-tight text-foreground">
-          LegoFlex
-        </h2>
+        <BrickMasterLogo />
+        <h2 className="text-lg font-bold tracking-tight text-foreground">BrickMaster</h2>
       </div>
       {notificationSlot}
     </header>
