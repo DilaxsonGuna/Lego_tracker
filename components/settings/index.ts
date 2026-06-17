@@ -6,3 +6,4 @@ export { EditProfileForm } from "./edit-profile-form";
 export { PasswordResetDialog } from "./password-reset-dialog";
 export { DefaultViewDialog } from "./default-view-dialog";
 export { ThemeSelectorDialog } from "./theme-selector-dialog";
+export { DeleteAccountDialog } from "./delete-account-dialog";

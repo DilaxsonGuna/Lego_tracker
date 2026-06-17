@@ -72,6 +72,14 @@ export async function updateProfileSetting(
   return { success: true };
 }
 
+export async function deleteUserAccount(): Promise<{
+  error?: string;
+  success?: boolean;
+}> {
+  const { deleteAccount } = await import("@/lib/commands/delete-account");
+  return deleteAccount();
+}
+
 export async function sendPasswordResetEmail(): Promise<{
   error?: string;
   success?: boolean;

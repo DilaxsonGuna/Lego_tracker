@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 import { getSettings } from "./actions";
 import { SettingsClient } from "./settings-client";
 
@@ -23,13 +24,19 @@ function SettingsLoading() {
 }
 
 async function SettingsContent() {
-  const settings = await getSettings();
+  const [settings, supabase] = await Promise.all([getSettings(), createClient()]);
 
   if (!settings) {
     redirect("/auth/login");
   }
 
-  return <SettingsClient initialSettings={settings} />;
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("username")
+    .eq("id", (await supabase.auth.getUser()).data.user!.id)
+    .single();
+
+  return <SettingsClient initialSettings={settings} username={profile?.username ?? "user"} />;
 }
 
 export default function SettingsPage() {

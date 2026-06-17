@@ -9,15 +9,17 @@ import {
   PasswordResetDialog,
   DefaultViewDialog,
   ThemeSelectorDialog,
+  DeleteAccountDialog,
 } from "@/components/settings";
-import { updateProfileSetting, type ProfileSettings } from "./actions";
+import { updateProfileSetting, deleteUserAccount, type ProfileSettings } from "./actions";
 import { toast } from "sonner";
 
 interface SettingsClientProps {
   initialSettings: ProfileSettings;
+  username: string;
 }
 
-export function SettingsClient({ initialSettings }: SettingsClientProps) {
+export function SettingsClient({ initialSettings, username }: SettingsClientProps) {
   const [settings, setSettings] = useState(initialSettings);
   const [isPending, startTransition] = useTransition();
 
@@ -90,12 +92,30 @@ export function SettingsClient({ initialSettings }: SettingsClientProps) {
           />
         </SettingsSection>
 
+        {/* Section: Danger Zone */}
+        <SettingsSection title="Danger Zone">
+          <DeleteAccountDialog username={username} onDelete={deleteUserAccount} />
+        </SettingsSection>
+
         {/* Sign Out */}
         <SettingsSignOut />
 
         {/* Footer */}
         <div className="pt-8 flex flex-col items-center justify-center gap-2">
-          <p className="text-xs text-muted-foreground">LegoFlex v1.0.0</p>
+          <p className="text-xs text-muted-foreground">BrickMaster v1.0.0</p>
+          <div className="flex gap-3 text-xs text-muted-foreground">
+            <a href="/privacy" className="hover:text-foreground transition-colors">
+              Privacy
+            </a>
+            <span>&middot;</span>
+            <a href="/terms" className="hover:text-foreground transition-colors">
+              Terms
+            </a>
+          </div>
+          <p className="text-[10px] text-muted-foreground/60 text-center max-w-xs">
+            LEGO is a trademark of the LEGO Group. BrickMaster is not affiliated with or endorsed by
+            the LEGO Group.
+          </p>
         </div>
       </div>
     </main>
