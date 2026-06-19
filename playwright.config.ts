@@ -1,4 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
+import dotenv from "dotenv";
+
+// Load local test env (Supabase URL/keys) so seed helpers and specs can read them.
+dotenv.config({ path: ".env.test" });
 
 export default defineConfig({
   testDir: "./e2e",

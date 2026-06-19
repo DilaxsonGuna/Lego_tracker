@@ -5,8 +5,14 @@
 
 import { createClient } from "@supabase/supabase-js";
 
-const SUPABASE_URL = "http://127.0.0.1:54321";
-const SERVICE_ROLE_KEY = "REMOVED_SUPABASE_SERVICE_ROLE_KEY";
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "http://127.0.0.1:54321";
+const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!SERVICE_ROLE_KEY) {
+  throw new Error(
+    "SUPABASE_SERVICE_ROLE_KEY is not set. E2E tests load it from .env.test — copy .env.example and fill in your local Supabase service role key."
+  );
+}
 
 // Admin client — bypasses RLS
 export const adminClient = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
