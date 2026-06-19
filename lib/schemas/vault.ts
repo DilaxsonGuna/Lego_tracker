@@ -9,17 +9,9 @@ export const fetchVaultSetsSchema = z.object({
   theme: z.string().max(100).optional(),
 });
 
-export const addSetToVaultSchema = z.object({
-  setNum: z.string().min(1).max(50),
-  quantity: z.number().int().min(1).max(999).default(1),
-  collectionType: collectionTypeSchema.default("collection"),
-});
-
 export const setNumSchema = z.object({
   setNum: z.string().min(1).max(50),
 });
-
-export const toggleFavoriteSchema = setNumSchema;
 
 export const addSetToCollectionSchema = z.object({
   setNum: z.string().min(1).max(50),

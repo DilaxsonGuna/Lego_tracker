@@ -12,11 +12,6 @@ export interface VaultSet {
   retailPrice: number | null;
 }
 
-export interface VaultStats {
-  totalPieces: string;
-  uniqueThemes: number;
-}
-
 export type VaultViewMode = "grid" | "list";
 
 export type VaultSortOption =

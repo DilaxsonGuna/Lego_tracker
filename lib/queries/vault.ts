@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import type { VaultSet, VaultStats, CollectionStats, WishlistStats } from "@/types/vault";
+import type { VaultSet, CollectionStats, WishlistStats } from "@/types/vault";
 import type { CollectionTab } from "@/types/lego-set";
 import { PAGE_SIZE } from "@/lib/constants";
 
@@ -119,39 +119,6 @@ export async function getVaultSets({
       retailPrice: priceMap.get(set.set_num) ?? null,
     };
   });
-}
-
-export async function getVaultStats(userId: string): Promise<VaultStats | null> {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("user_sets")
-    .select(
-      `
-      quantity,
-      lego_sets!inner(num_parts, theme_id)
-    `
-    )
-    .eq("user_id", userId);
-
-  if (error || !data) return null;
-
-  const totalParts = data.reduce((sum, row) => {
-    const set = row.lego_sets as unknown as { num_parts: number };
-    return sum + (set.num_parts ?? 0) * (row.quantity ?? 1);
-  }, 0);
-
-  // Count unique themes
-  const themeIds = new Set<number>();
-  for (const row of data) {
-    const set = row.lego_sets as unknown as { theme_id: number };
-    if (set.theme_id) themeIds.add(set.theme_id);
-  }
-
-  return {
-    totalPieces: totalParts.toLocaleString(),
-    uniqueThemes: themeIds.size,
-  };
 }
 
 export interface VaultTheme {
