@@ -1,18 +1,27 @@
+-- Restored from migrations_archive/014_follows_performance.sql.
+-- Dropped during the 000 consolidation (commit c64505d); re-added here so a
+-- fresh `db reset` and any prod replay recreate the denormalized follow counts
+-- read by lib/queries/social.ts (getFollowCounts).
+--
 -- Performance improvements for follows queries:
 -- 1. Compound indexes for cursor-based pagination
 -- 2. Denormalized follower/following counts on profiles
 -- 3. Trigger to keep counts in sync on INSERT/DELETE
+--
+-- Note: the original used CREATE INDEX CONCURRENTLY, which cannot run inside the
+-- transaction the Supabase CLI wraps each migration in. Dropped CONCURRENTLY —
+-- on a fresh/replayed schema there is no live-table locking concern.
 
 -- ============================================================
 -- 1. Compound indexes for cursor-based pagination
 -- ============================================================
 
 -- For fetching a user's followers (ordered by follow date)
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_follows_following_cursor
+CREATE INDEX IF NOT EXISTS idx_follows_following_cursor
   ON follows (following_id, created_at DESC, id DESC);
 
 -- For fetching who a user follows (ordered by follow date)
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_follows_follower_cursor
+CREATE INDEX IF NOT EXISTS idx_follows_follower_cursor
   ON follows (follower_id, created_at DESC, id DESC);
 
 -- ============================================================
@@ -62,6 +71,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+DROP TRIGGER IF EXISTS follows_count_trigger ON follows;
 CREATE TRIGGER follows_count_trigger
   AFTER INSERT OR DELETE ON follows
   FOR EACH ROW

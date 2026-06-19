@@ -1,4 +1,9 @@
--- Create notifications table
+-- Restored from migrations_archive/009_create_notifications.sql.
+-- Dropped during the 000 consolidation (commit c64505d); re-added here so a
+-- fresh `db reset` and any prod replay recreate the in-app notifications table.
+-- Read via lib/queries/notifications.ts, written via lib/commands/notifications.ts.
+-- The actor join relies on the FK being auto-named "notifications_actor_id_fkey".
+
 CREATE TABLE notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
@@ -30,3 +35,10 @@ CREATE POLICY "Users can update own notifications"
 CREATE POLICY "Authenticated users can create notifications"
   ON notifications FOR INSERT
   WITH CHECK (auth.role() = 'authenticated');
+
+-- Recipients (user_id) and the acting user (actor_id) can delete rows.
+-- Required by lib/commands/delete-account.ts, which clears notifications by
+-- both columns under RLS. Missing in the original 009; added on restore.
+CREATE POLICY "Users can delete own notifications"
+  ON notifications FOR DELETE
+  USING (auth.uid() = user_id OR auth.uid() = actor_id);
