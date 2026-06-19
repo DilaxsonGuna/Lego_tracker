@@ -1,7 +1,9 @@
 # BrickMaster — MVP Status & Launch Plan
 
-> **Date:** 2026-06-17
-> **Supersedes the MVP definitions in** `release_v1.md` **and** `product_strategy.md` — both predate the competitive analysis below and contradict each other. This is the source of truth.
+> **Date:** 2026-06-17 · **Updated:** 2026-06-18 (status reconciled against live code)
+> **Single source of truth for MVP scope.** It supersedes two earlier MVP definitions (`release_v1.md` and `product_strategy.md`) that predated the competitive analysis below and contradicted each other; both were removed in the 2026-06-19 docs cleanup, their decisions reconciled here.
+>
+> **2026-06-18 update:** all three 🔴 launch blockers are now **DONE** (rename finished, OG/favicon added, DOB removed) and Sentry is fully wired (needs only its DSN). Remaining work is validation (PostHog), the theme-completion feature, and the UI/UX refactor. Tables below updated. `npm run build` verified green.
 
 ---
 
@@ -15,8 +17,8 @@ The **value/investment lane is closed** (GameSetBrick, Brickfact, BrickEconomy o
 
 **Therefore this MVP:**
 
-- **KEEPS** everything social/gamified (that's the differentiation — do NOT strip it, contra `release_v1.md`).
-- **DOES NOT** gate launch on price data or CSV import (not our headline, contra `product_strategy.md`).
+- **KEEPS** everything social/gamified (that's the differentiation — do NOT strip it; an earlier draft wanted to, and was wrong).
+- **DOES NOT** gate launch on price data or CSV import (not our headline; an earlier draft over-scoped this).
 - **ADDS** one new feature — theme completion — because it's social, viral, and cheap.
 - **PRIORITIZES** measurement, because the whole launch is a test of whether the social loop fires.
 
@@ -41,20 +43,21 @@ The **value/investment lane is closed** (GameSetBrick, Brickfact, BrickEconomy o
 | SEO: `robots.ts` + `sitemap.ts`                                                                                     | Shipped                                     |
 | Sentry SDK installed (`@sentry/nextjs`) + config files                                                              | Installed (needs DSN to activate)           |
 
-### ⚠️ In progress / incomplete
+### ✅ Resolved since this doc was written (verified 2026-06-18)
 
-| Item                       | State                                                                                                                                                                                                                                                                                   |
-| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Rename → "BrickMaster"** | ~90% done. Title is "BrickMaster", name in 16 files. **3 files still say "LegoFlex":** `app/auth/layout.tsx`, `components/shared/sidebar.tsx`, `components/shared/mobile-header.tsx`. Logo file still named `components/shared/legoflex-logo.tsx`. No OG/favicon assets in `app/` root. |
+| Item                       | State                                                                                                                                          |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Rename → "BrickMaster"** | **Done.** Zero "LegoFlex" strings remain; logo renamed; OG/favicon assets added (commits `c580f01`, `61af157`, `0bd0cc1`).                     |
+| **DOB collection**         | **Removed** from onboarding action + form — no `date_of_birth`/`dob`/`birth` references remain.                                                |
+| **Sentry**                 | **Wired** (`sentry.client/server/edge.config.ts`, `app/global-error.tsx`, `lib/log-error.ts`). Activates once `NEXT_PUBLIC_SENTRY_DSN` is set. |
 
-### ❌ Missing
+### ❌ Still missing
 
-| Item                                   | Note                                                                                           |
-| -------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| **DOB collection** still in onboarding | `app/auth/onboarding/actions.ts:63` writes `date_of_birth`. GDPR exposure — remove or justify. |
-| **Product analytics (PostHog)**        | Not installed. Required to measure the social loop.                                            |
-| **Theme completion tracking**          | Not built. The one new feature worth adding pre-launch.                                        |
-| **CI/CD**                              | No `.github/workflows`. Tests exist but don't run on PRs. Fast-follow, not a launch blocker.   |
+| Item                            | Note                                                                                         |
+| ------------------------------- | -------------------------------------------------------------------------------------------- |
+| **Product analytics (PostHog)** | Not installed. Required to measure the social loop. **Now the top remaining launch task.**   |
+| **Theme completion tracking**   | Not built. The one new feature worth adding pre-launch.                                      |
+| **CI/CD**                       | No `.github/workflows`. Tests exist but don't run on PRs. Fast-follow, not a launch blocker. |
 
 ---
 
@@ -80,20 +83,22 @@ Full social layer · Brick Score + leaderboard + milestones · free analytics ·
 
 ## 3. What I need to launch — remaining task list
 
-### 🔴 Blockers (must do before any user sees it)
+### 🔴 Blockers — ✅ ALL DONE (verified 2026-06-18)
 
-| #   | Task                                                    | Where                                                                                                   | Effort |
-| --- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------ |
-| 1   | Finish the rename to **BrickMaster**                    | 3 string files above + rename `legoflex-logo.tsx` → `brickmaster-logo.tsx` (+ component name + imports) | 1–2h   |
-| 2   | Create OG image + favicon for BrickMaster               | `app/opengraph-image`, `app/icon`, `app/favicon.ico`                                                    | 1h     |
-| 3   | Remove DOB from onboarding (or document a real purpose) | `app/auth/onboarding/actions.ts:63` + the onboarding form                                               | 30m    |
+| #   | Task                                      | Where                                                     | Status  |
+| --- | ----------------------------------------- | --------------------------------------------------------- | ------- |
+| 1   | Finish the rename to **BrickMaster**      | string files + logo renamed (+ component name + imports)  | ✅ Done |
+| 2   | Create OG image + favicon for BrickMaster | `app/opengraph-image`, `app/icon`, `app/favicon.ico`      | ✅ Done |
+| 3   | Remove DOB from onboarding                | onboarding action + form — no `date_of_birth` refs remain | ✅ Done |
 
 ### 🟡 Required for validation (the launch is a test — instrument it)
 
-| #   | Task                                               | Why                                                         | Effort |
-| --- | -------------------------------------------------- | ----------------------------------------------------------- | ------ |
-| 4   | Install + wire **PostHog**                         | Must measure the social loop, not vanity signups            | 2–3h   |
-| 5   | Activate **Sentry** (set `NEXT_PUBLIC_SENTRY_DSN`) | SDK is already installed; just needs the DSN + a smoke test | 30m    |
+| #   | Task                                               | Why                                                   | Effort |
+| --- | -------------------------------------------------- | ----------------------------------------------------- | ------ |
+| 4   | Install + wire **PostHog**                         | Must measure the social loop, not vanity signups      | 2–3h   |
+| 5   | Activate **Sentry** (set `NEXT_PUBLIC_SENTRY_DSN`) | SDK + config wired; just needs the DSN + a smoke test | 30m    |
+
+> **Next up:** task 4 (PostHog) is now the top remaining launch item — nothing else blocks instrumenting the social loop.
 
 ### 🟢 Differentiator (do before the cold-community push, can trail the seed cluster)
 
@@ -122,7 +127,7 @@ Scope notes:
 - CI/CD pipeline (run the existing tests on PRs).
 - Re-confirm price data has real values loaded (sync script ran).
 
-**Total to a measurable launch: ~1.5–2 focused days** (tasks 1–5) for the seed cluster. Theme completion (~1 day) and the UI/UX review + refactor (~3–6 days) land before the wider cold-community push.
+**Total to a measurable launch: ~half a day left** — blockers 1–3 done, Sentry wired (task 5 = paste DSN). Only **task 4 (PostHog, 2–3h)** remains to instrument the seed-cluster launch. Theme completion (~1 day) and the UI/UX review + refactor (~3–6 days) land before the wider cold-community push.
 
 ---
 
