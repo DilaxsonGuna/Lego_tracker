@@ -12,6 +12,7 @@ import {
   removeFromVault,
   toggleFavorite,
 } from "@/app/(app)/set/[setNum]/actions";
+import { AnalyticsEvent, capture } from "@/lib/analytics/events";
 
 interface SetDetailActionsProps {
   setNum: string;
@@ -30,12 +31,17 @@ export function SetDetailActions({
 
   const handleAddToCollection = () => {
     startTransition(async () => {
+      const wasInWishlist = status.inWishlist;
       const result = await addToCollection(setNum);
       if (result.error) {
         toast.error(result.error);
       } else {
         setStatus({ inCollection: true, inWishlist: false, isFavorite: status.isFavorite });
         toast.success("Added to collection");
+        capture(wasInWishlist ? AnalyticsEvent.SetMoveToCollection : AnalyticsEvent.SetAdd, {
+          set_num: setNum,
+          list: "collection",
+        });
         router.refresh();
       }
     });
@@ -49,6 +55,7 @@ export function SetDetailActions({
       } else {
         setStatus({ inCollection: false, inWishlist: true, isFavorite: false });
         toast.success("Added to wishlist");
+        capture(AnalyticsEvent.SetAdd, { set_num: setNum, list: "wishlist" });
         router.refresh();
       }
     });
@@ -62,6 +69,7 @@ export function SetDetailActions({
       } else {
         setStatus({ inCollection: false, inWishlist: false, isFavorite: false });
         toast.success("Removed from vault");
+        capture(AnalyticsEvent.SetRemove, { set_num: setNum });
         router.refresh();
       }
     });
@@ -73,7 +81,12 @@ export function SetDetailActions({
       if (result.error) {
         toast.error(result.error);
       } else {
+        const nowFavorite = !status.isFavorite;
         setStatus((prev) => ({ ...prev, isFavorite: !prev.isFavorite }));
+        capture(AnalyticsEvent.SetFavoriteToggle, {
+          set_num: setNum,
+          is_favorite: nowFavorite,
+        });
         router.refresh();
       }
     });
@@ -82,11 +95,7 @@ export function SetDetailActions({
   if (!isAuthenticated) {
     return (
       <div className="flex flex-col sm:flex-row gap-3">
-        <Button
-          size="lg"
-          className="flex-1"
-          onClick={() => router.push("/auth/login")}
-        >
+        <Button size="lg" className="flex-1" onClick={() => router.push("/auth/login")}>
           <Package className="size-5 mr-2" />
           Log in to add to your vault
         </Button>
@@ -116,11 +125,7 @@ export function SetDetailActions({
           {isPending ? (
             <Loader2 className="size-5 animate-spin" />
           ) : (
-            <Star
-              className={`size-5 ${
-                status.isFavorite ? "fill-primary text-primary" : ""
-              }`}
-            />
+            <Star className={`size-5 ${status.isFavorite ? "fill-primary text-primary" : ""}`} />
           )}
         </Button>
         <Button
@@ -130,11 +135,7 @@ export function SetDetailActions({
           onClick={handleRemove}
           disabled={isPending}
         >
-          {isPending ? (
-            <Loader2 className="size-5 animate-spin" />
-          ) : (
-            <X className="size-5" />
-          )}
+          {isPending ? <Loader2 className="size-5 animate-spin" /> : <X className="size-5" />}
         </Button>
       </div>
     );
@@ -143,12 +144,7 @@ export function SetDetailActions({
   if (status.inWishlist) {
     return (
       <div className="flex flex-col sm:flex-row gap-3">
-        <Button
-          size="lg"
-          className="flex-1"
-          onClick={handleAddToCollection}
-          disabled={isPending}
-        >
+        <Button size="lg" className="flex-1" onClick={handleAddToCollection} disabled={isPending}>
           {isPending ? (
             <Loader2 className="size-5 mr-2 animate-spin" />
           ) : (
@@ -172,11 +168,7 @@ export function SetDetailActions({
           onClick={handleRemove}
           disabled={isPending}
         >
-          {isPending ? (
-            <Loader2 className="size-5 animate-spin" />
-          ) : (
-            <X className="size-5" />
-          )}
+          {isPending ? <Loader2 className="size-5 animate-spin" /> : <X className="size-5" />}
         </Button>
       </div>
     );
@@ -184,12 +176,7 @@ export function SetDetailActions({
 
   return (
     <div className="flex flex-col sm:flex-row gap-3">
-      <Button
-        size="lg"
-        className="flex-1"
-        onClick={handleAddToCollection}
-        disabled={isPending}
-      >
+      <Button size="lg" className="flex-1" onClick={handleAddToCollection} disabled={isPending}>
         {isPending ? (
           <Loader2 className="size-5 mr-2 animate-spin" />
         ) : (

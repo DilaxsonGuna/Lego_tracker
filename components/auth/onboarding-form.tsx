@@ -17,6 +17,7 @@ import {
   getPopularThemesAction,
 } from "@/app/auth/onboarding/actions";
 import type { ThemeCategory } from "@/types/explore";
+import { AnalyticsEvent, capture } from "@/lib/analytics/events";
 
 type OnboardingFormProps = React.ComponentPropsWithoutRef<"div">;
 
@@ -92,6 +93,11 @@ export function OnboardingForm({ className, ...props }: OnboardingFormProps) {
       setIsLoading(false);
       return;
     }
+
+    capture(AnalyticsEvent.OnboardingComplete, {
+      theme_count: selectedThemes.length,
+      has_bio: bio.length > 0,
+    });
 
     // Force hard navigation to ensure middleware re-evaluates
     window.location.href = "/";

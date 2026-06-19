@@ -16,3 +16,6 @@ Sentry.init({
   replaysSessionSampleRate: 0.01,
   replaysOnErrorSampleRate: 1.0,
 });
+
+// Instruments App Router client-side navigations for tracing.
+export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;

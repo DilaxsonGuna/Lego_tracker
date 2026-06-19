@@ -3,6 +3,7 @@
 import { Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { AnalyticsEvent, capture } from "@/lib/analytics/events";
 
 interface ShareProfileButtonProps {
   userId: string;
@@ -19,6 +20,10 @@ export function ShareProfileButton({ userId, username }: ShareProfileButtonProps
           title: `@${username} on BrickMaster`,
           url: profileUrl,
         });
+        capture(AnalyticsEvent.ProfileShare, {
+          target_user_id: userId,
+          method: "web_share",
+        });
       } catch (err) {
         // User cancelled share — ignore AbortError
         if (err instanceof Error && err.name === "AbortError") return;
@@ -27,6 +32,10 @@ export function ShareProfileButton({ userId, username }: ShareProfileButtonProps
       try {
         await navigator.clipboard.writeText(profileUrl);
         toast.success("Profile link copied!");
+        capture(AnalyticsEvent.ProfileShare, {
+          target_user_id: userId,
+          method: "clipboard",
+        });
       } catch {
         toast.error("Failed to copy link");
       }

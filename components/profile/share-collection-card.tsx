@@ -12,6 +12,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { AnalyticsEvent, capture } from "@/lib/analytics/events";
 
 interface ShareCollectionCardProps {
   userId: string;
@@ -32,6 +33,10 @@ export function ShareCollectionCard({ userId, open, onOpenChange }: ShareCollect
       await navigator.clipboard.writeText(ogImageUrl);
       setCopied(true);
       toast.success("Link copied to clipboard");
+      capture(AnalyticsEvent.CollectionShare, {
+        target_user_id: userId,
+        method: "clipboard",
+      });
       setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error("Failed to copy link");
@@ -50,6 +55,10 @@ export function ShareCollectionCard({ userId, open, onOpenChange }: ShareCollect
         title: "My LEGO Collection",
         text: "Check out my LEGO collection on BrickBox!",
         url: ogImageUrl,
+      });
+      capture(AnalyticsEvent.CollectionShare, {
+        target_user_id: userId,
+        method: "web_share",
       });
     } catch (err) {
       // User cancelled share - ignore AbortError

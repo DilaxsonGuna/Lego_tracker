@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
+import { PostHogProvider } from "@/components/providers/posthog-provider";
+import { CookieConsent } from "@/components/shared/cookie-consent";
 import "./globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -35,8 +37,11 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.className} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          {children}
-          <Toaster />
+          <PostHogProvider>
+            {children}
+            <Toaster />
+            <CookieConsent />
+          </PostHogProvider>
         </ThemeProvider>
       </body>
     </html>
