@@ -5,7 +5,7 @@ import {
   getUserSetNums,
   getUserSetsWithType,
 } from "@/lib/commands/user-sets";
-import { mockSupabaseAuth, mockSupabaseQuery } from "@test/helpers/mock-supabase";
+import { mockSupabaseAuth } from "@test/helpers/mock-supabase";
 
 vi.mock("@/lib/supabase/server", () => ({ createClient: vi.fn() }));
 vi.mock("@/lib/commands/user-stats", () => ({

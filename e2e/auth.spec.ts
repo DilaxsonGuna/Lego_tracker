@@ -1,5 +1,4 @@
 import { test, expect } from "@playwright/test";
-import { TEST_USER } from "./helpers/seed";
 import { loginAsTestUser } from "./helpers/login";
 
 test.describe("Auth redirect", () => {

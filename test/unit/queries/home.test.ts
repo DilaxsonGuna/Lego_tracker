@@ -1,10 +1,6 @@
 import { vi } from "vitest";
 import { getDashboardStats, getRecentlyAddedSets, getFollowingActivity } from "@/lib/queries/home";
-import {
-  mockSupabaseMultiTable,
-  mockSupabaseAuth,
-  mockSupabaseQuery,
-} from "@test/helpers/mock-supabase";
+import { mockSupabaseMultiTable, mockSupabaseQuery } from "@test/helpers/mock-supabase";
 
 vi.mock("@/lib/supabase/server", () => ({ createClient: vi.fn() }));
 import { createClient } from "@/lib/supabase/server";

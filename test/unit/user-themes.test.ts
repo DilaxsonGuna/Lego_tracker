@@ -1,6 +1,6 @@
 import { vi } from "vitest";
 import { setUserThemes, getUserThemesCount } from "@/lib/commands/user-themes";
-import { mockSupabaseAuth, mockSupabaseQuery } from "@test/helpers/mock-supabase";
+import { mockSupabaseQuery } from "@test/helpers/mock-supabase";
 
 vi.mock("@/lib/supabase/server", () => ({ createClient: vi.fn() }));
 import { createClient } from "@/lib/supabase/server";

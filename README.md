@@ -1,109 +1,158 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+# Lego Tracker
 
-<p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
+A social LEGO collection tracker. Browse sets, manage a vault (collection + wishlist), follow other collectors, and curate a public profile. Branded **BrickMaster** with the **BrickBox** design theme.
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+**Stack:** Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS · shadcn/ui · Supabase (Postgres + Auth + RLS) · Sentry · PostHog
 
-## Features
+---
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Proxy
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+## Prerequisites
 
-## Demo
+| Tool                                                      | Version | Notes                                |
+| --------------------------------------------------------- | ------- | ------------------------------------ |
+| [Node.js](https://nodejs.org)                             | 22+     | `node -v`                            |
+| npm                                                       | 10+     | ships with Node                      |
+| [Docker](https://www.docker.com/products/docker-desktop/) | latest  | required to run Supabase locally     |
+| [Supabase CLI](https://supabase.com/docs/guides/cli)      | 2.78+   | `brew install supabase/tap/supabase` |
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+---
 
-## Deploy to Vercel
+## Local setup
 
-Vercel deployment will guide you through creating a Supabase account and project.
+```bash
+# 1. Install dependencies
+git clone <repo-url> && cd Lego_tracker
+npm install
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+# 2. Start the local Supabase stack (Postgres, Auth, Storage, Studio) via Docker
+supabase start
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
+# 3. Create your env file (see "Environment variables" below)
+cp .env.example .env.local
+#    then fill in the LOCAL values printed by `supabase status`
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+# 4. Build the database: migrations + seed (catalog + dev logins)
+npm run db:reset
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+# 5. Run the app
+npm run dev
+```
 
-## Clone and run locally
+The app runs at **[localhost:3000](http://localhost:3000)** and Supabase Studio at **[localhost:54323](http://127.0.0.1:54323)**.
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+### Local env values
 
-2. Create a Next.js app using the Supabase Starter template npx command
+After `supabase start`, run `supabase status` and copy the values into `.env.local`:
 
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
-   ```
+```env
+NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<"Publishable key" from supabase status>
+SUPABASE_SERVICE_ROLE_KEY=<"service_role key" from supabase status>
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+```
 
-   ```bash
-   yarn create next-app --example with-supabase with-supabase-app
-   ```
+### Seeded dev logins
 
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
-   ```
+`npm run db:reset` creates two local accounts (a copy of prod users, with a shared dev password):
 
-3. Use `cd` to change into the app's directory
+| Email                    | Username | Password       |
+| ------------------------ | -------- | -------------- |
+| `dilax2001@gmail.com`    | dixi     | `Password123!` |
+| `nicef98651@gopicta.com` | admin    | `Password123!` |
 
-   ```bash
-   cd with-supabase-app
-   ```
+> These exist **only** in the local seed (`supabase/seed.sql`) and must never be used in production.
 
-4. Rename `.env.example` to `.env.local` and update the following:
+---
 
-  ```env
-  NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=[INSERT SUPABASE PROJECT API PUBLISHABLE OR ANON KEY]
-  ```
-  > [!NOTE]
-  > This example uses `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, which refers to Supabase's new **publishable** key format.
-  > Both legacy **anon** keys and new **publishable** keys can be used with this variable name during the transition period. Supabase's dashboard may show `NEXT_PUBLIC_SUPABASE_ANON_KEY`; its value can be used in this example.
-  > See the [full announcement](https://github.com/orgs/supabase/discussions/29260) for more information.
+## Database workflow
 
-  Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` can be found in [your Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true)
+Schema and data live under `supabase/`:
 
-5. You can now run the Next.js local development server:
+```
+supabase/
+  migrations/              Ordered SQL migrations (source of truth for the schema)
+    000_production_schema.sql    Baseline schema (tables, RPCs, RLS)
+    001_create_notifications.sql Notifications table + policies
+    002_follows_performance.sql  Denormalized follow counts + trigger + indexes
+  seed.sql                 Identity fixtures (auth users + profiles), auto-loaded on reset
+  seeds/
+    catalog/*.csv.gz        Large static catalog (themes, lego_sets, set_prices), gzipped
+    fixtures/*.csv          Per-user collection data (depends on the catalog)
+```
 
-   ```bash
-   npm run dev
-   ```
+Seeding is split on purpose: `seed.sql` holds small, readable identity fixtures and loads automatically during `supabase db reset`. The bulk catalog (~57k rows) is stored compressed and loaded separately by `scripts/seed-local-data.sh` via `COPY` — this keeps the repo lean and avoids the seeder's limitations.
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+### Commands
 
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+| Command                | What it does                                                                               |
+| ---------------------- | ------------------------------------------------------------------------------------------ |
+| `npm run db:reset`     | Recreate the local DB from migrations, then load catalog + fixtures. **Wipes local data.** |
+| `npm run db:seed-data` | Reload just the catalog + collection data (idempotent), without a full reset               |
+| `supabase db reset`    | Migrations + `seed.sql` only (logins/profiles, no catalog)                                 |
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+### Adding a migration
 
-## Feedback and issues
+```bash
+supabase migration new <descriptive_name>   # creates supabase/migrations/<ts>_<name>.sql
+# edit the SQL (follow the RLS conventions in agent_docs/database.md)
+npm run db:reset                              # apply + verify locally
+```
 
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
+### Deploying schema to production
 
-## More Supabase examples
+The repo is the single source of truth — local and prod migration history are aligned (`000`, `001`, `002`).
 
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+```bash
+supabase link --project-ref <prod-ref>   # one-time (asks for the DB password)
+supabase db push                          # applies any pending migrations to prod
+```
+
+Migrations are additive and never touch existing rows. After pushing, verify in the dashboard or via the REST API.
+
+---
+
+## Environment variables
+
+Defined in `.env.local` (git-ignored). See `.env.example` for the full template.
+
+| Variable                               | Required | Purpose                                                   |
+| -------------------------------------- | -------- | --------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`             | ✅       | Supabase API URL (local: `http://127.0.0.1:54321`)        |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | ✅       | Publishable/anon key                                      |
+| `SUPABASE_SERVICE_ROLE_KEY`            | ✅       | Service-role key (server-only; price sync, admin scripts) |
+| `NEXT_PUBLIC_SITE_URL`                 | ✅       | Base URL for auth redirects (`http://localhost:3000`)     |
+| `NEXT_PUBLIC_SENTRY_DSN`               | —        | Sentry error monitoring                                   |
+| `NEXT_PUBLIC_POSTHOG_KEY`              | —        | PostHog analytics project key                             |
+| `NEXT_PUBLIC_POSTHOG_HOST`             | —        | PostHog ingestion host (`https://us.i.posthog.com`)       |
+| `BRICKSET_API_KEY`                     | —        | Brickset API key for the price sync script                |
+
+---
+
+## Scripts & tooling
+
+| Command                     | Description                                       |
+| --------------------------- | ------------------------------------------------- |
+| `npm run dev`               | Next.js dev server                                |
+| `npm run build`             | Production build (run before committing)          |
+| `npm run lint`              | ESLint                                            |
+| `npm run test` / `test:run` | Vitest (watch / once)                             |
+| `npm run test:coverage`     | Vitest with coverage                              |
+| `npm run test:e2e`          | Playwright E2E tests                              |
+| `npm run types:generate`    | Regenerate `types/supabase.ts` from the DB schema |
+
+---
+
+## Project structure
+
+```
+app/(app)/      Sidebar pages: /, /explore, /vault, /profile, /settings
+app/auth/       Auth pages: login, sign-up, onboarding
+components/     UI primitives (ui/), shared chrome (shared/), page-specific
+lib/queries/    Reads  (Supabase → typed data)
+lib/commands/   Writes (mutations with error handling)
+lib/supabase/   Client/server Supabase clients
+supabase/       Migrations + seed data
+types/          TypeScript types per domain
+```
+
+Deeper documentation lives in [`CLAUDE.md`](./CLAUDE.md) and [`agent_docs/`](./agent_docs) — architecture, full database schema/RLS, and the design system.

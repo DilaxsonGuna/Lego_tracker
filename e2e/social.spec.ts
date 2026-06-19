@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { loginAsTestUser, loginAsSecondUser } from "./helpers/login";
+import { loginAsTestUser } from "./helpers/login";
 import { adminClient, TEST_USER, TEST_USER_2 } from "./helpers/seed";
 
 /**
